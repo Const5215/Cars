@@ -55,22 +55,15 @@ create table CENTER
 
 create table PART
 (
-  ID             NUMBER        not null,
+  ID             NUMBER        not null
+    constraint PART_PK
+    primary key,
   NAME           VARCHAR2(255) not null,
   UNIT_PRICE     NUMBER        not null,
   DISTRIBUTOR_ID NUMBER        not null
     constraint PART_DISTRIBUTOR_ID_FK
     references DISTRIBUTOR
 )
-/
-
-create unique index PART_ID
-  on PART (ID)
-/
-
-alter table PART
-  add constraint PART_PK
-primary key (ID)
 /
 
 create table INVENTORY
@@ -224,7 +217,8 @@ create table BASIC_SERVICE
   ESTIMATED_HOUR NUMBER        not null,
   CHARGE_RATE    NUMBER        not null,
   SERVICE_TYPE   NUMBER        not null,
-  FAULT          VARCHAR2(255),
+  WARRANTY       NUMBER,
+  PROBLEM        VARCHAR2(255),
   constraint BASIC_SERVICE_PK
   primary key (CAR_MODEL_ID, NAME)
 )
@@ -232,22 +226,15 @@ create table BASIC_SERVICE
 
 create table INTERNAL_NOTIFICATION
 (
-  ID                NUMBER not null,
+  ID                NUMBER not null
+    constraint INTERNAL_NOFICATION_PK
+    primary key;
   ORDER_ID          NUMBER not null
     constraint INTERNAL_NOTIFICATION_O_ID_FK
     references INTERNAL_ORDER
     on delete cascade,
   NOTIFICATION_DATE DATE   not null
 )
-/
-
-create unique index INTERNAL_NOTIFICATION
-  on INTERNAL_NOTIFICATION (ID)
-/
-
-alter table INTERNAL_NOTIFICATION
-  add constraint INTERNAL_NOFICATION_PK
-primary key (ID)
 /
 
 create table EXTERNAL_NOTIFICATION
