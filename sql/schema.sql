@@ -176,7 +176,7 @@ create table CAR_MODEL
 
 create table CAR
 (
-  PALTE             VARCHAR2(255) not null
+  PLATE             VARCHAR2(255) not null
     constraint CAR_PK
     primary key,
   CUSTOMER_ID       NUMBER        not null
