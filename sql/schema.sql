@@ -228,7 +228,7 @@ create table INTERNAL_NOTIFICATION
 (
   ID                NUMBER not null
     constraint INTERNAL_NOFICATION_PK
-    primary key;
+    primary key,
   ORDER_ID          NUMBER not null
     constraint INTERNAL_NOTIFICATION_O_ID_FK
     references INTERNAL_ORDER
