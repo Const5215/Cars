@@ -3,6 +3,7 @@ package edu.ncsu.csc.pages.customer;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
+import edu.ncsu.csc.pages.ProfileSubmenu;
 import edu.ncsu.csc.pages.start.Home;
 
 public class CustomerLanding extends AbstractPage {
