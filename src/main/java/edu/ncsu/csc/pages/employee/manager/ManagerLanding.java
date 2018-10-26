@@ -4,11 +4,9 @@ import edu.ncsu.csc.entity.Role;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
-import edu.ncsu.csc.pages.ProfileSubmenu;
+import edu.ncsu.csc.pages.Profile;
 import edu.ncsu.csc.pages.start.Home;
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
-import javax.swing.plaf.synth.SynthEditorPaneUI;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -18,18 +16,18 @@ public class ManagerLanding extends AbstractPage {
 
   public ManagerLanding(User manager) {
     this.manager = manager;
-    choices.add("View and Update Profile");
+    choices.add("Profile");
     choices.add("View Customer Profile");
-    choices.add("Add New Employee");
-    choices.add("View Payroll Information");
-    choices.add("View Inventory");
-    choices.add("View and Place Orders");
-    choices.add("View Notifications");
-    choices.add("Register New Car");
-    choices.add("View Service Details");
-    choices.add("View Service History");
-    choices.add("View Invoices");
-    choices.add("Go Back");
+    choices.add("Add New Employees");
+    choices.add("Payroll");
+    choices.add("Inventory");
+    choices.add("Orders");
+    choices.add("Notifications");
+    choices.add("New Car Model");
+    choices.add("Car Service Details");
+    choices.add("Service History");
+    choices.add("Invoices");
+    choices.add("Logout");
   }
 
   @Override
@@ -113,7 +111,7 @@ public class ManagerLanding extends AbstractPage {
   }
 
   private void viewCustomerProfile() {
-    Long customerId;
+    long customerId;
     System.out.println("viewCustomerProfile");
     System.out.println("Enter customer id:");
     do {
@@ -123,15 +121,20 @@ public class ManagerLanding extends AbstractPage {
         System.out.println("Invalid customer ID");
         continue;
       }
+      break;
+    } while (true);
       try {
-        connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        preparedStatement = connection.prepareStatement("SELECT * FROM CUSTOMER WHERE ID=?");
-        preparedStatement.setLong(1, customerId);
-        resultSet = preparedStatement.executeQuery();
-        if (!resultSet.next()) {
-          System.out.println("No such customer");
-          continue;
-        }
+        do {
+          connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+          preparedStatement = connection.prepareStatement("SELECT * FROM CUSTOMER WHERE ID=?");
+          preparedStatement.setLong(1, customerId);
+          resultSet = preparedStatement.executeQuery();
+          if (!resultSet.next()) {
+            System.out.println("No such customer");
+            continue;
+          }
+          break;
+        } while (true);
         User viewCustomer = new User(resultSet.getLong("ID"),
             resultSet.getString("PASSWORD"),
             resultSet.getString("NAME"),
@@ -149,13 +152,11 @@ public class ManagerLanding extends AbstractPage {
         e.printStackTrace();
       } finally {
         closeSqlConnection();
-        break;
       }
-    }while(true);
   }
 
   private void viewAndUpdateProfile() {
-    Page profileSubmenu = new ProfileSubmenu(manager);
-    profileSubmenu.run();
+    Page profile = new Profile(manager);
+    profile.run();
   }
 }

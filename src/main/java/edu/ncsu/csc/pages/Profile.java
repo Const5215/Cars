@@ -3,11 +3,11 @@ package edu.ncsu.csc.pages;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.customer.CustomerLanding;
 
-public class ProfileSubmenu extends AbstractPage {
+public class Profile extends AbstractPage {
 
     private User user;
 
-    public ProfileSubmenu(User user) {
+  public Profile(User user) {
         this.user = user;
         choices.add("View Profile");
         choices.add("Update Profile");
@@ -18,7 +18,7 @@ public class ProfileSubmenu extends AbstractPage {
     public void run() {
         int choice;
         do{
-            System.out.println("# ProfileSubmenu");
+          System.out.println("# Profile");
             displayChoices();
             choice = getChoiceFromInput();
             switch (choice) {
@@ -36,15 +36,8 @@ public class ProfileSubmenu extends AbstractPage {
     }
 
     private void viewProfile() {
-        System.out.println();
-        System.out.println("#ViewProfile");
-        System.out.println("user ID: " + user.getId());
-        System.out.println("Password: " + user.getPassword());
-        System.out.println("Name: " + user.getName());
-        System.out.println("Email: " + user.getEmail());
-        System.out.println("Phone: " + user.getPhone());
-        System.out.println("Address: " + user.getAddress());
-        System.out.println();
+      Page viewProfile = new ViewProfile(user);
+      viewProfile.run();
     }
 
     private void updateProfile() {

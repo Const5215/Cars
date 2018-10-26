@@ -14,48 +14,41 @@ public class UpdateProfile extends AbstractPage {
 
     UpdateProfile(User user) {
         this.user = user;
-        choices.add("Update Password");
-        choices.add("Update Name");
-        choices.add("Update Email");
-        choices.add("Update Phone");
-        choices.add("Update Address");
+      choices.add("Name");
+      choices.add("Address");
+      choices.add("Phone Number");
+      choices.add("Password");
         choices.add("Go back");
     }
 
     @Override
     public void run() {
         int choice;
-        do {
-            System.out.println("# UpdateProfile");
-            displayChoices();
-            String role;
-            if (user.getRole() == Role.Customer)
-                role = "CUSTOMER";
-            else
-                role = "EMPLOYEE";
-
-            choice = getChoiceFromInput();
-            switch (choice) {
-                case 1:
-                    updatePassword(role);
-                    break;
-                case 2:
-                    updateName(role);
-                    break;
-                case 3:
-                    updateEmail(role);
-                    break;
-                case 4:
-                    updatePhone(role);
-                    break;
-                case 5:
-                    updateAddress(role);
-                    break;
-                case 6:
-                    Page profileSubmenu = new ProfileSubmenu(user);
-                    profileSubmenu.run();
-            }
-        }while(choice != 6);
+      System.out.println("#Update Profile");
+      displayChoices();
+      String role;
+      if (user.getRole() == Role.Customer)
+        role = "CUSTOMER";
+      else
+        role = "EMPLOYEE";
+      choice = getChoiceFromInput();
+      switch (choice) {
+        case 1:
+          updateName(role);
+          break;
+        case 2:
+          updateAddress(role);
+          break;
+        case 3:
+          updatePhone(role);
+          break;
+        case 4:
+          updatePassword(role);
+          break;
+        case 5:
+          Page profileSubmenu = new Profile(user);
+          profileSubmenu.run();
+      }
     }
 
     private void updateAddress(String tableName) {
@@ -82,41 +75,6 @@ public class UpdateProfile extends AbstractPage {
 
         updateTable(tableName,"PHONE", user.getPhone());
         System.out.println("Phone updated.");
-    }
-
-    private void updateEmail(String tableName) {
-        do {
-            System.out.print("Enter new email address: ");
-            String email = scanner.nextLine().toLowerCase();
-            Pattern pattern = Pattern
-                    .compile("^[\\w.%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
-            Matcher matcher = pattern.matcher(email);
-
-            if (!matcher.matches()) {
-                System.out.println("Invalid email address");
-                continue;
-            }
-
-            try {
-                connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-                preparedStatement = connection.prepareStatement("select * from CUSTOMER where EMAIL=?");
-                preparedStatement.setString(1, email);
-                resultSet = preparedStatement.executeQuery();
-
-                if (resultSet.next()) {
-                    System.out.println("This email address is already used");
-                } else {
-                    user.setEmail(email);
-                    break;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } finally {
-                closeSqlConnection();
-            }
-        } while (true);
-        updateTable(tableName,"EMAIL", user.getEmail());
-        System.out.println("Email updated.");
     }
 
     private void updateName(String tabelName) {
