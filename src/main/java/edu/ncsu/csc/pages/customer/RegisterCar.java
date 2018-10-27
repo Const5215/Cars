@@ -1,16 +1,16 @@
 package edu.ncsu.csc.pages.customer;
 
 import edu.ncsu.csc.entity.Car;
+import edu.ncsu.csc.entity.MatchType;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class RegisterCar extends AbstractPage {
     private User user;
@@ -24,84 +24,77 @@ public class RegisterCar extends AbstractPage {
     @Override
     public void run() {
       System.out.println("#Register Car");
+
+      String carMake, carModel, strPurchaseDate, strLastServiceDate;
+      SimpleDateFormat dateFormat;
+      long carYear, lastMileage;
+      dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+      Car car = new Car();
+
+      System.out.print("Enter Licence Plate:");
+      car.setPlate(scanner.nextLine());
+      car.setCustomerId(user.getId());
+
+      strPurchaseDate = getInfo("Enter purchase date(dd/mm/yyyy):", MatchType.Date);
+      try {
+        car.setPurchaseDate(dateFormat.parse(strPurchaseDate));
+      } catch (ParseException e) {
+        e.printStackTrace();
+      }
+      do {
+        try {
+          System.out.print("Enter Make:");
+          carMake = scanner.nextLine();
+          System.out.print("Enter Model:");
+          carModel = scanner.nextLine();
+          carYear = Long.parseLong(getInfo("Enter Year:", MatchType.Number));
+          connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+          preparedStatement = connection
+              .prepareStatement("select ID from CAR_MODEL where MAKE=? AND MODEL=? AND YEAR=?");
+          preparedStatement.setString(1, carMake);
+          preparedStatement.setString(2, carModel);
+          preparedStatement.setLong(3, carYear);
+          resultSet = preparedStatement.executeQuery();
+          if (resultSet.next()) {
+            car.setCarModelId(resultSet.getLong("ID"));
+            break;
+          } else {
+            System.out.println("Invalid Car Model");
+          }
+        } catch (SQLException e) {
+          e.printStackTrace();
+        } finally {
+          closeSqlConnection();
+        }
+      } while (true);
+
+      lastMileage = Long.parseLong(getInfo("Enter last mileage:", MatchType.Number));
+      car.setLastMileage(lastMileage);
+
+      do {
+        System.out.println("Do you want to Enter last service date?(y/n)");
+        String tmp = scanner.nextLine();
+        if (tmp.equals("y")) {
+          strLastServiceDate = getInfo("Enter Last Service Date(dd/mm/yyyy, Enter for omitted):", MatchType.Date);
+          break;
+        } else if (tmp.equals("n")) {
+          strLastServiceDate = "";
+          break;
+        }
+      } while (true);
       displayChoices();
-      int choice;
-      choice = getChoiceFromInput();
-      switch (choice) {
+      switch (getChoiceFromInput()) {
         case 1:
-          register();
+          register(car, strLastServiceDate);
           break;
         case 2:
           Page customerLanding = new CustomerLanding(user);
           customerLanding.run();
-        }
+      }
     }
 
-  private void register() {
-    String carModel, strPurchaseDate;
-    SimpleDateFormat dateFormat;
-    Long lastMileage;
-    dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-    Car car = new Car();
-    System.out.println("#RegisterCar");
-    System.out.print("Enter Licence Plate:");
-    car.setPlate(scanner.nextLine());
-    car.setCustomerId(user.getId());
 
-    do {
-      System.out.print("Enter Car Model:");
-      try {
-        carModel = scanner.nextLine();
-        connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        preparedStatement = connection
-            .prepareStatement("select ID from CAR_MODEL where MODEL=?");
-        preparedStatement.setString(1, carModel);
-        resultSet = preparedStatement.executeQuery();
-        if (resultSet.next()) {
-          car.setCarModelId(resultSet.getLong("ID"));
-          break;
-        } else {
-          System.out.println("Invalid Car Model");
-        }
-      } catch (SQLException e) {
-        e.printStackTrace();
-      } finally {
-        closeSqlConnection();
-      }
-    } while (true);
-    do {
-      System.out.print("Enter purchase date(dd/mm/yyyy):");
-      strPurchaseDate = scanner.nextLine();
-      Pattern pattern = Pattern
-          .compile("^[0-3][0-9]/[0-3][0-9]/(?:[0-9][0-9])?[0-9][0-9]$");
-      Matcher matcher = pattern.matcher(strPurchaseDate);
-      if (matcher.matches()) {
-        try {
-          car.setPurchaseDate(dateFormat.parse(strPurchaseDate));
-        } catch (ParseException e) {
-          e.printStackTrace();
-        }
-        break;
-      } else {
-        System.out.println("Invalid date format");
-      }
-    } while (true);
-    System.out.print("Enter Last Mileage:");
-    do {
-      try {
-        lastMileage = Long.parseLong(scanner.nextLine());
-      } catch (NumberFormatException e) {
-        System.out.println("Invalid Mileage");
-        continue;
-      }
-      break;
-    } while (true);
-    car.setLastMileage(lastMileage);
-    try {
-      car.setLastServiceDate(dateFormat.parse("00/00/0000"));
-    } catch (ParseException e) {
-      e.printStackTrace();
-    }
+  private void register(Car car, String strLastServiceDate) {
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
       preparedStatement = connection
@@ -112,20 +105,17 @@ public class RegisterCar extends AbstractPage {
       preparedStatement.setDate(4, new java.sql.Date(car.getPurchaseDate().getTime()));
       preparedStatement.setLong(5, car.getLastMileage());
       preparedStatement.setLong(6, car.getLastServiceType());
-      preparedStatement.setDate(7, new java.sql.Date(car.getLastServiceDate().getTime()));
-      preparedStatement.executeUpdate();
-
-      preparedStatement = connection.prepareStatement("select ID from CUSTOMER where EMAIL=?");
-      preparedStatement.setString(1, user.getEmail());
-      resultSet = preparedStatement.executeQuery();
-      while (resultSet.next()) {
-        user.setId(resultSet.getLong("ID"));
+      if (strLastServiceDate.equals("")) {
+        preparedStatement.setNull(7, Types.DATE);
+      } else {
+        preparedStatement.setDate(7, new java.sql.Date(car.getLastServiceDate().getTime()));
       }
+      preparedStatement.executeUpdate();
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
+      System.out.println("Register Success.");
       closeSqlConnection();
     }
-    System.out.println("Register Success.");
   }
 }
