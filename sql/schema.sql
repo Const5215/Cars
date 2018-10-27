@@ -227,7 +227,7 @@ create table BASIC_SERVICE
 create table INTERNAL_NOTIFICATION
 (
   ID                NUMBER not null
-    constraint INTERNAL_NOFICATION_PK
+    constraint INTERNAL_NOTIFICATION_PK
     primary key,
   ORDER_ID          NUMBER not null
     constraint INTERNAL_NOTIFICATION_O_ID_FK
@@ -270,7 +270,7 @@ create table SERVICE_HISTORY
     constraint SERVICE_HISTORY_PK
     primary key,
   CAR_PLATE        VARCHAR2(255) not null
-    constraint SERVICE_HISTORY_CAR_PALTE_FK
+    constraint SERVICE_HISTORY_CAR_PLATE_FK
     references CAR,
   SERVICE_TYPE     NUMBER        not null,
   START_TIME       DATE          not null,
