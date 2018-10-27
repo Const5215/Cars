@@ -7,6 +7,7 @@ import edu.ncsu.csc.pages.Page;
 import edu.ncsu.csc.pages.customer.CustomerLanding;
 import edu.ncsu.csc.pages.employee.manager.ManagerLanding;
 import edu.ncsu.csc.pages.employee.receptionist.ReceptionistLanding;
+
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -47,6 +48,7 @@ public class Login extends AbstractPage {
 
           if (user == null) {
             System.out.println("Login incorrect");
+            continue;
           }
 
           switch (user.getRole()) {

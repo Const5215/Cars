@@ -1,14 +1,11 @@
 package edu.ncsu.csc.pages.employee.manager;
 
-import edu.ncsu.csc.entity.Role;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
-import edu.ncsu.csc.pages.Profile;
+import edu.ncsu.csc.pages.employee.EmployeeProfile;
+import edu.ncsu.csc.pages.employee.EmployeeViewCustomerProfile;
 import edu.ncsu.csc.pages.start.Home;
-
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 public class ManagerLanding extends AbstractPage {
 
@@ -16,8 +13,8 @@ public class ManagerLanding extends AbstractPage {
 
   public ManagerLanding(User manager) {
     this.manager = manager;
-    choices.add("Profile");
-    choices.add("View Customer Profile");
+    choices.add("CustomerProfile");
+    choices.add("View Customer CustomerProfile");
     choices.add("Add New Employees");
     choices.add("Payroll");
     choices.add("Inventory");
@@ -106,57 +103,17 @@ public class ManagerLanding extends AbstractPage {
   }
 
   private void addNewEmployee() {
-    System.out.println("addNewEmployee");
-    System.out.println("Enter ");
+    Page addNewEmployees = new AddNewEmployees(manager);
+    addNewEmployees.run();
   }
 
   private void viewCustomerProfile() {
-    long customerId;
-    System.out.println("viewCustomerProfile");
-    System.out.println("Enter customer id:");
-    do {
-      try {
-        customerId = Long.parseLong(scanner.nextLine());
-      } catch (NumberFormatException e) {
-        System.out.println("Invalid customer ID");
-        continue;
-      }
-      break;
-    } while (true);
-      try {
-        do {
-          connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-          preparedStatement = connection.prepareStatement("SELECT * FROM CUSTOMER WHERE ID=?");
-          preparedStatement.setLong(1, customerId);
-          resultSet = preparedStatement.executeQuery();
-          if (!resultSet.next()) {
-            System.out.println("No such customer");
-            continue;
-          }
-          break;
-        } while (true);
-        User viewCustomer = new User(resultSet.getLong("ID"),
-            resultSet.getString("PASSWORD"),
-            resultSet.getString("NAME"),
-            resultSet.getString("EMAIL"),
-            resultSet.getString("PHONE"),
-            resultSet.getString("ADDRESS"),
-            Role.Customer);
-        System.out.println("Customer ID: " + viewCustomer.getId());
-        System.out.println("Password: " + viewCustomer.getPassword());
-        System.out.println("Name: " + viewCustomer.getName());
-        System.out.println("Email: " + viewCustomer.getEmail());
-        System.out.println("Phone: " + viewCustomer.getPhone());
-        System.out.println("Address: " + viewCustomer.getAddress());
-      } catch (SQLException e) {
-        e.printStackTrace();
-      } finally {
-        closeSqlConnection();
-      }
+    Page viewCustomerProfile = new EmployeeViewCustomerProfile(manager);
+    viewCustomerProfile.run();
   }
 
   private void viewAndUpdateProfile() {
-    Page profile = new Profile(manager);
+    Page profile = new EmployeeProfile(manager);
     profile.run();
   }
 }

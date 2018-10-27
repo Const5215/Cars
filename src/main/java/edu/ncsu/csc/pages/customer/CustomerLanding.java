@@ -3,7 +3,6 @@ package edu.ncsu.csc.pages.customer;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
-import edu.ncsu.csc.pages.Profile;
 import edu.ncsu.csc.pages.start.Home;
 
 public class CustomerLanding extends AbstractPage {
@@ -12,7 +11,7 @@ public class CustomerLanding extends AbstractPage {
 
   public CustomerLanding(User customer) {
     this.customer = customer;
-    choices.add("View and Update Profile");
+    choices.add("View and Update CustomerProfile");
     choices.add("Register Car");
     choices.add("View and Schedule Service");
     choices.add("View Invoices");
@@ -44,7 +43,7 @@ public class CustomerLanding extends AbstractPage {
   }
 
   private void viewAndUpdateProfile() {
-    Page profileSubmenu = new Profile(customer);
+    Page profileSubmenu = new CustomerProfile(customer);
     profileSubmenu.run();
   }
 
