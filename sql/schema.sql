@@ -275,10 +275,13 @@ create table SERVICE_HISTORY
   TOTAL_LABOR_HOUR NUMBER        not null,
   STATUS           NUMBER        not null,
   MECHANIC_ID      NUMBER        not null,
+  CENTER_ID        NUMBER        not null,
   constraint SERVICE_HISTORY_PK
   primary key (ID),
   constraint SERVICE_HISTORY_CAR_PLATE_FK
   foreign key (CAR_PLATE) references CAR,
+  constraint SERVICE_HISTORY_CENTER_ID_FK
+  foreign key (CENTER_ID) references CENTER,
   constraint SERVICE_HISTORY_EMPLOYEE_ID_FK
   foreign key (MECHANIC_ID) references EMPLOYEE
 )
