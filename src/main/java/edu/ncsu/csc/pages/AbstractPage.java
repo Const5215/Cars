@@ -1,12 +1,16 @@
 package edu.ncsu.csc.pages;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import edu.ncsu.csc.entity.Car;
+import edu.ncsu.csc.entity.MatchType;
+import edu.ncsu.csc.entity.Role;
+import edu.ncsu.csc.entity.User;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AbstractPage implements Page {
 
@@ -79,6 +83,125 @@ public class AbstractPage implements Page {
       } catch (SQLException e) {
         e.printStackTrace();
       }
+    }
+  }
+
+  protected String getInfo(String info, MatchType matchType) {
+    String result;
+    do {
+      System.out.print(info);
+      result = scanner.nextLine();
+      boolean matched = true;
+      String targetRegex;
+      Pattern pattern;
+      Matcher matcher;
+      switch (matchType) {
+        case Email:
+          targetRegex = "^[\\w.%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$";
+          pattern = Pattern.compile(targetRegex);
+          matcher = pattern.matcher(result);
+          matched = matcher.matches();
+          break;
+        case Phone:
+          targetRegex = "^\\d{3}-\\d{3}-\\d{4}$";
+          pattern = Pattern.compile(targetRegex);
+          matcher = pattern.matcher(result);
+          matched = matcher.matches();
+          break;
+        case Date:
+          targetRegex = "^[0-3][0-9]/[0-3][0-9]/(?:[0-9][0-9])?[0-9][0-9]$";
+          pattern = Pattern.compile(targetRegex);
+          matcher = pattern.matcher(result);
+          matched = matcher.matches();
+          break;
+        case Number:
+          try {
+            Long num = Long.parseLong(scanner.nextLine());
+          } catch (NumberFormatException e) {
+            matched = false;
+          }
+      }
+      if (matched) {
+        break;
+      } else {
+        switch (matchType) {
+          case Email:
+            System.out.println("Invalid email");
+            break;
+          case Phone:
+            System.out.println("Invalid phone");
+            break;
+          case Date:
+            System.out.println("Invalid date");
+            break;
+          case Number:
+            System.out.println("Invalid number");
+        }
+      }
+    } while (true);
+    return result;
+  }
+
+  protected boolean checkUsedEmail(String email) {
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection.prepareStatement("select * from CUSTOMER where EMAIL=?");
+      preparedStatement.setString(1, email);
+      resultSet = preparedStatement.executeQuery();
+      if (resultSet.next()) {
+        System.out.println("This email address is already used.");
+        return true;
+      } else {
+        return false;
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
+    return true;
+  }
+
+  protected Car getCar() {
+    Car car = null;
+    try {
+      car = new Car(resultSet.getString("PLATE"),
+          resultSet.getLong("CUSTOMER_ID"),
+          resultSet.getLong("CAR_MODEL_ID"),
+          resultSet.getDate("PURCHASE_DATE"),
+          resultSet.getLong("LAST_MILEAGE"),
+          resultSet.getLong("LAST_SERVICE_TYPE"),
+          resultSet.getDate("LAST_SERVICE_DATE"));
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return car;
+  }
+
+  protected User getUser() {
+    User user = null;
+    try {
+      user = new User(resultSet.getLong("ID"),
+          resultSet.getString("PASSWORD"),
+          resultSet.getString("NAME"),
+          resultSet.getString("EMAIL"),
+          resultSet.getString("PHONE"),
+          resultSet.getString("ADDRESS"),
+          Role.Customer);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return user;
+  }
+
+  protected void displayCarList(List<Car> carList) {
+    for (int i = 0; i < carList.size(); i++) {
+      System.out.printf("Car #%d details:\n", i);
+      System.out.println("Plate: " + carList.get(i).getPlate());
+      System.out.println("Purchase date:" + carList.get(i).getPurchaseDate());
+      System.out.println("Last Mileage:" + carList.get(i).getLastMileage());
+      System.out.println("Last service type:" + carList.get(i).getLastServiceType());
+      System.out.println("Last service date:" + carList.get(i).getLastServiceDate());
     }
   }
 }

@@ -11,7 +11,7 @@ public class CustomerLanding extends AbstractPage {
 
   public CustomerLanding(User customer) {
     this.customer = customer;
-    choices.add("View and Update Profile");
+    choices.add("View and Update CustomerProfile");
     choices.add("Register Car");
     choices.add("View and Schedule Service");
     choices.add("View Invoices");
@@ -43,7 +43,7 @@ public class CustomerLanding extends AbstractPage {
   }
 
   private void viewAndUpdateProfile() {
-    Page profileSubmenu = new ProfileSubmenu(customer);
+    Page profileSubmenu = new CustomerProfile(customer);
     profileSubmenu.run();
   }
 
