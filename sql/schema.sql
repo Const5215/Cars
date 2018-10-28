@@ -1,7 +1,9 @@
 create sequence CUSTOMER_ID_SEQ
   nocache
 /
-
+create sequence EMPLOYEE_ID_SEQ
+  nocache
+/
 create table CUSTOMER
 (
   ID       NUMBER        not null
