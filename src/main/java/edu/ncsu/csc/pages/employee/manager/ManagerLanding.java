@@ -92,11 +92,13 @@ public class ManagerLanding extends AbstractPage {
   }
 
   private void viewAndPlaceOrders() {
-
+    Page orders = new Orders(manager);
+    orders.run();
   }
 
   private void viewInventory() {
-
+    Page inventory = new Inventory(manager);
+    inventory.run();
   }
 
   private void viewPayrollInformation() {

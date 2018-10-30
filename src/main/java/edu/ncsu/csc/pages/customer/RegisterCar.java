@@ -86,7 +86,6 @@ public class RegisterCar extends AbstractPage {
       switch (getChoiceFromInput()) {
         case 1:
           register(car, strLastServiceDate);
-          break;
         case 2:
           Page customerLanding = new CustomerLanding(user);
           customerLanding.run();
