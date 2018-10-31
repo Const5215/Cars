@@ -12,15 +12,15 @@ public class EmployeeProfile extends AbstractPage {
 
   public EmployeeProfile(User employee) {
     this.employee = employee;
-    choices.add("View CustomerProfile");
-    choices.add("Update CustomerProfile");
+    choices.add("View Profile");
+    choices.add("Update Profile");
     choices.add("Go back");
   }
 
   @Override
   public void run() {
     int choice;
-    System.out.println("# CustomerProfile");
+    System.out.println("# Profile");
     displayChoices();
     choice = getChoiceFromInput();
     switch (choice) {

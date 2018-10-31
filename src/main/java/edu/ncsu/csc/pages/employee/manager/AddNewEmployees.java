@@ -48,6 +48,9 @@ public class AddNewEmployees extends AbstractPage {
           System.out.println("Invalid input");
           break;
       }
+      if (oneReceptionistCheck()) {
+        System.out.println("This service center already have a receptionist.");
+      }
     } while (true);
     employee.setRole(role);
     employee.setPassword("12345678");
@@ -73,6 +76,22 @@ public class AddNewEmployees extends AbstractPage {
         Page managerLanding = new ManagerLanding(manager);
         managerLanding.run();
     }
+  }
+
+  private boolean oneReceptionistCheck() {
+    long centerId = getCenterId(manager.getId());
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection.prepareStatement(
+          "SELECT * FROM EMPLOYMENT WHERE CENTER_ID=? AND POSITION=?");
+      preparedStatement.setLong(1, centerId);
+      preparedStatement.setLong(2, Role.Receptionist.ordinal());
+      resultSet = preparedStatement.executeQuery();
+      return resultSet.next();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return false;
   }
 
   private void addNewEmployee(User employee, Employment employment) {

@@ -10,10 +10,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomerViewProfile extends AbstractPage {
+public class ViewProfile extends AbstractPage {
   private User customer;
 
-  CustomerViewProfile(User customer) {
+  ViewProfile(User customer) {
     this.customer = customer;
     choices.add("Go Back");
   }
@@ -45,7 +45,7 @@ public class CustomerViewProfile extends AbstractPage {
     do {
       displayChoices();
     } while (getChoiceFromInput() != 1);
-    Page profile = new CustomerProfile(customer);
+    Page profile = new Profile(customer);
     profile.run();
   }
 

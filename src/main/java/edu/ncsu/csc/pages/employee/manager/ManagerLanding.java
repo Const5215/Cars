@@ -13,8 +13,8 @@ public class ManagerLanding extends AbstractPage {
 
   public ManagerLanding(User manager) {
     this.manager = manager;
-    choices.add("CustomerProfile");
-    choices.add("View Customer CustomerProfile");
+    choices.add("Profile");
+    choices.add("View Customer Profile");
     choices.add("Add New Employees");
     choices.add("Payroll");
     choices.add("Inventory");

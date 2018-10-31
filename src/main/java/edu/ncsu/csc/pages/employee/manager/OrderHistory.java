@@ -14,7 +14,7 @@ public class OrderHistory extends AbstractPage {
 
   @Override
   public void run() {
-
+    System.out.println("#orderHistory");
     displayChoices();
     getChoiceFromInput();
     Page orders = new Orders(manager);

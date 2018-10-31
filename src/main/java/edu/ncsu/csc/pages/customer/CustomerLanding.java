@@ -11,10 +11,10 @@ public class CustomerLanding extends AbstractPage {
 
   public CustomerLanding(User customer) {
     this.customer = customer;
-    choices.add("View and Update CustomerProfile");
+    choices.add("Profile");
     choices.add("Register Car");
-    choices.add("View and Schedule Service");
-    choices.add("View Invoices");
+    choices.add("Service");
+    choices.add("Invoices");
     choices.add("Logout");
   }
 
@@ -25,26 +25,25 @@ public class CustomerLanding extends AbstractPage {
 
     switch (getChoiceFromInput()) {
       case 1:
-        viewAndUpdateProfile();
+        profile();
         break;
       case 2:
         registerCar();
         break;
       case 3:
-        viewAndScheduleService();
+        service();
         break;
       case 4:
-        viewInvoices();
+        invoices();
         break;
       case 5:
         logout();
-        break;
     }
   }
 
-  private void viewAndUpdateProfile() {
-    Page profileSubmenu = new CustomerProfile(customer);
-    profileSubmenu.run();
+  private void profile() {
+    Page customerProfile = new Profile(customer);
+    customerProfile.run();
   }
 
   private void registerCar() {
@@ -52,14 +51,14 @@ public class CustomerLanding extends AbstractPage {
     registerCar.run();
   }
 
-  private void viewAndScheduleService() {
-    Page serviceSubmenu = new ServiceSubmenu(customer);
-    serviceSubmenu.run();
+  private void service() {
+    Page service = new Service(customer);
+    service.run();
   }
 
-  private void viewInvoices() {
-    Page customerInvoice = new CustomerInvoice(customer);
-    customerInvoice.run();
+  private void invoices() {
+    Page invoice = new Invoice(customer);
+    invoice.run();
   }
 
   private void logout() {

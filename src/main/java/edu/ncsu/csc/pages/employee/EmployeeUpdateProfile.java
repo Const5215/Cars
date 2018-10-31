@@ -25,7 +25,7 @@ public class EmployeeUpdateProfile extends AbstractPage {
     @Override
     public void run() {
         int choice;
-      System.out.println("#Update CustomerProfile");
+      System.out.println("#Update Profile");
       displayChoices();
       choice = getChoiceFromInput();
       switch (choice) {
