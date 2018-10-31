@@ -4,20 +4,17 @@ import edu.ncsu.csc.entity.Car;
 import edu.ncsu.csc.entity.MatchType;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
-import edu.ncsu.csc.pages.Page;
-import edu.ncsu.csc.pages.employee.manager.ManagerLanding;
-import edu.ncsu.csc.pages.employee.receptionist.ReceptionistLanding;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EmployeeViewCustomerProfile extends AbstractPage {
+public class ViewCustomerProfile extends AbstractPage {
 
   private User employee;
 
-  public EmployeeViewCustomerProfile(User employee) {
+  public ViewCustomerProfile(User employee) {
     this.employee = employee;
     choices.add("Go Back");
   }
@@ -70,18 +67,8 @@ public class EmployeeViewCustomerProfile extends AbstractPage {
     System.out.printf("Customer has %d car(s) in total.\n", customerCarList.size());
     displayCarList(customerCarList);
 
-    do {
-      displayChoices();
-    } while (getChoiceFromInput() != 1);
-
-    switch (employee.getRole()) {
-      case Manager:
-        Page managerLanding = new ManagerLanding(employee);
-        managerLanding.run();
-        break;
-      case Receptionist:
-        Page receptionistLanding = new ReceptionistLanding(employee);
-        receptionistLanding.run();
-    }
+    displayChoices();
+    getChoiceFromInput();
+    Profile.appropriateLandingPage(employee);
   }
 }

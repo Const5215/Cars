@@ -27,9 +27,13 @@ public class Profile extends AbstractPage {
         updateProfile();
         break;
       case 3:
-        Page customerLanding = new CustomerLanding(customer);
-        customerLanding.run();
+        goBack();
     }
+  }
+
+  private void goBack() {
+    Page customerLanding = new CustomerLanding(customer);
+    customerLanding.run();
   }
 
   private void viewProfile() {

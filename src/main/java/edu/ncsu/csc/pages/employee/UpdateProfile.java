@@ -8,11 +8,11 @@ import edu.ncsu.csc.pages.Page;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class EmployeeUpdateProfile extends AbstractPage {
+public class UpdateProfile extends AbstractPage {
 
     private User user;
 
-  EmployeeUpdateProfile(User user) {
+  UpdateProfile(User user) {
     this.user = user;
       choices.add("Name");
       choices.add("Address");
@@ -45,7 +45,7 @@ public class EmployeeUpdateProfile extends AbstractPage {
           updatePassword();
           break;
         case 6:
-          Page profileSubmenu = new EmployeeProfile(user);
+          Page profileSubmenu = new Profile(user);
           profileSubmenu.run();
       }
     }

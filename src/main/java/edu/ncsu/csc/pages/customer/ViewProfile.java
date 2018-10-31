@@ -20,7 +20,7 @@ public class ViewProfile extends AbstractPage {
 
   @Override
   public void run() {
-    System.out.println("#EmployeeViewProfile");
+    System.out.println("#ViewProfile");
     System.out.println("Customer ID: " + customer.getId());
     System.out.println("Name: " + customer.getName());
     System.out.println("Address: " + customer.getAddress());
@@ -42,9 +42,13 @@ public class ViewProfile extends AbstractPage {
     }
     System.out.printf("You have %d car(s) in total.\n", customerCarList.size());
     displayCarList(customerCarList);
-    do {
-      displayChoices();
-    } while (getChoiceFromInput() != 1);
+
+    displayChoices();
+    getChoiceFromInput();
+    goBack();
+  }
+
+  private void goBack() {
     Page profile = new Profile(customer);
     profile.run();
   }

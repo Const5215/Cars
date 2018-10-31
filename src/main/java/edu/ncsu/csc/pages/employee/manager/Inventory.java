@@ -59,6 +59,10 @@ public class Inventory extends AbstractPage {
     }
     displayChoices();
     getChoiceFromInput();
+    goBack();
+  }
+
+  private void goBack() {
     Page managerLanding = new ManagerLanding(manager);
     managerLanding.run();
   }
@@ -70,15 +74,6 @@ public class Inventory extends AbstractPage {
     private long minOrderQuantity;
 
     InventoryPart() {
-    }
-
-    public InventoryPart(long id, String name, long unitPrice, long distributorId, long currentQuantity,
-                         long availableQuantity, long minThreshold, long minOrderQuantity) {
-      super(id, name, unitPrice, distributorId);
-      this.currentQuantity = currentQuantity;
-      this.availableQuantity = availableQuantity;
-      this.minThreshold = minThreshold;
-      this.minOrderQuantity = minOrderQuantity;
     }
 
     public long getCurrentQuantity() {

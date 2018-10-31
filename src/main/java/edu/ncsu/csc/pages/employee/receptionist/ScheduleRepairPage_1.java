@@ -1,13 +1,14 @@
-package edu.ncsu.csc.pages.customer;
+package edu.ncsu.csc.pages.employee.receptionist;
 
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
 
 public class ScheduleRepairPage_1 extends AbstractPage {
-  private User customer;
+  private User receptionist, customer;
 
-  ScheduleRepairPage_1(User customer) {
+  ScheduleRepairPage_1(User receptionist, User customer) {
+    this.receptionist = receptionist;
     this.customer = customer;
     choices.add("Engine knock");
     choices.add("Car drifts in a particular direction");
@@ -41,7 +42,7 @@ public class ScheduleRepairPage_1 extends AbstractPage {
   }
 
   private void goBack() {
-    Page scheduleService = new ScheduleService(customer);
+    Page scheduleService = new ScheduleService(receptionist);
     scheduleService.run();
   }
 
@@ -54,11 +55,11 @@ public class ScheduleRepairPage_1 extends AbstractPage {
 
   private void createDiagnosticReport(int choice) {
     if (findRepairDate()) {
-      Page scheduleRepairPage_2 = new ScheduleRepairPage_2(customer);
-      scheduleRepairPage_2.run();
+      Page scheduleService = new ScheduleRepairPage_2(receptionist, customer);
+      scheduleService.run();
     } else {
       displayErrorMessage();
-      Page scheduleService = new ScheduleService(customer);
+      Page scheduleService = new ScheduleService(receptionist);
       scheduleService.run();
     }
   }

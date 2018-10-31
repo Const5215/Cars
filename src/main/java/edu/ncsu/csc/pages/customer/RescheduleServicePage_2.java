@@ -20,14 +20,22 @@ public class RescheduleServicePage_2 extends AbstractPage {
     displayChoices();
     switch (getChoiceFromInput()) {
       case 1:
-        rescheduleExistingService();
-        Page service = new Service(customer);
-        service.run();
+        rescheduleDate();
         break;
       case 2:
-        Page rescheduleServicePage_1 = new RescheduleServicePage_1(customer);
-        rescheduleServicePage_1.run();
+        goBack();
     }
+  }
+
+  private void goBack() {
+    Page rescheduleServicePage_1 = new RescheduleServicePage_1(customer);
+    rescheduleServicePage_1.run();
+  }
+
+  private void rescheduleDate() {
+    rescheduleExistingService();
+    Page service = new Service(customer);
+    service.run();
   }
 
   private void rescheduleExistingService() {

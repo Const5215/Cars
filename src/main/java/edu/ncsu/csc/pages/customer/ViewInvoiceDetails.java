@@ -18,6 +18,10 @@ public class ViewInvoiceDetails extends AbstractPage {
 
     displayChoices();
     getChoiceFromInput();
+    goBack();
+  }
+
+  private void goBack() {
     Page invoice = new Invoice(customer);
     invoice.run();
   }

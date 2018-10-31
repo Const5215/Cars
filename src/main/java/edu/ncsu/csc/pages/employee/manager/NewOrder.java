@@ -21,12 +21,17 @@ public class NewOrder extends AbstractPage {
       case 1:
         placeOrder();
       case 2:
-        Page orders = new Orders(manager);
-        orders.run();
+        goBack();
     }
+  }
+
+  private void goBack() {
+    Page orders = new Orders(manager);
+    orders.run();
   }
 
   private void placeOrder() {
 
   }
+
 }

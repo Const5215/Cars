@@ -17,6 +17,10 @@ public class OrderHistory extends AbstractPage {
     System.out.println("#orderHistory");
     displayChoices();
     getChoiceFromInput();
+    goBack();
+  }
+
+  private void goBack() {
     Page orders = new Orders(manager);
     orders.run();
   }

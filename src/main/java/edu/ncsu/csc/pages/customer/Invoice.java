@@ -20,12 +20,20 @@ public class Invoice extends AbstractPage {
     displayChoices();
     switch (getChoiceFromInput()) {
       case 1:
-        Page viewInvoiceDetails = new ViewInvoiceDetails(customer);
-        viewInvoiceDetails.run();
+        viewInvoiceDetails();
         break;
       case 2:
-        Page customerLanding = new CustomerLanding(customer);
-        customerLanding.run();
+        goBack();
     }
+  }
+
+  private void goBack() {
+    Page customerLanding = new CustomerLanding(customer);
+    customerLanding.run();
+  }
+
+  private void viewInvoiceDetails() {
+    Page viewInvoiceDetails = new ViewInvoiceDetails(customer);
+    viewInvoiceDetails.run();
   }
 }

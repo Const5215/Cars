@@ -8,17 +8,17 @@ import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class EmployeeViewProfile extends AbstractPage {
+public class ViewProfile extends AbstractPage {
   private User employee;
 
-  EmployeeViewProfile(User employee) {
+  ViewProfile(User employee) {
     this.employee = employee;
     choices.add("Go Back");
   }
 
   @Override
   public void run() {
-    System.out.println("#EmployeeViewProfile");
+    System.out.println("#ViewProfile");
     System.out.println("Employee ID: " + employee.getId());
     System.out.println("Name: " + employee.getName());
     System.out.println("Address: " + employee.getAddress());
@@ -54,7 +54,7 @@ public class EmployeeViewProfile extends AbstractPage {
     do {
       displayChoices();
     } while (getChoiceFromInput() != 1);
-    Page profile = new EmployeeProfile(employee);
+    Page profile = new Profile(employee);
     profile.run();
   }
 

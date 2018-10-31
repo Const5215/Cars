@@ -73,9 +73,13 @@ public class AddNewEmployees extends AbstractPage {
       case 1:
         addNewEmployee(employee, employment);
       case 2:
-        Page managerLanding = new ManagerLanding(manager);
-        managerLanding.run();
+        goBack();
     }
+  }
+
+  private void goBack() {
+    Page managerLanding = new ManagerLanding(manager);
+    managerLanding.run();
   }
 
   private boolean oneReceptionistCheck() {

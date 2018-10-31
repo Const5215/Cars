@@ -1,14 +1,14 @@
-package edu.ncsu.csc.pages.customer;
+package edu.ncsu.csc.pages.employee.receptionist;
 
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
 
 public class RescheduleServicePage_1 extends AbstractPage {
-  private User customer;
+  private User receptionist, customer;
 
-  RescheduleServicePage_1(User customer) {
-    this.customer = customer;
+  RescheduleServicePage_1(User receptionist) {
+    this.receptionist = receptionist;
     choices.add("Pick a service");
     choices.add("Go Back");
   }
@@ -28,13 +28,13 @@ public class RescheduleServicePage_1 extends AbstractPage {
   }
 
   private void goBack() {
-    Page customerService = new Service(customer);
-    customerService.run();
+    Page receptionistLanding = new ReceptionistLanding(receptionist);
+    receptionistLanding.run();
   }
 
   private void pickAService() {
     selectRescheduleService();
-    Page rescheduleServicePage_2 = new RescheduleServicePage_2(customer);
+    Page rescheduleServicePage_2 = new RescheduleServicePage_2(receptionist, customer);
     rescheduleServicePage_2.run();
   }
 

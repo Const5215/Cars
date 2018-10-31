@@ -19,16 +19,28 @@ public class Orders extends AbstractPage {
     displayChoices();
     switch (getChoiceFromInput()) {
       case 1:
-        Page orderHistory = new OrderHistory(manager);
-        orderHistory.run();
+        orderHistory();
         break;
       case 2:
-        Page newOrder = new NewOrder(manager);
-        newOrder.run();
+        newOrder();
         break;
       case 3:
-        Page managerLanding = new ManagerLanding(manager);
-        managerLanding.run();
+        goBack();
     }
+  }
+
+  private void goBack() {
+    Page managerLanding = new ManagerLanding(manager);
+    managerLanding.run();
+  }
+
+  private void newOrder() {
+    Page newOrder = new NewOrder(manager);
+    newOrder.run();
+  }
+
+  private void orderHistory() {
+    Page orderHistory = new OrderHistory(manager);
+    orderHistory.run();
   }
 }

@@ -1,13 +1,14 @@
-package edu.ncsu.csc.pages.customer;
+package edu.ncsu.csc.pages.employee.receptionist;
 
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
 
 public class ScheduleRepairPage_2 extends AbstractPage {
-  private User customer;
+  private User receptionist, customer;
 
-  ScheduleRepairPage_2(User customer) {
+  ScheduleRepairPage_2(User receptionist, User customer) {
+    this.receptionist = receptionist;
     this.customer = customer;
     choices.add("Repair on Date");
     choices.add("Go Back");
@@ -28,13 +29,13 @@ public class ScheduleRepairPage_2 extends AbstractPage {
   }
 
   private void goBack() {
-    Page scheduleRepairPage_1 = new ScheduleRepairPage_1(customer);
+    Page scheduleRepairPage_1 = new ScheduleRepairPage_1(receptionist, customer);
     scheduleRepairPage_1.run();
   }
 
   private void repairOnDate() {
 
-    Page scheduleService = new ScheduleService(customer);
+    Page scheduleService = new ScheduleService(receptionist);
     scheduleService.run();
   }
 }

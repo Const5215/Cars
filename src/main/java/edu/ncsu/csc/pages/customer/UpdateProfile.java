@@ -42,10 +42,14 @@ public class UpdateProfile extends AbstractPage {
           updatePassword();
           break;
         case 5:
-          Page profile = new Profile(user);
-          profile.run();
+          goBack();
       }
     } while (choice != 5);
+  }
+
+  private void goBack() {
+    Page profile = new Profile(user);
+    profile.run();
   }
 
   private void updateAddress() {

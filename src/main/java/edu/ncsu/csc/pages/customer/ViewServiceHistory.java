@@ -14,9 +14,12 @@ public class ViewServiceHistory extends AbstractPage {
 
   @Override
   public void run() {
-
     displayChoices();
     getChoiceFromInput();
+    goBack();
+  }
+
+  private void goBack() {
     Page customerService = new Service(customer);
     customerService.run();
   }

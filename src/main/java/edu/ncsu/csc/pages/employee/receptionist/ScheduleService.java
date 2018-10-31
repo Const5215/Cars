@@ -1,14 +1,14 @@
-package edu.ncsu.csc.pages.customer;
+package edu.ncsu.csc.pages.employee.receptionist;
 
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
 
 public class ScheduleService extends AbstractPage {
-  private User customer;
+  private User receptionist, customer;
 
-  ScheduleService(User customer) {
-    this.customer = customer;
+  ScheduleService(User receptionist) {
+    this.receptionist = receptionist;
     choices.add("Schedule Maintenance");
     choices.add("Schedule Repair");
     choices.add("Go Back");
@@ -17,8 +17,6 @@ public class ScheduleService extends AbstractPage {
   @Override
   public void run() {
     System.out.println("#scheduleService");
-
-    displayChoices();
     switch (getChoiceFromInput()) {
       case 1:
         scheduleMaintenance();
@@ -32,17 +30,17 @@ public class ScheduleService extends AbstractPage {
   }
 
   private void goBack() {
-    Page customerService = new Service(customer);
-    customerService.run();
+    Page receptionistLanding = new ReceptionistLanding(receptionist);
+    receptionistLanding.run();
   }
 
   private void scheduleRepair() {
-    Page scheduleRepairPage_1 = new ScheduleRepairPage_1(customer);
-    scheduleRepairPage_1.run();
+    Page scheduleRepair = new ScheduleRepairPage_1(receptionist, customer);
+    scheduleRepair.run();
   }
 
   private void scheduleMaintenance() {
-    Page scheduleMaintenancePage_1 = new ScheduleMaintenancePage_1(customer);
-    scheduleMaintenancePage_1.run();
+    Page scheduleMaintenance = new ScheduleMaintenancePage_1(receptionist, customer);
+    scheduleMaintenance.run();
   }
 }

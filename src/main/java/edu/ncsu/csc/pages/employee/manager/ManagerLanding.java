@@ -3,8 +3,8 @@ package edu.ncsu.csc.pages.employee.manager;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
-import edu.ncsu.csc.pages.employee.EmployeeProfile;
-import edu.ncsu.csc.pages.employee.EmployeeViewCustomerProfile;
+import edu.ncsu.csc.pages.employee.Profile;
+import edu.ncsu.csc.pages.employee.ViewCustomerProfile;
 import edu.ncsu.csc.pages.start.Home;
 
 public class ManagerLanding extends AbstractPage {
@@ -31,92 +31,97 @@ public class ManagerLanding extends AbstractPage {
   public void run() {
 
     int choice;
-      System.out.println("# Manager");
-      switch(getChoiceFromInput()){
-        case 1:
-          viewAndUpdateProfile();
-          break;
-        case 2:
-          viewCustomerProfile();
-          break;
-        case 3:
-          addNewEmployee();
-          break;
-        case 4:
-          viewPayrollInformation();
-          break;
-        case 5:
-          viewInventory();
-          break;
-        case 6:
-          viewAndPlaceOrders();
-          break;
-        case 7:
-          viewNotifications();
-          break;
-        case 8:
-          registerNewCar();
-          break;
-        case 9:
-          viewServiceDetails();
-          break;
-        case 10:
-          viewServiceInventory();
-          break;
-        case 11:
-          viewInvoices();
-      }
+    System.out.println("# Manager");
+    switch (getChoiceFromInput()) {
+      case 1:
+        profile();
+        break;
+      case 2:
+        viewCustomerProfile();
+        break;
+      case 3:
+        addNewEmployees();
+        break;
+      case 4:
+        payroll();
+        break;
+      case 5:
+        inventory();
+        break;
+      case 6:
+        orders();
+        break;
+      case 7:
+        notifications();
+        break;
+      case 8:
+        newCarModel();
+        break;
+      case 9:
+        carServiceDetails();
+        break;
+      case 10:
+        serviceHistory();
+        break;
+      case 11:
+        invoices();
+      case 12:
+        logout();
+    }
+  }
+
+  private void logout() {
     Page home = new Home();
     home.run();
   }
 
-  private void viewInvoices() {
+  private void invoices() {
 
   }
 
-  private void viewServiceInventory() {
+  private void serviceHistory() {
 
   }
 
-  private void viewServiceDetails() {
+  private void carServiceDetails() {
 
   }
 
-  private void registerNewCar() {
+  private void newCarModel() {
     Page newCarModel = new NewCarModel(manager);
     newCarModel.run();
   }
 
-  private void viewNotifications() {
+  private void notifications() {
 
   }
 
-  private void viewAndPlaceOrders() {
+  private void orders() {
     Page orders = new Orders(manager);
     orders.run();
   }
 
-  private void viewInventory() {
+  private void inventory() {
     Page inventory = new Inventory(manager);
     inventory.run();
   }
 
-  private void viewPayrollInformation() {
+  private void payroll() {
 
   }
 
-  private void addNewEmployee() {
+  private void addNewEmployees() {
     Page addNewEmployees = new AddNewEmployees(manager);
     addNewEmployees.run();
   }
 
   private void viewCustomerProfile() {
-    Page viewCustomerProfile = new EmployeeViewCustomerProfile(manager);
+    Page viewCustomerProfile = new ViewCustomerProfile(manager);
     viewCustomerProfile.run();
   }
 
-  private void viewAndUpdateProfile() {
-    Page profile = new EmployeeProfile(manager);
+  private void profile() {
+    Page profile = new Profile(manager);
     profile.run();
   }
 }

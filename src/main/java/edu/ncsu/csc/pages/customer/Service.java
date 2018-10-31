@@ -22,20 +22,36 @@ public class Service extends AbstractPage {
     displayChoices();
     switch (getChoiceFromInput()) {
       case 1:
-        Page viewServiceHistory = new ViewServiceHistory(customer);
-        viewServiceHistory.run();
+        viewServiceHistory();
         break;
       case 2:
-        Page scheduleService = new ScheduleService(customer);
-        scheduleService.run();
+        scheduleService();
         break;
       case 3:
-        Page rescheduleService = new RescheduleServicePage_1(customer);
-        rescheduleService.run();
+        rescheduleService();
         break;
       case 4:
-        Page customerLanding = new CustomerLanding(customer);
-        customerLanding.run();
+        goBack();
     }
+  }
+
+  private void goBack() {
+    Page customerLanding = new CustomerLanding(customer);
+    customerLanding.run();
+  }
+
+  private void rescheduleService() {
+    Page rescheduleService = new RescheduleServicePage_1(customer);
+    rescheduleService.run();
+  }
+
+  private void scheduleService() {
+    Page scheduleService = new ScheduleService(customer);
+    scheduleService.run();
+  }
+
+  private void viewServiceHistory() {
+    Page viewServiceHistory = new ViewServiceHistory(customer);
+    viewServiceHistory.run();
   }
 }

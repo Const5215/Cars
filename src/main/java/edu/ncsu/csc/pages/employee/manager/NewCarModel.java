@@ -60,11 +60,15 @@ public class NewCarModel extends AbstractPage {
     displayChoices();
     switch (getChoiceFromInput()) {
       case 1:
-        newCarModel(carModel);
+        addCar(carModel);
       case 2:
-        Page managerLanding = new ManagerLanding(manager);
-        managerLanding.run();
+        goBack();
     }
+  }
+
+  private void goBack() {
+    Page managerLanding = new ManagerLanding(manager);
+    managerLanding.run();
   }
 
   private void getServiceInfo(ServiceType serviceType) {
@@ -108,7 +112,7 @@ public class NewCarModel extends AbstractPage {
     return partList;
   }
 
-  private void newCarModel(CarModel carModel) {
+  private void addCar(CarModel carModel) {
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
       preparedStatement = connection.prepareStatement(

@@ -16,7 +16,7 @@ public class RegisterCar extends AbstractPage {
     private User user;
 
     RegisterCar(User user) {
-        this.user = user;
+      this.user = user;
       choices.add("Register");
       choices.add("Cancel");
     }
@@ -87,10 +87,14 @@ public class RegisterCar extends AbstractPage {
         case 1:
           register(car, strLastServiceDate);
         case 2:
-          Page customerLanding = new CustomerLanding(user);
-          customerLanding.run();
+          cancel();
       }
     }
+
+  private void cancel() {
+    Page customerLanding = new CustomerLanding(user);
+    customerLanding.run();
+  }
 
 
   private void register(Car car, String strLastServiceDate) {
@@ -115,6 +119,8 @@ public class RegisterCar extends AbstractPage {
     } finally {
       System.out.println("Register Success.");
       closeSqlConnection();
+      Page customerLanding = new CustomerLanding(user);
+      customerLanding.run();
     }
   }
 }
