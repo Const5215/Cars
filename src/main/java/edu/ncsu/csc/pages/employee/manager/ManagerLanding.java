@@ -83,7 +83,8 @@ public class ManagerLanding extends AbstractPage {
   }
 
   private void registerNewCar() {
-
+    Page newCarModel = new NewCarModel(manager);
+    newCarModel.run();
   }
 
   private void viewNotifications() {

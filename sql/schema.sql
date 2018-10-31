@@ -4,6 +4,9 @@ create sequence CUSTOMER_ID_SEQ
 create sequence EMPLOYEE_ID_SEQ
   nocache
 /
+create sequence CAR_MODEL_ID_SEQ
+  nocache
+/
 create table CUSTOMER
 (
   ID       NUMBER        not null,
@@ -174,6 +177,10 @@ create table CAR_MODEL
   constraint CAR_MAKE_CONSTRAINT
   check (MAKE IN ('Honda', 'Nissan', 'Toyota'))
 )
+/
+
+create unique index CAR_MODEL_UINDEX
+  on CAR_MODEL (MAKE, MODEL, YEAR)
 /
 
 create table CAR
