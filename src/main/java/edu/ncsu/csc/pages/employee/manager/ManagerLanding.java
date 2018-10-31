@@ -76,15 +76,18 @@ public class ManagerLanding extends AbstractPage {
   }
 
   private void invoices() {
-
+    Page invoices = new Invoices(manager);
+    invoices.run();
   }
 
   private void serviceHistory() {
-
+    Page serviceHistory = new ServiceHistory(manager);
+    serviceHistory.run();
   }
 
   private void carServiceDetails() {
-
+    Page carServiceDetails = new CarServiceDetails(manager);
+    carServiceDetails.run();
   }
 
   private void newCarModel() {
@@ -93,7 +96,8 @@ public class ManagerLanding extends AbstractPage {
   }
 
   private void notifications() {
-
+    Page notifications = new Notifications(manager);
+    notifications.run();
   }
 
   private void orders() {
@@ -107,7 +111,8 @@ public class ManagerLanding extends AbstractPage {
   }
 
   private void payroll() {
-
+    Page payroll = new Payroll(manager);
+    payroll.run();
   }
 
   private void addNewEmployees() {

@@ -1,9 +1,8 @@
 package edu.ncsu.csc.pages;
 
-import edu.ncsu.csc.entity.Car;
-import edu.ncsu.csc.entity.MatchType;
-import edu.ncsu.csc.entity.Role;
-import edu.ncsu.csc.entity.User;
+import edu.ncsu.csc.entity.*;
+import edu.ncsu.csc.pages.employee.manager.ManagerLanding;
+import edu.ncsu.csc.pages.employee.receptionist.ReceptionistLanding;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -15,8 +14,8 @@ import java.util.regex.Pattern;
 public class AbstractPage implements Page {
 
   protected static final String URL = "jdbc:oracle:thin:@orca.csc.ncsu.edu:1521:orcl01";
-  protected static final String USERNAME = "";
-  protected static final String PASSWORD = "";
+  protected static final String USERNAME = "hwang75";
+  protected static final String PASSWORD = "-swap255";
   protected Connection connection;
   protected PreparedStatement preparedStatement;
   protected ResultSet resultSet;
@@ -194,6 +193,37 @@ public class AbstractPage implements Page {
     return user;
   }
 
+  protected long getCenterId(long employeeId) {
+    long centerId = -1;
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection.prepareStatement("SELECT CENTER_ID FROM EMPLOYMENT WHERE EMPLOYEE_ID=?");
+      preparedStatement.setLong(1, employeeId);
+      resultSet = preparedStatement.executeQuery();
+      if (resultSet.next()) {
+        centerId = resultSet.getLong("CENTER_ID");
+      } else {
+        System.out.println("Center Id not found");
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return centerId;
+  }
+
+  protected Part getPart() {
+    Part part = null;
+    try {
+      part = new Part(resultSet.getLong("ID"),
+          resultSet.getString("NAME"),
+          resultSet.getLong("UNIT_PRICE"),
+          resultSet.getLong("DISTRIBUTOR_ID"));
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return part;
+  }
+
   protected void displayCarList(List<Car> carList) {
     for (int i = 0; i < carList.size(); i++) {
       System.out.printf("Car #%d details:\n", i);
@@ -204,4 +234,5 @@ public class AbstractPage implements Page {
       System.out.println("Last service date:" + carList.get(i).getLastServiceDate());
     }
   }
+
 }
