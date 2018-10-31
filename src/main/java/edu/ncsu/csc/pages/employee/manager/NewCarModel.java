@@ -112,6 +112,19 @@ public class NewCarModel extends AbstractPage {
     return partList;
   }
 
+  private Part getPart() {
+    Part part = null;
+    try {
+      part = new Part(resultSet.getLong("ID"),
+          resultSet.getString("NAME"),
+          resultSet.getLong("UNIT_PRICE"),
+          resultSet.getLong("DISTRIBUTOR_ID"));
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return part;
+  }
+
   private void addCar(CarModel carModel) {
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);

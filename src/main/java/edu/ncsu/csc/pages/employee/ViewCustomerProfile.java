@@ -2,6 +2,7 @@ package edu.ncsu.csc.pages.employee;
 
 import edu.ncsu.csc.entity.Car;
 import edu.ncsu.csc.entity.MatchType;
+import edu.ncsu.csc.entity.Role;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 
@@ -9,6 +10,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static edu.ncsu.csc.pages.customer.ViewProfile.displayCarList;
 
 public class ViewCustomerProfile extends AbstractPage {
 
@@ -71,4 +74,37 @@ public class ViewCustomerProfile extends AbstractPage {
     getChoiceFromInput();
     Profile.appropriateLandingPage(employee);
   }
+
+  private User getUser() {
+    User user = null;
+    try {
+      user = new User(resultSet.getLong("ID"),
+          resultSet.getString("PASSWORD"),
+          resultSet.getString("NAME"),
+          resultSet.getString("EMAIL"),
+          resultSet.getString("PHONE"),
+          resultSet.getString("ADDRESS"),
+          Role.Customer);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return user;
+  }
+
+  private Car getCar() {
+    Car car = null;
+    try {
+      car = new Car(resultSet.getString("PLATE"),
+          resultSet.getLong("CUSTOMER_ID"),
+          resultSet.getLong("CAR_MODEL_ID"),
+          resultSet.getDate("PURCHASE_DATE"),
+          resultSet.getLong("LAST_MILEAGE"),
+          resultSet.getLong("LAST_SERVICE_TYPE"),
+          resultSet.getDate("LAST_SERVICE_DATE"));
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return car;
+  }
+
 }

@@ -53,5 +53,32 @@ public class ViewProfile extends AbstractPage {
     profile.run();
   }
 
+  public static void displayCarList(List<Car> carList) {
+    for (int i = 0; i < carList.size(); i++) {
+      System.out.printf("Car #%d details:\n", i);
+      System.out.println("Plate: " + carList.get(i).getPlate());
+      System.out.println("Purchase date:" + carList.get(i).getPurchaseDate());
+      System.out.println("Last Mileage:" + carList.get(i).getLastMileage());
+      System.out.println("Last service type:" + carList.get(i).getLastServiceType());
+      System.out.println("Last service date:" + carList.get(i).getLastServiceDate());
+    }
+  }
+
+  private Car getCar() {
+    Car car = null;
+    try {
+      car = new Car(resultSet.getString("PLATE"),
+          resultSet.getLong("CUSTOMER_ID"),
+          resultSet.getLong("CAR_MODEL_ID"),
+          resultSet.getDate("PURCHASE_DATE"),
+          resultSet.getLong("LAST_MILEAGE"),
+          resultSet.getLong("LAST_SERVICE_TYPE"),
+          resultSet.getDate("LAST_SERVICE_DATE"));
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return car;
+  }
+
 }
 
