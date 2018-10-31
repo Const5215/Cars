@@ -1,8 +1,6 @@
 package edu.ncsu.csc.pages;
 
 import edu.ncsu.csc.entity.*;
-import edu.ncsu.csc.pages.employee.manager.ManagerLanding;
-import edu.ncsu.csc.pages.employee.receptionist.ReceptionistLanding;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,8 +12,8 @@ import java.util.regex.Pattern;
 public class AbstractPage implements Page {
 
   protected static final String URL = "jdbc:oracle:thin:@orca.csc.ncsu.edu:1521:orcl01";
-  protected static final String USERNAME = "hwang75";
-  protected static final String PASSWORD = "-swap255";
+  protected static final String USERNAME = "";
+  protected static final String PASSWORD = "";
   protected Connection connection;
   protected PreparedStatement preparedStatement;
   protected ResultSet resultSet;
