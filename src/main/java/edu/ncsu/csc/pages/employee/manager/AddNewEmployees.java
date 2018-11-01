@@ -35,7 +35,7 @@ public class AddNewEmployees extends AbstractPage {
     Role role;
     label:
     do {
-      System.out.println("Enter role(receptionist/mechanic):");
+      System.out.print("Enter role(receptionist/mechanic):");
       String strRole = scanner.nextLine();
       switch (strRole) {
         case "receptionist":
@@ -63,15 +63,15 @@ public class AddNewEmployees extends AbstractPage {
       e.printStackTrace();
       return;
     }
-    employment.setEmployeeId(employee.getId());
-    employment.setCenterId(manager.getId());
+    employment.setCenterId(getCenterId(manager.getId()));
     employment.setPosition(role.ordinal());
-    System.out.println("Enter compensation:");
+    System.out.print("Enter compensation:");
     employment.setCompensation(Float.parseFloat(scanner.nextLine()));
     displayChoices();
     switch (getChoiceFromInput()) {
       case 1:
         addNewEmployee(employee, employment);
+        System.out.println("Employee added.");
       case 2:
         goBack();
     }
@@ -107,6 +107,12 @@ public class AddNewEmployees extends AbstractPage {
       preparedStatement.setString(3, employee.getEmail());
       preparedStatement.setString(4, employee.getPhone());
       preparedStatement.setString(5, employee.getAddress());
+      preparedStatement.executeUpdate();
+      preparedStatement = connection.prepareStatement("SELECT ID FROM EMPLOYEE WHERE EMAIL=?");
+      preparedStatement.setString(1, employee.getEmail());
+      resultSet = preparedStatement.executeQuery();
+      resultSet.next();
+      employment.setEmployeeId(resultSet.getLong("ID"));
       preparedStatement.executeUpdate();
       preparedStatement = connection.prepareStatement("INSERT INTO EMPLOYMENT values (?, ?, ?, ?, ?)");
       preparedStatement.setLong(1, employment.getEmployeeId());
