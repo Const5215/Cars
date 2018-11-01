@@ -32,6 +32,7 @@ public class ManagerLanding extends AbstractPage {
 
     int choice;
     System.out.println("# Manager");
+    displayChoices();
     switch (getChoiceFromInput()) {
       case 1:
         profile();

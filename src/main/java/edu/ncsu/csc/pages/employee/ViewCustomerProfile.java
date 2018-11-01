@@ -25,51 +25,46 @@ public class ViewCustomerProfile extends AbstractPage {
   @Override
   public void run() {
     System.out.println("#viewCustomerProfile");
-    User customer;
-    do {
-      String customerEmail;
-      do {
-        customerEmail = getInfo("Enter customer email:", MatchType.Email);
-      } while (checkUsedEmail(customerEmail));
-      try {
-        connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        preparedStatement = connection.prepareStatement("SELECT * from CUSTOMER WHERE EMAIL=?");
-        preparedStatement.setString(1, customerEmail);
-        resultSet = preparedStatement.executeQuery();
-        if (resultSet.next()) {
-          customer = getUser();
-          break;
-        } else {
-          System.out.println("Email Address Not Found");
-          return;
-        }
-      } catch (SQLException e) {
-        e.printStackTrace();
-      }
-    } while (true);
+    User customer = null;
 
-    List<Car> customerCarList = new ArrayList<>();
+    String customerEmail = getInfo("Enter customer email:", MatchType.Email);
     try {
-      preparedStatement = connection.prepareStatement("SELECT * from CAR WHERE CUSTOMER_ID=?");
-      preparedStatement.setLong(1, customer.getId());
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection.prepareStatement("SELECT * from CUSTOMER WHERE EMAIL=?");
+      preparedStatement.setString(1, customerEmail);
       resultSet = preparedStatement.executeQuery();
-      while (resultSet.next()) {
-        Car car = getCar();
-        customerCarList.add(car);
+      if (resultSet.next()) {
+        customer = getUser();
+      } else {
+        System.out.println("Email Address Not Found");
       }
     } catch (SQLException e) {
       e.printStackTrace();
     }
 
-    System.out.println("Customer ID: " + customer.getId());
-    System.out.println("Name: " + customer.getName());
-    System.out.println("Address: " + customer.getAddress());
-    System.out.println("Email Address: " + customer.getEmail());
-    System.out.println("Phone Number: " + customer.getPhone());
+    if (customer != null) {
+      List<Car> customerCarList = new ArrayList<>();
+      try {
+        preparedStatement = connection.prepareStatement("SELECT * from CAR WHERE CUSTOMER_ID=?");
+        preparedStatement.setLong(1, customer.getId());
+        resultSet = preparedStatement.executeQuery();
+        while (resultSet.next()) {
+          Car car = getCar();
+          customerCarList.add(car);
+        }
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
 
-    System.out.printf("Customer has %d car(s) in total.\n", customerCarList.size());
-    displayCarList(customerCarList);
+      System.out.println("Customer ID: " + customer.getId());
+      System.out.println("Name: " + customer.getName());
+      System.out.println("Address: " + customer.getAddress());
+      System.out.println("Email Address: " + customer.getEmail());
+      System.out.println("Phone Number: " + customer.getPhone());
 
+      System.out.printf("Customer has %d car(s) in total.\n", customerCarList.size());
+      displayCarList(customerCarList);
+    }
     displayChoices();
     getChoiceFromInput();
     Profile.appropriateLandingPage(employee);
