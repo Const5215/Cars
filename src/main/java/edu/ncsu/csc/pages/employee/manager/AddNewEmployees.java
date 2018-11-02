@@ -10,7 +10,6 @@ import edu.ncsu.csc.pages.Page;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 public class AddNewEmployees extends AbstractPage {
   private User manager;
@@ -25,6 +24,34 @@ public class AddNewEmployees extends AbstractPage {
   public void run() {
     System.out.println("#addNewEmployees");
 
+    User employee = getEmployee();
+    Employment employment = getEmployment(employee);
+    displayChoices();
+    switch (getChoiceFromInput()) {
+      case 1:
+        addNewEmployee(employee, employment);
+        System.out.println("Employee added.");
+      case 2:
+        goBack();
+    }
+  }
+
+  private Employment getEmployment(User employee) {
+    Employment employment = new Employment();
+    String strStartDate = getInfo("Enter start date:", MatchType.Date);
+    try {
+      employment.setStartDate(dateFormat.parse(strStartDate));
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    employment.setCenterId(getCenterIdByEmployeeId(manager.getId()));
+    employment.setPosition(employee.getRole().ordinal());
+    System.out.print("Enter compensation:");
+    employment.setCompensation(Float.parseFloat(scanner.nextLine()));
+    return employment;
+  }
+
+  private User getEmployee() {
     User employee = new User();
     System.out.print("Enter Name:");
     employee.setName(scanner.nextLine());
@@ -54,27 +81,7 @@ public class AddNewEmployees extends AbstractPage {
     } while (true);
     employee.setRole(role);
     employee.setPassword("12345678");
-    String strStartDate = getInfo("Enter start date:", MatchType.Date);
-    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-    Employment employment = new Employment();
-    try {
-      employment.setStartDate(dateFormat.parse(strStartDate));
-    } catch (ParseException e) {
-      e.printStackTrace();
-      return;
-    }
-    employment.setCenterId(getCenterId(manager.getId()));
-    employment.setPosition(role.ordinal());
-    System.out.print("Enter compensation:");
-    employment.setCompensation(Float.parseFloat(scanner.nextLine()));
-    displayChoices();
-    switch (getChoiceFromInput()) {
-      case 1:
-        addNewEmployee(employee, employment);
-        System.out.println("Employee added.");
-      case 2:
-        goBack();
-    }
+    return employee;
   }
 
   private void goBack() {
@@ -83,7 +90,7 @@ public class AddNewEmployees extends AbstractPage {
   }
 
   private boolean oneReceptionistCheck() {
-    long centerId = getCenterId(manager.getId());
+    long centerId = getCenterIdByEmployeeId(manager.getId());
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
       preparedStatement = connection.prepareStatement(
@@ -127,4 +134,5 @@ public class AddNewEmployees extends AbstractPage {
       closeSqlConnection();
     }
   }
+
 }

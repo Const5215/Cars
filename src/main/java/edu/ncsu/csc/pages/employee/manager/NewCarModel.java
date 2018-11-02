@@ -27,6 +27,21 @@ public class NewCarModel extends AbstractPage {
   public void run() {
     System.out.println("#newCarModel");
 
+    CarModel carModel = getCarModel();
+
+    getServiceInfo(ServiceType.Maintenance_A);
+    getServiceInfo(ServiceType.Maintenance_B);
+    getServiceInfo(ServiceType.Maintenance_C);
+    displayChoices();
+    switch (getChoiceFromInput()) {
+      case 1:
+        addCar(carModel);
+      case 2:
+        goBack();
+    }
+  }
+
+  private CarModel getCarModel() {
     CarModel carModel = new CarModel();
     do {
       System.out.print("Enter make(Honda/Nissan/Toyota):");
@@ -53,17 +68,7 @@ public class NewCarModel extends AbstractPage {
         closeSqlConnection();
       }
     } while (true);
-
-    getServiceInfo(ServiceType.A);
-    getServiceInfo(ServiceType.B);
-    getServiceInfo(ServiceType.C);
-    displayChoices();
-    switch (getChoiceFromInput()) {
-      case 1:
-        addCar(carModel);
-      case 2:
-        goBack();
-    }
+    return carModel;
   }
 
   private void goBack() {

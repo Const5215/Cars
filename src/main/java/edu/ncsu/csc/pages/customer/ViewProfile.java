@@ -21,12 +21,19 @@ public class ViewProfile extends AbstractPage {
   @Override
   public void run() {
     System.out.println("#ViewProfile");
-    System.out.println("Customer ID: " + customer.getId());
-    System.out.println("Name: " + customer.getName());
-    System.out.println("Address: " + customer.getAddress());
-    System.out.println("Email Address: " + customer.getEmail());
-    System.out.println("Phone: " + customer.getPhone());
+    printProfile();
 
+    List<Car> customerCarList = getCustomerCarList();
+
+    System.out.printf("You have %d car(s) in total.\n", customerCarList.size());
+    printCarList(customerCarList);
+
+    displayChoices();
+    getChoiceFromInput();
+    goBack();
+  }
+
+  private List<Car> getCustomerCarList() {
     List<Car> customerCarList = new ArrayList<>();
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
@@ -40,28 +47,20 @@ public class ViewProfile extends AbstractPage {
     } catch (SQLException e) {
       e.printStackTrace();
     }
-    System.out.printf("You have %d car(s) in total.\n", customerCarList.size());
-    displayCarList(customerCarList);
+    return customerCarList;
+  }
 
-    displayChoices();
-    getChoiceFromInput();
-    goBack();
+  private void printProfile() {
+    System.out.println("Customer ID: " + customer.getId());
+    System.out.println("Name: " + customer.getName());
+    System.out.println("Address: " + customer.getAddress());
+    System.out.println("Email Address: " + customer.getEmail());
+    System.out.println("Phone: " + customer.getPhone());
   }
 
   private void goBack() {
     Page profile = new Profile(customer);
     profile.run();
-  }
-
-  public static void displayCarList(List<Car> carList) {
-    for (int i = 0; i < carList.size(); i++) {
-      System.out.printf("Car #%d details:\n", i);
-      System.out.println("Plate: " + carList.get(i).getPlate());
-      System.out.println("Purchase date:" + carList.get(i).getPurchaseDate());
-      System.out.println("Last Mileage:" + carList.get(i).getLastMileage());
-      System.out.println("Last service type:" + carList.get(i).getLastServiceType());
-      System.out.println("Last service date:" + carList.get(i).getLastServiceDate());
-    }
   }
 
   private Car getCar() {

@@ -22,7 +22,28 @@ public class Inventory extends AbstractPage {
   public void run() {
     System.out.println("#inventory");
 
-    long centerId = getCenterId(manager.getId());
+    long centerId = getCenterIdByEmployeeId(manager.getId());
+    List<InventoryPart> inventoryPartList = getInventoryPartList(centerId);
+    printInventoryPartList(inventoryPartList);
+    displayChoices();
+    getChoiceFromInput();
+    goBack();
+  }
+
+  private void printInventoryPartList(List<InventoryPart> inventoryPartList) {
+    System.out.printf("Total part nums:%d\n", inventoryPartList.size());
+    for (int i = 0; i < inventoryPartList.size(); i++) {
+      System.out.printf("Info for part #%d:\n", i);
+      System.out.println("Part ID:" + inventoryPartList.get(i).getId());
+      System.out.println("Part Name:" + inventoryPartList.get(i).getName());
+      System.out.println("Quantity:" + inventoryPartList.get(i).getAvailableQuantity());
+      System.out.println("Unit Price:" + inventoryPartList.get(i).getUnitPrice());
+      System.out.println("Minimum Quantity Threshold:" + inventoryPartList.get(i).getMinThreshold());
+      System.out.println("Minimum Order Threshold:" + inventoryPartList.get(i).getMinOrderQuantity());
+    }
+  }
+
+  private List<InventoryPart> getInventoryPartList(long centerId) {
     List<InventoryPart> inventoryPartList = new ArrayList<>();
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
@@ -47,19 +68,7 @@ public class Inventory extends AbstractPage {
     } finally {
       closeSqlConnection();
     }
-    System.out.printf("Total part nums:%d\n", inventoryPartList.size());
-    for (int i = 0; i < inventoryPartList.size(); i++) {
-      System.out.printf("Info for part #%d:\n", i);
-      System.out.println("Part ID:" + inventoryPartList.get(i).getId());
-      System.out.println("Part Name:" + inventoryPartList.get(i).getName());
-      System.out.println("Quantity:" + inventoryPartList.get(i).getAvailableQuantity());
-      System.out.println("Unit Price:" + inventoryPartList.get(i).getUnitPrice());
-      System.out.println("Minimum Quantity Threshold:" + inventoryPartList.get(i).getMinThreshold());
-      System.out.println("Minimum Order Threshold:" + inventoryPartList.get(i).getMinOrderQuantity());
-    }
-    displayChoices();
-    getChoiceFromInput();
-    goBack();
+    return inventoryPartList;
   }
 
   private void goBack() {
@@ -108,4 +117,5 @@ public class Inventory extends AbstractPage {
       this.minOrderQuantity = minOrderQuantity;
     }
   }
+
 }

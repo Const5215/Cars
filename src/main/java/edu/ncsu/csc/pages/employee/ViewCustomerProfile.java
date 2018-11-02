@@ -11,8 +11,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static edu.ncsu.csc.pages.customer.ViewProfile.displayCarList;
-
 public class ViewCustomerProfile extends AbstractPage {
 
   private User employee;
@@ -63,7 +61,7 @@ public class ViewCustomerProfile extends AbstractPage {
       System.out.println("Phone Number: " + customer.getPhone());
 
       System.out.printf("Customer has %d car(s) in total.\n", customerCarList.size());
-      displayCarList(customerCarList);
+      printCarList(customerCarList);
     }
     displayChoices();
     getChoiceFromInput();
