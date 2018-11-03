@@ -1,12 +1,17 @@
 package edu.ncsu.csc.pages.employee.receptionist;
 
+import edu.ncsu.csc.entity.MatchType;
+import edu.ncsu.csc.entity.ServiceHistory;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
 
+import java.util.List;
+
 public class Invoices extends AbstractPage {
   private User receptionist;
-  public Invoices(User receptionist) {
+
+  Invoices(User receptionist) {
     this.receptionist = receptionist;
     choices.add("Go Back");
   }
@@ -14,10 +19,22 @@ public class Invoices extends AbstractPage {
   @Override
   public void run() {
     System.out.println("#invoices");
+    String email = getInfo("Enter customer email address: ", MatchType.Email);
+    List<ServiceHistory> serviceHistoryList = getServiceHistoryListByCustomerId(getCustomerIdByEmail(email));
+    printServiceHistoryList(serviceHistoryList);
 
     displayChoices();
     getChoiceFromInput();
     goBack();
+  }
+
+  private void printServiceHistoryList(List<ServiceHistory> serviceHistoryList) {
+    for (int i = 0; i < serviceHistoryList.size(); i++) {
+      ServiceHistory serviceHistory = serviceHistoryList.get(i);
+      System.out.printf("Customer has %d service list.\n", serviceHistoryList.size());
+      System.out.printf("Service #%d details:\n", i);
+      printServiceHistory(serviceHistory);
+    }
   }
 
   private void goBack() {
