@@ -14,7 +14,7 @@ public class PayrollRepositoryImpl extends AbstractPage implements IPayrollRepos
     @Override
     public List<Payroll> getPayroll(User employee) {
         List<Payroll> payrollList = new ArrayList<>();
-        String sql = "select EMPLOYEE_ID, FROM_DATE, TO_DATE, PAYCHECK_DATE, UNIT, EARNING" +
+        String sql = "SELECT EMPLOYEE_ID, FROM_DATE, TO_DATE, PAYCHECK_DATE, UNIT, EARNING" +
                 " FROM PAYROLL" +
                 " WHERE EMPLOYEE_ID = ? ";
         String employeeId = employee.getId().toString();
