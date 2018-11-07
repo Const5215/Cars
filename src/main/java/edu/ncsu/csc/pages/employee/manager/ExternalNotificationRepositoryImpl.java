@@ -24,8 +24,4 @@ public class ExternalNotificationRepositoryImpl extends AbstractPage implements 
         }
         return externaNotificationRepositoryList;
     }
-    public static void main(String[] args){
-        IExternalNotificationRepository externalNotificationRepository = new ExternalNotificationRepositoryImpl();
-        externalNotificationRepository.getExternalNotification(1);
-    }
 }
