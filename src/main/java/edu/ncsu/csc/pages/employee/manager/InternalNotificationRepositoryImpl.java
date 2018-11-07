@@ -25,10 +25,4 @@ public class InternalNotificationRepositoryImpl extends AbstractPage implements 
         }
         return internalNotification;
     }
-
-    public static void main(String[] args){
-        IInternalNotificationRepository internalNotification = new InternalNotificationRepositoryImpl();
-        internalNotification.getInternalNotification(1);
-
-    }
 }
