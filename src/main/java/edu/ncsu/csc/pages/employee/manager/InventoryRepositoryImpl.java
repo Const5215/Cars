@@ -25,9 +25,4 @@ public class InventoryRepositoryImpl extends AbstractPage implements IInventoryR
         }
         return inventoryList;
     }
-
-    public static void main(String[] args) {
-        IInventoryRepository inventoryRepository = new InventoryRepositoryImpl();
-        inventoryRepository.getInventory(1L);
-    }
 }
