@@ -26,9 +26,4 @@ public class ExternalOrderRepositoryImpl extends AbstractPage implements IExtern
         }
         return externalOrderList;
     }
-
-    public static void main(String[] args){
-        IExternalOrderRepository externalOrderRepository = new ExternalOrderRepositoryImpl();
-        externalOrderRepository.getExternalOrder(1L);
-    }
 }
