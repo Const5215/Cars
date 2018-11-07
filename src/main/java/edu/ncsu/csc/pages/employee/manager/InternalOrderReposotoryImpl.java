@@ -27,9 +27,4 @@ public class InternalOrderReposotoryImpl extends AbstractPage implements IIntern
 
         return internalOrderList;
     }
-
-    public static void main(String[] args){
-        IInternalOrderRepository internalOrderRepository = new InternalOrderReposotoryImpl();
-        internalOrderRepository.getInternalOrder(1);
-    }
 }
