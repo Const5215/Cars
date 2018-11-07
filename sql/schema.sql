@@ -2,6 +2,7 @@ create sequence CUSTOMER_ID_SEQ
   nocache
 /
 create sequence EMPLOYEE_ID_SEQ
+  start with 100000000
   nocache
 /
 create sequence CAR_MODEL_ID_SEQ
