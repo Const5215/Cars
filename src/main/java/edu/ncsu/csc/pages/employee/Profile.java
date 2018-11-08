@@ -6,21 +6,33 @@ import edu.ncsu.csc.pages.Page;
 import edu.ncsu.csc.pages.employee.manager.ManagerLanding;
 import edu.ncsu.csc.pages.employee.receptionist.ReceptionistLanding;
 
-public class EmployeeProfile extends AbstractPage {
+public class Profile extends AbstractPage {
 
   private User employee;
 
-  public EmployeeProfile(User employee) {
+  public Profile(User employee) {
     this.employee = employee;
-    choices.add("View CustomerProfile");
-    choices.add("Update CustomerProfile");
+    choices.add("View Profile");
+    choices.add("Update Profile");
     choices.add("Go back");
+  }
+
+  static void appropriateLandingPage(User employee) {
+    switch (employee.getRole()) {
+      case Manager:
+        Page managerLanding = new ManagerLanding(employee);
+        managerLanding.run();
+        break;
+      case Receptionist:
+        Page receptionistLanding = new ReceptionistLanding(employee);
+        receptionistLanding.run();
+    }
   }
 
   @Override
   public void run() {
     int choice;
-    System.out.println("# CustomerProfile");
+    System.out.println("# Profile");
     displayChoices();
     choice = getChoiceFromInput();
     switch (choice) {
@@ -31,25 +43,17 @@ public class EmployeeProfile extends AbstractPage {
         updateProfile();
         break;
       case 3:
-        switch (employee.getRole()) {
-          case Manager:
-            Page managerLanding = new ManagerLanding(employee);
-            managerLanding.run();
-            break;
-          case Receptionist:
-            Page receptionistLanding = new ReceptionistLanding(employee);
-            receptionistLanding.run();
-        }
+        appropriateLandingPage(employee);
     }
   }
 
   private void viewProfile() {
-    Page viewProfile = new EmployeeViewProfile(employee);
+    Page viewProfile = new ViewProfile(employee);
     viewProfile.run();
   }
 
   private void updateProfile() {
-    Page updateProfile = new EmployeeUpdateProfile(employee);
+    Page updateProfile = new UpdateProfile(employee);
     updateProfile.run();
   }
 }

@@ -10,13 +10,12 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 public class RegisterCar extends AbstractPage {
     private User user;
 
     RegisterCar(User user) {
-        this.user = user;
+      this.user = user;
       choices.add("Register");
       choices.add("Cancel");
     }
@@ -26,9 +25,8 @@ public class RegisterCar extends AbstractPage {
       System.out.println("#Register Car");
 
       String carMake, carModel, strPurchaseDate, strLastServiceDate;
-      SimpleDateFormat dateFormat;
+
       long carYear, lastMileage;
-      dateFormat = new SimpleDateFormat("dd/MM/yyyy");
       Car car = new Car();
 
       System.out.print("Enter Licence Plate:");
@@ -82,16 +80,20 @@ public class RegisterCar extends AbstractPage {
           break;
         }
       } while (true);
+
       displayChoices();
       switch (getChoiceFromInput()) {
         case 1:
           register(car, strLastServiceDate);
-          break;
         case 2:
-          Page customerLanding = new CustomerLanding(user);
-          customerLanding.run();
+          cancel();
       }
     }
+
+  private void cancel() {
+    Page customerLanding = new CustomerLanding(user);
+    customerLanding.run();
+  }
 
 
   private void register(Car car, String strLastServiceDate) {
@@ -116,6 +118,8 @@ public class RegisterCar extends AbstractPage {
     } finally {
       System.out.println("Register Success.");
       closeSqlConnection();
+      Page customerLanding = new CustomerLanding(user);
+      customerLanding.run();
     }
   }
 }
