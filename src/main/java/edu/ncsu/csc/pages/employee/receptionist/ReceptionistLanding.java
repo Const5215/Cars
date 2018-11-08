@@ -5,12 +5,10 @@ import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
 import edu.ncsu.csc.pages.employee.EmployeeProfile;
 import edu.ncsu.csc.pages.employee.EmployeeViewCustomerProfile;
+import edu.ncsu.csc.pages.employee.Profile;
+import edu.ncsu.csc.pages.employee.ViewCustomerProfile;
+import edu.ncsu.csc.pages.start.Home;
 
-/**
- * Receptionist landing page, list menu.
- *
- * @author ych
- */
 public class ReceptionistLanding extends AbstractPage {
 
   private User receptionist;

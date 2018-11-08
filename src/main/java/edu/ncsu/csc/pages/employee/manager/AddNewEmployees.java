@@ -10,7 +10,6 @@ import edu.ncsu.csc.pages.Page;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 public class AddNewEmployees extends AbstractPage {
   private User manager;
@@ -25,6 +24,34 @@ public class AddNewEmployees extends AbstractPage {
   public void run() {
     System.out.println("#addNewEmployees");
 
+    User employee = getEmployee();
+    Employment employment = getEmployment(employee);
+    displayChoices();
+    switch (getChoiceFromInput()) {
+      case 1:
+        addNewEmployee(employee, employment);
+        System.out.println("Employee added.");
+      case 2:
+        goBack();
+    }
+  }
+
+  private Employment getEmployment(User employee) {
+    Employment employment = new Employment();
+    String strStartDate = getInfo("Enter start date:", MatchType.Date);
+    try {
+      employment.setStartDate(dateFormat.parse(strStartDate));
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    employment.setCenterId(getCenterIdByEmployeeId(manager.getId()));
+    employment.setPosition(employee.getRole().ordinal());
+    System.out.print("Enter compensation:");
+    employment.setCompensation(Float.parseFloat(scanner.nextLine()));
+    return employment;
+  }
+
+  private User getEmployee() {
     User employee = new User();
     System.out.print("Enter Name:");
     employee.setName(scanner.nextLine());
@@ -35,7 +62,7 @@ public class AddNewEmployees extends AbstractPage {
     Role role;
     label:
     do {
-      System.out.println("Enter role(receptionist/mechanic):");
+      System.out.print("Enter role(receptionist/mechanic):");
       String strRole = scanner.nextLine();
       switch (strRole) {
         case "receptionist":
@@ -48,31 +75,34 @@ public class AddNewEmployees extends AbstractPage {
           System.out.println("Invalid input");
           break;
       }
+      if (oneReceptionistCheck()) {
+        System.out.println("This service center already have a receptionist.");
+      }
     } while (true);
     employee.setRole(role);
     employee.setPassword("12345678");
-    String strStartDate = getInfo("Enter start date:", MatchType.Date);
-    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-    Employment employment = new Employment();
+    return employee;
+  }
+
+  private void goBack() {
+    Page managerLanding = new ManagerLanding(manager);
+    managerLanding.run();
+  }
+
+  private boolean oneReceptionistCheck() {
+    long centerId = getCenterIdByEmployeeId(manager.getId());
     try {
-      employment.setStartDate(dateFormat.parse(strStartDate));
-    } catch (ParseException e) {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection.prepareStatement(
+          "SELECT * FROM EMPLOYMENT WHERE CENTER_ID=? AND POSITION=?");
+      preparedStatement.setLong(1, centerId);
+      preparedStatement.setLong(2, Role.Receptionist.ordinal());
+      resultSet = preparedStatement.executeQuery();
+      return resultSet.next();
+    } catch (SQLException e) {
       e.printStackTrace();
-      return;
     }
-    employment.setEmployeeId(employee.getId());
-    employment.setCenterId(manager.getId());
-    employment.setPosition(role.ordinal());
-    System.out.println("Enter compensation:");
-    employment.setCompensation(Float.parseFloat(scanner.nextLine()));
-    displayChoices();
-    switch (getChoiceFromInput()) {
-      case 1:
-        addNewEmployee(employee, employment);
-      case 2:
-        Page managerLanding = new ManagerLanding(manager);
-        managerLanding.run();
-    }
+    return false;
   }
 
   private void addNewEmployee(User employee, Employment employment) {
@@ -84,6 +114,12 @@ public class AddNewEmployees extends AbstractPage {
       preparedStatement.setString(3, employee.getEmail());
       preparedStatement.setString(4, employee.getPhone());
       preparedStatement.setString(5, employee.getAddress());
+      preparedStatement.executeUpdate();
+      preparedStatement = connection.prepareStatement("SELECT ID FROM EMPLOYEE WHERE EMAIL=?");
+      preparedStatement.setString(1, employee.getEmail());
+      resultSet = preparedStatement.executeQuery();
+      resultSet.next();
+      employment.setEmployeeId(resultSet.getLong("ID"));
       preparedStatement.executeUpdate();
       preparedStatement = connection.prepareStatement("INSERT INTO EMPLOYMENT values (?, ?, ?, ?, ?)");
       preparedStatement.setLong(1, employment.getEmployeeId());
@@ -98,4 +134,5 @@ public class AddNewEmployees extends AbstractPage {
       closeSqlConnection();
     }
   }
+
 }

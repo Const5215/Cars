@@ -27,6 +27,21 @@ public class NewCarModel extends AbstractPage {
   public void run() {
     System.out.println("#newCarModel");
 
+    CarModel carModel = getCarModel();
+
+    getServiceInfo(ServiceType.Maintenance_A);
+    getServiceInfo(ServiceType.Maintenance_B);
+    getServiceInfo(ServiceType.Maintenance_C);
+    displayChoices();
+    switch (getChoiceFromInput()) {
+      case 1:
+        addCar(carModel);
+      case 2:
+        goBack();
+    }
+  }
+
+  private CarModel getCarModel() {
     CarModel carModel = new CarModel();
     do {
       System.out.print("Enter make(Honda/Nissan/Toyota):");
@@ -53,18 +68,12 @@ public class NewCarModel extends AbstractPage {
         closeSqlConnection();
       }
     } while (true);
+    return carModel;
+  }
 
-    getServiceInfo(ServiceType.A);
-    getServiceInfo(ServiceType.B);
-    getServiceInfo(ServiceType.C);
-    displayChoices();
-    switch (getChoiceFromInput()) {
-      case 1:
-        newCarModel(carModel);
-      case 2:
-        Page managerLanding = new ManagerLanding(manager);
-        managerLanding.run();
-    }
+  private void goBack() {
+    Page managerLanding = new ManagerLanding(manager);
+    managerLanding.run();
   }
 
   private void getServiceInfo(ServiceType serviceType) {
@@ -108,7 +117,20 @@ public class NewCarModel extends AbstractPage {
     return partList;
   }
 
-  private void newCarModel(CarModel carModel) {
+  private Part getPart() {
+    Part part = null;
+    try {
+      part = new Part(resultSet.getLong("ID"),
+          resultSet.getString("NAME"),
+          resultSet.getLong("UNIT_PRICE"),
+          resultSet.getLong("DISTRIBUTOR_ID"));
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return part;
+  }
+
+  private void addCar(CarModel carModel) {
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
       preparedStatement = connection.prepareStatement(
