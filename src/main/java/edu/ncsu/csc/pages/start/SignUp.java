@@ -34,6 +34,7 @@ public class SignUp extends AbstractPage {
       }
 
       try {
+        System.out.println("try    ");
         connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
         preparedStatement = connection.prepareStatement("select * from CUSTOMER where EMAIL=?");
         preparedStatement.setString(1, email);
@@ -93,6 +94,9 @@ public class SignUp extends AbstractPage {
   private void signUp(User user) {
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      if (!connection.isClosed()) {
+        System.out.println("connected!!!!!");
+      }
       preparedStatement = connection
           .prepareStatement("insert into CUSTOMER values (CUSTOMER_ID_SEQ.nextval, ?, ?, ?, ?, ?)");
       preparedStatement.setString(1, user.getPassword());

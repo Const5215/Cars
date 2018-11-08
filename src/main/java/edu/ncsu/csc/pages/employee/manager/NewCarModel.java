@@ -100,7 +100,7 @@ public class NewCarModel extends AbstractPage {
       preparedStatement = connection.prepareStatement("SELECT * FROM PART");
       resultSet = preparedStatement.executeQuery();
       while (resultSet.next()) {
-        partList.add(getPart());
+//        partList.add(getPart());
       }
     } catch (SQLException e) {
       e.printStackTrace();

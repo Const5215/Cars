@@ -15,8 +15,8 @@ import java.util.regex.Pattern;
 public class AbstractPage implements Page {
 
   protected static final String URL = "jdbc:oracle:thin:@orca.csc.ncsu.edu:1521:orcl01";
-  protected static final String USERNAME = "";
-  protected static final String PASSWORD = "";
+  protected static final String USERNAME = "cyuan7";
+  protected static final String PASSWORD = "200263186";
   protected Connection connection;
   protected PreparedStatement preparedStatement;
   protected ResultSet resultSet;
