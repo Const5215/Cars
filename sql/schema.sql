@@ -1,13 +1,3 @@
-create sequence CUSTOMER_ID_SEQ
-  nocache
-/
-create sequence EMPLOYEE_ID_SEQ
-  start with 100000000
-  nocache
-/
-create sequence CAR_MODEL_ID_SEQ
-  nocache
-/
 create table CUSTOMER
 (
   ID       NUMBER        not null,
@@ -27,12 +17,12 @@ create unique index CUSTOMER_EMAIL_UINDEX
 
 create table EMPLOYEE
 (
-  ID       NUMBER        not null,
-  PASSWORD VARCHAR2(255) not null,
-  NAME     VARCHAR2(255) not null,
-  EMAIL    VARCHAR2(255) not null,
-  PHONE    VARCHAR2(255) not null,
-  ADDRESS  VARCHAR2(255) not null,
+  ID       NUMBER                         not null,
+  PASSWORD VARCHAR2(255) default 12345678 not null,
+  NAME     VARCHAR2(255)                  not null,
+  EMAIL    VARCHAR2(255)                  not null,
+  PHONE    VARCHAR2(255)                  not null,
+  ADDRESS  VARCHAR2(255)                  not null,
   constraint EMPLOYEE_PK
   primary key (ID)
 )
@@ -40,9 +30,8 @@ create table EMPLOYEE
 
 create table DISTRIBUTOR
 (
-  ID              NUMBER        not null,
-  NAME            VARCHAR2(255) not null,
-  DELIVERY_WINDOW NUMBER        not null,
+  ID   NUMBER        not null,
+  NAME VARCHAR2(255) not null,
   constraint DISTRIBUTOR_PK
   primary key (ID)
 )
@@ -61,10 +50,13 @@ create table CENTER
 
 create table PART
 (
-  ID             NUMBER        not null,
-  NAME           VARCHAR2(255) not null,
-  UNIT_PRICE     NUMBER        not null,
-  DISTRIBUTOR_ID NUMBER        not null,
+  ID              NUMBER            not null,
+  NAME            VARCHAR2(255)     not null,
+  MAKE            VARCHAR2(255)     not null,
+  UNIT_PRICE      FLOAT             not null,
+  WARRANTY        NUMBER default 0  not null,
+  DELIVERY_WINDOW NUMBER            not null,
+  DISTRIBUTOR_ID  NUMBER            not null,
   constraint PART_PK
   primary key (ID),
   constraint PART_DISTRIBUTOR_ID_FK
@@ -111,7 +103,7 @@ create table PAYROLL
 (
   EMPLOYEE_ID   NUMBER not null,
   FROM_DATE     DATE   not null,
-  TO_DATE       DATE,
+  TO_DATE       DATE   not NULL,
   PAYCHECK_DATE DATE   not null,
   UNIT          NUMBER not null,
   EARNING       FLOAT  not null,
@@ -125,15 +117,16 @@ create table PAYROLL
 
 create table EXTERNAL_ORDER
 (
-  ID             NUMBER not null,
-  PART_ID        NUMBER not null,
-  QUANTITY       NUMBER not null,
-  TOTAL          FLOAT  not null,
-  CENTER_ID      NUMBER not null,
-  DISTRIBUTOR_ID NUMBER not null,
-  ORDER_DATE     DATE   not null,
-  DELIVERY_DATE  DATE   not null,
-  STATUS         NUMBER not null,
+  ID                     NUMBER           not null,
+  PART_ID                NUMBER           not null,
+  QUANTITY               NUMBER           not null,
+  TOTAL                  FLOAT            not null,
+  DISTRIBUTOR_ID         NUMBER           not null,
+  CENTER_ID              NUMBER           not null,
+  ORDER_DATE             DATE             not null,
+  EXPECTED_DELIVERY_DATE DATE             not null,
+  ACTUAL_DELIVERY_DATE   DATE,
+  STATUS                 NUMBER default 0 not null,
   constraint EXTERNAL_ORDER_PK
   primary key (ID),
   constraint EXTERNAL_ORDER_C_ID_FK
@@ -147,56 +140,37 @@ create table EXTERNAL_ORDER
 
 create table INTERNAL_ORDER
 (
-  ID            NUMBER not null,
-  PART_ID       NUMBER not null,
-  QUANTITY      NUMBER not null,
-  TOTAL         FLOAT  not null,
-  TO_ID         NUMBER not null,
-  FROM_ID       NUMBER not null,
-  ORDER_DATE    DATE   not null,
-  DELIVERY_DATE DATE   not null,
-  STATUS        NUMBER not null,
+  ID                     NUMBER           not null,
+  PART_ID                NUMBER           not null,
+  QUANTITY               NUMBER           not null,
+  TOTAL                  FLOAT            not null,
+  FROM_ID                NUMBER           not null,
+  TO_ID                  NUMBER           not null,
+  ORDER_DATE             DATE             not null,
+  EXPECTED_DELIVERY_DATE DATE             not null,
+  ACTUAL_DELIVERY_DATE   DATE,
+  STATUS                 NUMBER default 0 not null,
   constraint INTERNAL_ORDER_PK
   primary key (ID),
   constraint INTERNAL_ORDER_FROM_C_ID_FK
-  foreign key (TO_ID) references CENTER,
+  foreign key (FROM_ID) references CENTER,
   constraint INTERNAL_ORDER_PART_ID_FK
   foreign key (PART_ID) references PART,
   constraint INTERNAL_ORDER_TO_C_ID_FK
-  foreign key (FROM_ID) references CENTER
+  foreign key (TO_ID) references CENTER
 )
-/
-
-create table CAR_MODEL
-(
-  ID    NUMBER        not null,
-  MAKE  VARCHAR2(255) not null,
-  MODEL VARCHAR2(255) not null,
-  YEAR  NUMBER        not null,
-  constraint CAR_MODEL_PK
-  primary key (ID),
-  constraint CAR_MAKE_CONSTRAINT
-  check (MAKE IN ('Honda', 'Nissan', 'Toyota'))
-)
-/
-
-create unique index CAR_MODEL_UINDEX
-  on CAR_MODEL (MAKE, MODEL, YEAR)
 /
 
 create table CAR
 (
-  PLATE             VARCHAR2(255) not null,
-  CUSTOMER_ID       NUMBER        not null,
-  CAR_MODEL_ID      NUMBER        not null,
-  PURCHASE_DATE     DATE          not null,
-  LAST_MILEAGE      NUMBER        not null,
-  LAST_SERVICE_TYPE NUMBER,
-  LAST_SERVICE_DATE DATE,
+  PLATE         VARCHAR2(255) not null,
+  CUSTOMER_ID   NUMBER        not null,
+  MAKE          VARCHAR2(255) not null,
+  MODEL         VARCHAR2(255) not null,
+  YEAR          NUMBER        not null,
+  PURCHASE_DATE DATE          not null,
   constraint CAR_PK
   primary key (PLATE),
-  constraint CAR_CAR_MODEL_ID_FK
-  foreign key (CAR_MODEL_ID) references CAR_MODEL,
   constraint CAR_CUSTOMER_ID_FK
   foreign key (CUSTOMER_ID) references CUSTOMER
   on delete cascade
@@ -205,110 +179,146 @@ create table CAR
 
 create table MAINTENANCE
 (
-  CAR_MODEL_ID NUMBER not null,
-  SERVICE_TYPE NUMBER not null,
-  MILE         NUMBER not null,
-  MONTH        NUMBER not null,
+  MAKE             VARCHAR2(255) not null,
+  MODEL            VARCHAR2(255) not null,
+  MAINTENANCE_TYPE NUMBER        not null,
+  MILEAGE          NUMBER        not null,
   constraint MAINTENANCE_PK
-  primary key (CAR_MODEL_ID, SERVICE_TYPE),
-  constraint MAINTENANCE_CAR_MODEL_ID_FK
-  foreign key (CAR_MODEL_ID) references CAR_MODEL
-  on delete cascade
+  primary key (MAKE, MODEL, MAINTENANCE_TYPE)
 )
 /
 
 create table BASIC_SERVICE
 (
-  CAR_MODEL_ID   NUMBER        not null,
-  NAME           VARCHAR2(255) not null,
-  ESTIMATED_HOUR NUMBER        not null,
-  CHARGE_RATE    NUMBER        not null,
-  SERVICE_TYPE   NUMBER        not null,
-  WARRANTY       NUMBER,
-  PROBLEM        VARCHAR2(255),
+  ID          NUMBER        not null,
+  NAME        VARCHAR2(255) not null,
+  LABOR_HOUR  FLOAT         not null,
+  CHARGE_RATE NUMBER        not null,
   constraint BASIC_SERVICE_PK
-  primary key (CAR_MODEL_ID, NAME),
-  constraint BASIC_SERVICE_CAR_MODEL_ID_FK
-  foreign key (CAR_MODEL_ID) references CAR_MODEL
-  on delete cascade
-)
-/
-
-create table INTERNAL_NOTIFICATION
-(
-  ID                NUMBER not null,
-  ORDER_ID          NUMBER not null,
-  NOTIFICATION_DATE DATE   not null,
-  constraint INTERNAL_NOTIFICATION_PK
-  primary key (ID),
-  constraint INTERNAL_NOTIFICATION_O_ID_FK
-  foreign key (ORDER_ID) references INTERNAL_ORDER
-  on delete cascade
-)
-/
-
-create table EXTERNAL_NOTIFICATION
-(
-  ID                NUMBER not null,
-  ORDER_ID          NUMBER not null,
-  NOTIFICATION_DATE NUMBER not null,
-  constraint EXTERNAL_NOTIFICATION_PK
-  primary key (ID),
-  constraint EXTERNAL_NOTIFICATION_O_ID_FK
-  foreign key (ORDER_ID) references EXTERNAL_ORDER
-  on delete cascade
+  primary key (ID)
 )
 /
 
 create table BASIC_SERVICE_PART
 (
-  CAR_MODEL_ID       NUMBER        not null,
-  BASIC_SERVICE_NAME VARCHAR2(255) not null,
-  PART_ID            NUMBER        not null,
-  QUANTITY           NUMBER        not null,
+  BASIC_SERVICE_ID NUMBER        not null,
+  PART_ID          NUMBER        not null,
+  MAKE             VARCHAR2(255) not null,
+  MODEL            VARCHAR2(255) not null,
+  QUANTITY         NUMBER        not null,
   constraint BASIC_SERVICE_PART_PK
-  primary key (CAR_MODEL_ID, BASIC_SERVICE_NAME, PART_ID),
-  constraint BASIC_SERVICE_PART_FK
-  foreign key (CAR_MODEL_ID, BASIC_SERVICE_NAME) references BASIC_SERVICE,
-  constraint BASIC_SERVICE_PART_PART_ID_FK
+  primary key (BASIC_SERVICE_ID, PART_ID, MAKE, MODEL),
+  constraint BASIC_SERVICE_ID_FK
+  foreign key (BASIC_SERVICE_ID) references BASIC_SERVICE,
+  constraint BASIC_SERVICE_PART_ID_FK
   foreign key (PART_ID) references PART
 )
 /
 
-create table SERVICE_HISTORY
+create table MAINTENANCE_DETAIL
 (
-  ID               NUMBER        not null,
-  CAR_PLATE        VARCHAR2(255) not null,
-  SERVICE_TYPE     NUMBER        not null,
-  START_TIME       DATE          not null,
-  END_TIME         DATE          not null,
-  TOTAL_LABOR_HOUR NUMBER        not null,
-  STATUS           NUMBER        not null,
-  MECHANIC_ID      NUMBER        not null,
-  CENTER_ID        NUMBER        not null,
+  MAKE             VARCHAR2(255) not null,
+  MODEL            VARCHAR2(255) not null,
+  MAINTENANCE_TYPE NUMBER        not null,
+  BASIC_SERVICE_ID NUMBER        not null,
+  constraint MAINTENANCE_DETAIL_FK
+  foreign key (MAKE, MODEL, MAINTENANCE_TYPE) references MAINTENANCE
+)
+/
+
+create table DIAGNOSIS
+(
+  ID      NUMBER        not null,
+  PROBLEM VARCHAR2(255) not null,
+  ISSUE   VARCHAR2(255) not null,
+  FEE     FLOAT         not null,
+  constraint DIAGNOSIS_PK
+  primary key (ID)
+)
+/
+
+create table REPAIR_HISTORY
+(
+  ID           NUMBER        not null,
+  CUSTOMER_ID  NUMBER        not null,
+  CAR_PLATE    VARCHAR2(255) not null,
+  CENTER_ID    NUMBER        not null,
+  DIAGNOSIS_ID NUMBER        not null,
+  MILEAGE      NUMBER        not null,
+  START_TIME   DATE          not null,
+  END_TIME     DATE          not null,
+  MECHANIC_ID  NUMBER        not null,
   constraint SERVICE_HISTORY_PK
   primary key (ID),
-  constraint SERVICE_HISTORY_CAR_PLATE_FK
+  constraint REPAIR_HISTORY_CAR_PLATE_FK
   foreign key (CAR_PLATE) references CAR,
-  constraint SERVICE_HISTORY_CENTER_ID_FK
+  constraint REPAIR_HISTORY_CENTER_ID_FK
   foreign key (CENTER_ID) references CENTER,
-  constraint SERVICE_HISTORY_EMPLOYEE_ID_FK
+  constraint REPAIR_HISTORY_CUSTOMER_ID_FK
+  foreign key (CUSTOMER_ID) references CUSTOMER,
+  constraint REPAIR_HISTORY_DIAGNOSIS_ID_FK
+  foreign key (DIAGNOSIS_ID) references DIAGNOSIS,
+  constraint REPAIR_HISTORY_EMPLOYEE_ID_FK
   foreign key (MECHANIC_ID) references EMPLOYEE
 )
 /
 
-create table SERVICE_HISTORY_DETAIL
+create table REPAIR
 (
-  SERVICE_HISTORY_ID NUMBER not null,
-  PART_ID            NUMBER not null,
-  QUANTITY           NUMBER not null,
-  constraint SERVICE_HISTORY_DETAIL_PK
-  primary key (SERVICE_HISTORY_ID, PART_ID),
-  constraint SERVICE_HISTORY_DETAIL_FK
-  foreign key (PART_ID) references PART,
-  constraint SERVICE_HISTORY_ID_FK
-  foreign key (SERVICE_HISTORY_ID) references SERVICE_HISTORY
-  on delete cascade
+  DIAGNOSIS_ID     NUMBER not null,
+  BASIC_SERVICE_ID NUMBER not null,
+  constraint REPAIR_BASIC_SERVICE_ID_FK
+  foreign key (BASIC_SERVICE_ID) references BASIC_SERVICE,
+  constraint REPAIR_DIAGNOSIS_ID_FK
+  foreign key (DIAGNOSIS_ID) references DIAGNOSIS
 )
 /
 
+create table MAINTENANCE_HISTORY
+(
+  ID               NUMBER        not null,
+  CUSTOMER_ID      NUMBER        not null,
+  CAR_PLATE        VARCHAR2(255) not null,
+  CENTER_ID        NUMBER        not null,
+  MAINTENANCE_TYPE NUMBER        not null,
+  MILEAGE          NUMBER        not null,
+  START_TIME       DATE          not null,
+  END_TIME         DATE          not null,
+  MECHANIC_ID      NUMBER        not null,
+  constraint MAINTENANCE_HISTORY_PK
+  primary key (ID),
+  constraint M_HISTORY_CAR_PLATE_FK
+  foreign key (CAR_PLATE) references CAR,
+  constraint M_HISTORY_CENTER_ID_FK
+  foreign key (CENTER_ID) references CENTER,
+  constraint M_HISTORY_CUSTOMER_ID_FK
+  foreign key (CUSTOMER_ID) references CUSTOMER,
+  constraint M_HISTORY_EMPLOYEE_ID_FK
+  foreign key (MECHANIC_ID) references EMPLOYEE
+)
+/
+
+create sequence CUSTOMER_ID_SEQ
+  start with 1005
+  nocache
+/
+
+create sequence CENTER_ID_SEQ
+  start with 3
+  nocache
+/
+
+create sequence EMPLOYEE_ID_SEQ
+  start with 100000000
+  nocache
+/
+
+create sequence ORDER_ID_SEQ
+  start with 12
+  nocache
+/
+
+create sequence SERVICE_HISTORY_ID
+  start with 17
+  nocache
+/
