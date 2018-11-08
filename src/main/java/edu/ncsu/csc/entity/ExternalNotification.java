@@ -18,7 +18,6 @@ public class ExternalNotification implements Serializable {
     public ExternalNotification( Date notificationDate,
                                 ExternalOrder externalOrder) {
         this.notificationDate = notificationDate;
-//        this.externalOrder = externalOrder;
         this.orderId = orderId;
     }
 
@@ -37,14 +36,7 @@ public class ExternalNotification implements Serializable {
     public void setNotificationDate(Date notificationDate) {
         this.notificationDate = notificationDate;
     }
-//
-//    public ExternalOrder getExternalOrder() {
-//        return externalOrder;
-//    }
-//
-//    public void setExternalOrder(ExternalOrder externalOrder) {
-//        this.externalOrder = externalOrder;
-//    }
+
     public Long getOrderId() { return orderId; }
 
     public void setOrderId(Long orderId) {

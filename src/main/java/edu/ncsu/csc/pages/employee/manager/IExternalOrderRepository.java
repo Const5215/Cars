@@ -8,5 +8,7 @@ public interface IExternalOrderRepository {
 
     List<ExternalOrder> getExternalOrder(long centerId);
 
+    int saveExternalOrder(ExternalOrder externalOrder);
+
 }
 

@@ -17,12 +17,6 @@ public class ExternalOrder implements Serializable {
 
     private OrderStatus status;
 
-    //private Part part;
-
-    //private Center center;
-
-    //private Distributor distributor;
-
     private ExternalNotification externalNotification;
 
     private Long partId;
@@ -42,9 +36,6 @@ public class ExternalOrder implements Serializable {
         this.deliveryDate = deliveryDate;
         this.total = total;
         this.status = status;
-        //this.part = part;
-        //this.center = center;
-        //this.distributor = distributor;
         this.externalNotification = externalNotification;
         this.partId = partId;
         this.distributorId = distributorId;
@@ -98,28 +89,6 @@ public class ExternalOrder implements Serializable {
     public void setStatus(OrderStatus status) {
         this.status = status;
     }
-
-//    public Part getPart() { return part; }
-//
-//    public void setPart(Part part) {
-//        this.part = part;
-//    }
-//
-//    public Center getCenter() {
-//        return center;
-//    }
-//
-//    public void setCenter(Center center) {
-//        this.center = center;
-//    }
-
-//    public Distributor getDistributor() {
-//        return distributor;
-//    }
-//
-//    public void setDistributor(Distributor distributor) {
-//        this.distributor = distributor;
-//    }
 
     public ExternalNotification getExternalNotification() {
         return externalNotification;
