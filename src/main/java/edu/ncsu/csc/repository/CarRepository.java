@@ -45,6 +45,11 @@ public class CarRepository extends AbstractPage {
       resultSet = preparedStatement.executeQuery();
       while (resultSet.next()) {
         Car car = new Car();
+        car.setPlate(resultSet.getString("PLATE"));
+        car.setCustomerId(resultSet.getLong("CUSTOMER_ID"));
+        car.setCarModelId(resultSet.getLong("CAR_MODEL_ID"));
+        car.setYear(resultSet.getLong("YEAR"));
+        car.setPurchaseDate(resultSet.getDate("PURCHASE_DATE"));
         carList.add(car);
       }
     } catch (SQLException e) {
