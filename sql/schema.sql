@@ -161,16 +161,27 @@ create table INTERNAL_ORDER
 )
 /
 
+create table CAR_MODEL
+(
+  ID    NUMBER        not null,
+  MAKE  VARCHAR2(255) not null,
+  MODEL VARCHAR2(255) not null,
+  constraint CAR_MODEL_PK
+  primary key (ID)
+)
+/
+
 create table CAR
 (
   PLATE         VARCHAR2(255) not null,
   CUSTOMER_ID   NUMBER        not null,
-  MAKE          VARCHAR2(255) not null,
-  MODEL         VARCHAR2(255) not null,
+  CAR_MODEL_ID  NUMBER        not null,
   YEAR          NUMBER        not null,
   PURCHASE_DATE DATE          not null,
   constraint CAR_PK
   primary key (PLATE),
+  constraint CAR_CAR_MODEL_ID_FK
+  foreign key (CAR_MODEL_ID) references CAR_MODEL,
   constraint CAR_CUSTOMER_ID_FK
   foreign key (CUSTOMER_ID) references CUSTOMER
   on delete cascade
@@ -179,12 +190,14 @@ create table CAR
 
 create table MAINTENANCE
 (
-  MAKE             VARCHAR2(255) not null,
-  MODEL            VARCHAR2(255) not null,
-  MAINTENANCE_TYPE NUMBER        not null,
-  MILEAGE          NUMBER        not null,
+  CAR_MODEL_ID     NUMBER not null,
+  MAINTENANCE_TYPE NUMBER not null,
+  MILEAGE          NUMBER not null,
   constraint MAINTENANCE_PK
-  primary key (MAKE, MODEL, MAINTENANCE_TYPE)
+  primary key (CAR_MODEL_ID, MAINTENANCE_TYPE),
+  constraint MAINTENANCE_CAR_MODEL_ID_FK
+  foreign key (CAR_MODEL_ID) references CAR_MODEL
+  on delete cascade
 )
 /
 
@@ -201,28 +214,27 @@ create table BASIC_SERVICE
 
 create table BASIC_SERVICE_PART
 (
-  BASIC_SERVICE_ID NUMBER        not null,
-  PART_ID          NUMBER        not null,
-  MAKE             VARCHAR2(255) not null,
-  MODEL            VARCHAR2(255) not null,
-  QUANTITY         NUMBER        not null,
+  BASIC_SERVICE_ID NUMBER not null,
+  PART_ID          NUMBER not null,
+  CAR_MODEL_ID     NUMBER not null,
+  QUANTITY         NUMBER not null,
   constraint BASIC_SERVICE_PART_PK
-  primary key (BASIC_SERVICE_ID, PART_ID, MAKE, MODEL),
+  primary key (BASIC_SERVICE_ID, PART_ID, CAR_MODEL_ID),
+  constraint BASIC_SERVICE_CAR_MODEL_ID_FK
+  foreign key (CAR_MODEL_ID) references CAR_MODEL,
   constraint BASIC_SERVICE_ID_FK
-  foreign key (BASIC_SERVICE_ID) references BASIC_SERVICE,
-  constraint BASIC_SERVICE_PART_ID_FK
-  foreign key (PART_ID) references PART
+  foreign key (BASIC_SERVICE_ID) references BASIC_SERVICE
 )
 /
 
+
 create table MAINTENANCE_DETAIL
 (
-  MAKE             VARCHAR2(255) not null,
-  MODEL            VARCHAR2(255) not null,
-  MAINTENANCE_TYPE NUMBER        not null,
-  BASIC_SERVICE_ID NUMBER        not null,
+  CAR_MODEL_ID     NUMBER not null,
+  MAINTENANCE_TYPE NUMBER not null,
+  BASIC_SERVICE_ID NUMBER not null,
   constraint MAINTENANCE_DETAIL_FK
-  foreign key (MAKE, MODEL, MAINTENANCE_TYPE) references MAINTENANCE
+  foreign key (CAR_MODEL_ID, MAINTENANCE_TYPE) references MAINTENANCE
 )
 /
 
