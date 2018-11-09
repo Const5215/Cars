@@ -1,11 +1,15 @@
 package edu.ncsu.csc.pages.employee.manager;
 
-import edu.ncsu.csc.entity.Maintenance;
-import edu.ncsu.csc.entity.Part;
-import edu.ncsu.csc.entity.User;
+import edu.ncsu.csc.entity.*;
 import edu.ncsu.csc.pages.AbstractPage;
+import edu.ncsu.csc.pages.Page;
+import edu.ncsu.csc.repository.BasicServicePartRepository;
+import edu.ncsu.csc.repository.CarModelRepository;
 import edu.ncsu.csc.repository.PartRepository;
+import javafx.util.Pair;
 
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,24 +27,57 @@ class NewCarModel extends AbstractPage {
     choices.add("Go Back");
   }
 
-  /*
-    --this page is under rework--
+
   @Override
   public void run() {
     System.out.println("#newCarModel");
 
     CarModel carModel = getCarModel();
-
-    getServiceInfo(ServiceType.Maintenance_A);
-    getServiceInfo(ServiceType.Maintenance_B);
-    getServiceInfo(ServiceType.Maintenance_C);
+    List<Pair<Maintenance, List<BasicServicePart>>> serviceDetailList = getServiceDetailList();
     displayChoices();
     switch (getChoiceFromInput()) {
       case 1:
-        addCar(carModel);
+        addCar(carModel, serviceDetailList);
       case 2:
         goBack();
     }
+  }
+
+  private void addCar(CarModel carModel, List<Pair<Maintenance, List<BasicServicePart>>> serviceDetailList) {
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection.prepareStatement(
+          "INSERT INTO CAR_MODEL VALUES (CAR_MODEL_ID_SEQ.nextval, ?, ?, ?)");
+      preparedStatement.setString(1, carModel.getMake());
+      preparedStatement.setString(2, carModel.getModel());
+      preparedStatement.executeUpdate();
+      CarModelRepository carModelRepository = new CarModelRepository();
+      long carModelId = carModelRepository.getCarModelIdByMakeAndModel(carModel.getMake(), carModel.getModel());
+      carModel.setId(carModelId);
+
+      preparedStatement = connection.prepareStatement(
+          "INSERT INTO MAINTENANCE VALUES (?, ? ,?)");
+      for (Pair<Maintenance, List<BasicServicePart>> serviceDetail : serviceDetailList) {
+        serviceDetail.getKey().setCarModelId(carModelId);
+        preparedStatement.setLong(1, serviceDetail.getKey().getCarModelId());
+        preparedStatement.setString(2, serviceDetail.getKey().getServiceType().toString());
+        preparedStatement.setLong(3, serviceDetail.getKey().getMile());
+        preparedStatement.executeUpdate();
+        for (int i = 0; i < serviceDetail.getValue().size(); i++) {
+          BasicServicePartRepository basicServicePartRepository = new BasicServicePartRepository();
+          basicServicePartRepository.addBasicServicePart(serviceDetail.getValue().get(i));
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
+  }
+
+  private void goBack() {
+    Page managerLanding = new ManagerLanding(manager);
+    managerLanding.run();
   }
 
   private CarModel getCarModel() {
@@ -62,78 +99,37 @@ class NewCarModel extends AbstractPage {
     return carModel;
   }
 
-  private void goBack() {
-    Page managerLanding = new ManagerLanding(manager);
-    managerLanding.run();
-  }
-
-  private void getServiceInfo(ServiceType serviceType) {
-    System.out.printf("Entering info for %s:\n", serviceType.toString());
-    Maintenance maintenance = new Maintenance();
-    maintenance.setServiceType(serviceType);
-    maintenance.setMile(Long.parseLong(getInfo("Enter mile for service:", MatchType.Number)));
-    getInfo("Enter month for service:", MatchType.Number);
-    getPartList(serviceType);
-    serviceList.add(maintenance);
-  }
-
-  private void getPartList(ServiceType serviceType) {
-    BasicServicePart basicServicePart = new BasicServicePart();
-    basicServicePart.setName(serviceType.toString());
+  private List<BasicServicePart> getBasicServicePartList() {
+    List<BasicServicePart> basicServicePartList = new ArrayList<>();
     System.out.println("available part id listed below:");
     for (Part part : availablePartList) {
       System.out.printf("Part id:%d, Name:%s\n", part.getId(), part.getName());
     }
-    int partNum = Integer.parseInt(getInfo("Enter total kinds of parts for service:", MatchType.Number));
+    int partNum = Integer.parseInt(
+        getInfo("Enter total kinds of (parts)/(basic services) for service:", MatchType.Number));
     for (int i = 0; i < partNum; i++) {
-      System.out.printf("Entering info for part #%d\n:", i);
+      BasicServicePart basicServicePart = new BasicServicePart();
+      System.out.printf("Entering info for part #%d\n:", i + 1);
       basicServicePart.setPartId(Long.parseLong(getInfo("Enter part id:", MatchType.Number)));
       basicServicePart.setQuantity(Long.parseLong(getInfo("Enter part quantity:", MatchType.Number)));
+      basicServicePartList.add(basicServicePart);
     }
-    servicePartList.add(basicServicePart);
+    return basicServicePartList;
   }
 
-  private void addCar(CarModel carModel) {
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement(
-          "INSERT INTO CAR_MODEL VALUES (CAR_MODEL_ID_SEQ.nextval, ?, ?, ?)");
-      preparedStatement.setString(1, carModel.getMake());
-      preparedStatement.setString(2, carModel.getModel());
-      preparedStatement.setLong(3, carModel.getYear());
-      preparedStatement.executeUpdate();
-      preparedStatement = connection.prepareStatement(
-          "SELECT * FROM CAR_MODEL WHERE MAKE=? AND MODEL=? AND YEAR=?");
-      preparedStatement.setString(1, carModel.getMake());
-      preparedStatement.setString(2, carModel.getModel());
-      preparedStatement.setLong(3, carModel.getYear());
-      resultSet = preparedStatement.executeQuery();
-      carModel.setId(resultSet.getLong("ID"));
-      preparedStatement = connection.prepareStatement("INSERT INTO MAINTENANCE VALUES (?, ?, ?, ?)");
-      for (Maintenance aServiceList : serviceList) {
-        aServiceList.setCarModelId(carModel.getId());
-        preparedStatement.setLong(1, aServiceList.getCarModelId());
-        preparedStatement.setLong(2, aServiceList.getServiceType().ordinal());
-        preparedStatement.setLong(3, aServiceList.getMile());
-        preparedStatement.setLong(4, aServiceList.getMonth());
-        preparedStatement.executeUpdate();
-      }
-      preparedStatement = connection.prepareStatement(
-          "INSERT INTO BASIC_SERVICE_PART VALUES (?, ? ,? ,?)");
-      for (BasicServicePart aServicePartList : servicePartList) {
-        aServicePartList.setCarModelId(carModel.getId());
-        preparedStatement.setLong(1, aServicePartList.getCarModelId());
-        preparedStatement.setString(2, aServicePartList.getName());
-        preparedStatement.setLong(3, aServicePartList.getPartId());
-        preparedStatement.setLong(4, aServicePartList.getQuantity());
-        preparedStatement.executeUpdate();
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      closeSqlConnection();
+  private List<Pair<Maintenance, List<BasicServicePart>>> getServiceDetailList() {
+    List<Pair<Maintenance, List<BasicServicePart>>> serviceDetailList = new ArrayList<>();
+    for (int i = 0; i < 3; i++) {
+      Maintenance maintenance = new Maintenance();
+      ServiceType serviceType = ServiceType.values()[i];
+      System.out.printf("Entering info for %s:\n", serviceType.toString());
+      maintenance.setMile(Long.parseLong(getInfo("Enter mile for maintenance:", MatchType.Number)));
+      getInfo("Enter month for maintenance:", MatchType.Number);
+      List<BasicServicePart> basicServicePartList = getBasicServicePartList();
+      Pair<Maintenance, List<BasicServicePart>> serviceDetail = new Pair<>(maintenance, basicServicePartList);
+      serviceDetailList.add(serviceDetail);
     }
-
+    return serviceDetailList;
   }
-  */
+
 }

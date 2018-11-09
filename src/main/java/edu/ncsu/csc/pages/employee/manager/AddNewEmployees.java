@@ -6,10 +6,9 @@ import edu.ncsu.csc.entity.Role;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
+import edu.ncsu.csc.repository.EmployeeRepository;
 import edu.ncsu.csc.repository.EmploymentRepository;
 
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.text.ParseException;
 
 public class AddNewEmployees extends AbstractPage {
@@ -41,7 +40,7 @@ public class AddNewEmployees extends AbstractPage {
 
   private Employment getEmployment(User employee) {
     Employment employment = new Employment();
-    String strStartDate = getInfo("Enter start date:", MatchType.Date);
+    String strStartDate = getInfo("Enter start date(YYYY-MM-DD):", MatchType.Date);
     try {
       employment.setStartDate(dateFormat.parse(strStartDate));
     } catch (ParseException e) {
@@ -96,33 +95,12 @@ public class AddNewEmployees extends AbstractPage {
   }
 
   private void addNewEmployee(User employee, Employment employment) {
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement("INSERT INTO EMPLOYEE values (EMPLOYEE_ID_SEQ.nextval, ?, ?, ?, ?, ?)");
-      preparedStatement.setString(1, employee.getPassword());
-      preparedStatement.setString(2, employee.getName());
-      preparedStatement.setString(3, employee.getEmail());
-      preparedStatement.setString(4, employee.getPhone());
-      preparedStatement.setString(5, employee.getAddress());
-      preparedStatement.executeUpdate();
-      preparedStatement = connection.prepareStatement("SELECT ID FROM EMPLOYEE WHERE EMAIL=?");
-      preparedStatement.setString(1, employee.getEmail());
-      resultSet = preparedStatement.executeQuery();
-      resultSet.next();
-      employment.setEmployeeId(resultSet.getLong("ID"));
-      preparedStatement.executeUpdate();
-      preparedStatement = connection.prepareStatement("INSERT INTO EMPLOYMENT values (?, ?, ?, ?, ?)");
-      preparedStatement.setLong(1, employment.getEmployeeId());
-      preparedStatement.setLong(2, employment.getCenterId());
-      preparedStatement.setLong(3, employment.getPosition().ordinal());
-      preparedStatement.setFloat(4, employment.getCompensation());
-      preparedStatement.setDate(5, new java.sql.Date(employment.getStartDate().getTime()));
-      preparedStatement.executeUpdate();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      closeSqlConnection();
-    }
+    EmployeeRepository employeeRepository = new EmployeeRepository();
+    employeeRepository.addEmployee(employee);
+    employee.setId(employeeRepository.getEmployeeIdByEmail(employee.getEmail()));
+    employment.setEmployeeId(employee.getId());
+    EmploymentRepository employmentRepository = new EmploymentRepository();
+    employmentRepository.addEmployment(employment);
   }
 
 }
