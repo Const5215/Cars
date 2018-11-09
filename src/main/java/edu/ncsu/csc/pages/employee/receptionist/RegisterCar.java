@@ -17,6 +17,7 @@ public class RegisterCar extends AbstractPage {
   public void run() {
     System.out.println("#registerCar");
 
+    User customer = new User();
     displayChoices();
     switch (getChoiceFromInput()) {
       case 1:

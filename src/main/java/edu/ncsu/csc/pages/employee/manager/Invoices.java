@@ -1,23 +1,17 @@
 package edu.ncsu.csc.pages.employee.manager;
 
-import edu.ncsu.csc.entity.ServiceHistory;
-import edu.ncsu.csc.entity.*;
+import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
-import edu.ncsu.csc.pages.Page;
 
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-public class Invoices extends AbstractPage {
+class Invoices extends AbstractPage {
   private User manager;
 
   Invoices(User manager) {
     this.manager = manager;
     choices.add("Go Back");
   }
-
+  /*
+    --This page is under rework--
   @Override
   public void run() {
     System.out.println("#invoices");
@@ -85,4 +79,5 @@ public class Invoices extends AbstractPage {
     Page managerLanding = new ManagerLanding(manager);
     managerLanding.run();
   }
+  */
 }

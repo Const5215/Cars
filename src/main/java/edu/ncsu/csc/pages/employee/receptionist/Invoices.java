@@ -1,21 +1,17 @@
 package edu.ncsu.csc.pages.employee.receptionist;
 
-import edu.ncsu.csc.entity.MatchType;
-import edu.ncsu.csc.entity.ServiceHistory;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
-import edu.ncsu.csc.pages.Page;
 
-import java.util.List;
-
-public class Invoices extends AbstractPage {
+class Invoices extends AbstractPage {
   private User receptionist;
 
   Invoices(User receptionist) {
     this.receptionist = receptionist;
     choices.add("Go Back");
   }
-
+  /*
+    --This page is under rework--
   @Override
   public void run() {
     System.out.println("#invoices");
@@ -41,4 +37,5 @@ public class Invoices extends AbstractPage {
     Page receptionistLanding = new ReceptionistLanding(receptionist);
     receptionistLanding.run();
   }
+  */
 }

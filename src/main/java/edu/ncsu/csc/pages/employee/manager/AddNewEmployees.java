@@ -6,6 +6,7 @@ import edu.ncsu.csc.entity.Role;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
+import edu.ncsu.csc.repository.EmploymentRepository;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -13,9 +14,11 @@ import java.text.ParseException;
 
 public class AddNewEmployees extends AbstractPage {
   private User manager;
+  private EmploymentRepository employmentRepository;
 
   AddNewEmployees(User manager) {
     this.manager = manager;
+    employmentRepository = new EmploymentRepository();
     choices.add("Add");
     choices.add("Go Back");
   }
@@ -44,8 +47,9 @@ public class AddNewEmployees extends AbstractPage {
     } catch (ParseException e) {
       e.printStackTrace();
     }
-    employment.setCenterId(getCenterIdByEmployeeId(manager.getId()));
-    employment.setPosition(employee.getRole().ordinal());
+    employment.setCenterId(
+        employmentRepository.getCenterIdByEmployeeId(manager.getId()));
+    employment.setPosition(employee.getRole());
     System.out.print("Enter compensation:");
     employment.setCompensation(Float.parseFloat(scanner.nextLine()));
     return employment;
@@ -75,7 +79,9 @@ public class AddNewEmployees extends AbstractPage {
           System.out.println("Invalid input");
           break;
       }
-      if (oneReceptionistCheck()) {
+      if (employmentRepository.oneReceptionistCheck(
+          employmentRepository.getCenterIdByEmployeeId(manager.getId())
+      )) {
         System.out.println("This service center already have a receptionist.");
       }
     } while (true);
@@ -87,22 +93,6 @@ public class AddNewEmployees extends AbstractPage {
   private void goBack() {
     Page managerLanding = new ManagerLanding(manager);
     managerLanding.run();
-  }
-
-  private boolean oneReceptionistCheck() {
-    long centerId = getCenterIdByEmployeeId(manager.getId());
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement(
-          "SELECT * FROM EMPLOYMENT WHERE CENTER_ID=? AND POSITION=?");
-      preparedStatement.setLong(1, centerId);
-      preparedStatement.setLong(2, Role.Receptionist.ordinal());
-      resultSet = preparedStatement.executeQuery();
-      return resultSet.next();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    return false;
   }
 
   private void addNewEmployee(User employee, Employment employment) {
@@ -124,7 +114,7 @@ public class AddNewEmployees extends AbstractPage {
       preparedStatement = connection.prepareStatement("INSERT INTO EMPLOYMENT values (?, ?, ?, ?, ?)");
       preparedStatement.setLong(1, employment.getEmployeeId());
       preparedStatement.setLong(2, employment.getCenterId());
-      preparedStatement.setLong(3, employment.getPosition());
+      preparedStatement.setLong(3, employment.getPosition().ordinal());
       preparedStatement.setFloat(4, employment.getCompensation());
       preparedStatement.setDate(5, new java.sql.Date(employment.getStartDate().getTime()));
       preparedStatement.executeUpdate();

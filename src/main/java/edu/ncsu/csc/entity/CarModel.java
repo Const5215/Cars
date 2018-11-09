@@ -4,16 +4,14 @@ public class CarModel {
   private Long id;
   private String make;
   private String model;
-  private long year;
 
   public CarModel() {
   }
 
-  public CarModel(Long id, String make, String model, long year) {
+  public CarModel(Long id, String make, String model) {
     this.id = id;
     this.make = make;
     this.model = model;
-    this.year = year;
   }
 
   public Long getId() {
@@ -38,13 +36,5 @@ public class CarModel {
 
   public void setModel(String model) {
     this.model = model;
-  }
-
-  public long getYear() {
-    return year;
-  }
-
-  public void setYear(long year) {
-    this.year = year;
   }
 }
