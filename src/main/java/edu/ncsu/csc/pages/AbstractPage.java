@@ -110,7 +110,7 @@ public class AbstractPage implements Page {
           matched = matcher.matches();
           break;
         case Date:
-          targetRegex = "^[0-3][0-9]/[0-3][0-9]/(?:[0-9][0-9])?[0-9][0-9]$";
+          targetRegex = "^[0-9][0-9][0-9][0-9]-[0-3][0-9]-[0-3][0-9]$";
           pattern = Pattern.compile(targetRegex);
           matcher = pattern.matcher(result);
           matched = matcher.matches();
