@@ -1,18 +1,19 @@
 package edu.ncsu.csc.pages.customer;
 
 import edu.ncsu.csc.entity.ServiceHistory;
-import edu.ncsu.csc.entity.ServiceHistoryDetail;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
+import edu.ncsu.csc.repository.ServiceHistoryRepository;
 
 import java.util.List;
 
 public class Invoice extends AbstractPage {
   private User customer;
-
+  private ServiceHistoryRepository serviceHistoryRepository;
   Invoice(User customer) {
     this.customer = customer;
+    serviceHistoryRepository = new ServiceHistoryRepository();
     choices.add("View Invoice Details");
     choices.add("Go Back");
   }
@@ -21,7 +22,8 @@ public class Invoice extends AbstractPage {
   public void run() {
     System.out.println("#Invoice");
 
-    List<ServiceHistory> serviceHistoryList = getServiceHistoryListByCustomerId(customer.getId());
+    List<ServiceHistory> serviceHistoryList =
+        serviceHistoryRepository.getServiceHistoryListByCustomerId(customer.getId());
     printServiceHistoryList(serviceHistoryList);
     displayChoices();
     switch (getChoiceFromInput()) {
@@ -34,11 +36,11 @@ public class Invoice extends AbstractPage {
   }
 
   private void printServiceHistoryList(List<ServiceHistory> serviceHistoryList) {
-    System.out.printf("You have %d completed service(s) in total.\n\n", serviceHistoryList.size());
+    /*System.out.printf("You have %d completed service(s) in total.\n\n", serviceHistoryList.size());
     for (int i = 0; i < serviceHistoryList.size(); i++) {
       ServiceHistory serviceHistory = serviceHistoryList.get(i);
       List<ServiceHistoryDetail> serviceHistoryDetailList =
-          getServiceHistoryDetailListByServiceHistoryId(serviceHistory.getId());
+          serviceHistoryRepository.getServiceHistoryDetailListByServiceHistoryId(serviceHistory.getId());
       float totalServiceCost = 0;
       for (ServiceHistoryDetail serviceHistoryDetail : serviceHistoryDetailList) {
         long quantity = serviceHistoryDetail.getQuantity();
@@ -55,7 +57,7 @@ public class Invoice extends AbstractPage {
       System.out.println("Service Type: " + serviceHistory.getServiceType().toString());
       System.out.println("Mechanic Name:" + getEmployeeNameByEmployeeId(serviceHistory.getMechanicId()));
       System.out.println("Total Service Cost: " + totalServiceCost);
-    }
+    }*/
   }
 
   private void goBack() {

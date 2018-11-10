@@ -4,17 +4,16 @@ import edu.ncsu.csc.entity.Car;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
+import edu.ncsu.csc.repository.CarRepository;
 
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ViewProfile extends AbstractPage {
   private User customer;
-
+  private CarRepository carRepository;
   ViewProfile(User customer) {
     this.customer = customer;
+    carRepository = new CarRepository();
     choices.add("Go Back");
   }
 
@@ -23,10 +22,9 @@ public class ViewProfile extends AbstractPage {
     System.out.println("#ViewProfile");
     printProfile();
 
-    List<Car> customerCarList = getCustomerCarList();
-
+    List<Car> customerCarList = carRepository.getCarListByCustomerId(customer.getId());
     System.out.printf("You have %d car(s) in total.\n", customerCarList.size());
-    printCarList(customerCarList);
+    carRepository.printCarList(customerCarList);
 
     displayChoices();
     getChoiceFromInput();
@@ -34,20 +32,8 @@ public class ViewProfile extends AbstractPage {
   }
 
   private List<Car> getCustomerCarList() {
-    List<Car> customerCarList = new ArrayList<>();
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement("SELECT * FROM CAR WHERE CUSTOMER_ID=?");
-      preparedStatement.setLong(1, customer.getId());
-      resultSet = preparedStatement.executeQuery();
-      while (resultSet.next()) {
-        Car car = getCar();
-        customerCarList.add(car);
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    return customerCarList;
+    CarRepository carRepository = new CarRepository();
+    return carRepository.getCarListByCustomerId(customer.getId());
   }
 
   private void printProfile() {
@@ -61,22 +47,6 @@ public class ViewProfile extends AbstractPage {
   private void goBack() {
     Page profile = new Profile(customer);
     profile.run();
-  }
-
-  private Car getCar() {
-    Car car = null;
-    try {
-      car = new Car(resultSet.getString("PLATE"),
-          resultSet.getLong("CUSTOMER_ID"),
-          resultSet.getLong("CAR_MODEL_ID"),
-          resultSet.getDate("PURCHASE_DATE"),
-          resultSet.getLong("LAST_MILEAGE"),
-          resultSet.getLong("LAST_SERVICE_TYPE"),
-          resultSet.getDate("LAST_SERVICE_DATE"));
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    return car;
   }
 
 }

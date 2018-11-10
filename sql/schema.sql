@@ -334,3 +334,8 @@ create sequence SERVICE_HISTORY_ID
   start with 17
   nocache
 /
+
+create sequence CAR_MODEL_ID_SEQ
+  start with 7
+  nocache
+/

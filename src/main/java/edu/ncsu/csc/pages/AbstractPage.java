@@ -1,8 +1,12 @@
 package edu.ncsu.csc.pages;
 
-import edu.ncsu.csc.entity.*;
+import edu.ncsu.csc.entity.MatchType;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -19,7 +23,7 @@ public class AbstractPage implements Page {
   protected ResultSet resultSet;
   protected Scanner scanner;
   protected List<String> choices;
-
+  protected SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
   protected AbstractPage() {
     scanner = new Scanner(System.in);
     choices = new ArrayList<>();
@@ -106,7 +110,7 @@ public class AbstractPage implements Page {
           matched = matcher.matches();
           break;
         case Date:
-          targetRegex = "^[0-3][0-9]/[0-3][0-9]/(?:[0-9][0-9])?[0-9][0-9]$";
+          targetRegex = "^[0-9][0-9][0-9][0-9]-[0-3][0-9]-[0-3][0-9]$";
           pattern = Pattern.compile(targetRegex);
           matcher = pattern.matcher(result);
           matched = matcher.matches();
@@ -137,100 +141,6 @@ public class AbstractPage implements Page {
       }
     } while (true);
     return result;
-  }
-
-  protected boolean checkUsedEmail(String email) {
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement("select * from CUSTOMER where EMAIL=?");
-      preparedStatement.setString(1, email);
-      resultSet = preparedStatement.executeQuery();
-      if (resultSet.next()) {
-        System.out.println("This email address is already used.");
-        return true;
-      } else {
-        return false;
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      closeSqlConnection();
-    }
-    return true;
-  }
-
-  protected Car getCar() {
-    Car car = null;
-    try {
-      car = new Car(resultSet.getString("PLATE"),
-          resultSet.getLong("CUSTOMER_ID"),
-          resultSet.getLong("CAR_MODEL_ID"),
-          resultSet.getDate("PURCHASE_DATE"),
-          resultSet.getLong("LAST_MILEAGE"),
-          resultSet.getLong("LAST_SERVICE_TYPE"),
-          resultSet.getDate("LAST_SERVICE_DATE"));
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    return car;
-  }
-
-  protected User getUser() {
-    User user = null;
-    try {
-      user = new User(resultSet.getLong("ID"),
-          resultSet.getString("PASSWORD"),
-          resultSet.getString("NAME"),
-          resultSet.getString("EMAIL"),
-          resultSet.getString("PHONE"),
-          resultSet.getString("ADDRESS"),
-          Role.Customer);
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    return user;
-  }
-
-  protected long getCenterId(long employeeId) {
-    long centerId = -1;
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement("SELECT CENTER_ID FROM EMPLOYMENT WHERE EMPLOYEE_ID=?");
-      preparedStatement.setLong(1, employeeId);
-      resultSet = preparedStatement.executeQuery();
-      if (resultSet.next()) {
-        centerId = resultSet.getLong("CENTER_ID");
-      } else {
-        System.out.println("Center Id not found");
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    return centerId;
-  }
-
-  protected Part getPart() {
-    Part part = null;
-    try {
-      part = new Part(resultSet.getLong("ID"),
-          resultSet.getString("NAME"),
-          resultSet.getLong("UNIT_PRICE"),
-          resultSet.getLong("DISTRIBUTOR_ID"));
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    return part;
-  }
-
-  protected void displayCarList(List<Car> carList) {
-    for (int i = 0; i < carList.size(); i++) {
-      System.out.printf("Car #%d details:\n", i);
-      System.out.println("Plate: " + carList.get(i).getPlate());
-      System.out.println("Purchase date:" + carList.get(i).getPurchaseDate());
-      System.out.println("Last Mileage:" + carList.get(i).getLastMileage());
-      System.out.println("Last service type:" + carList.get(i).getLastServiceType());
-      System.out.println("Last service date:" + carList.get(i).getLastServiceDate());
-    }
   }
 
 }

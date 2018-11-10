@@ -1,17 +1,9 @@
 package edu.ncsu.csc.pages.customer;
 
-import edu.ncsu.csc.entity.Car;
-import edu.ncsu.csc.entity.MatchType;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
-import edu.ncsu.csc.pages.Page;
 
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.text.ParseException;
-
-public class RegisterCar extends AbstractPage {
+class RegisterCar extends AbstractPage {
     private User user;
 
     RegisterCar(User user) {
@@ -19,7 +11,8 @@ public class RegisterCar extends AbstractPage {
       choices.add("Register");
       choices.add("Cancel");
     }
-
+    /*
+      -- This page is under rework --
     @Override
     public void run() {
       System.out.println("#Register Car");
@@ -46,6 +39,7 @@ public class RegisterCar extends AbstractPage {
           System.out.print("Enter Model:");
           carModel = scanner.nextLine();
           carYear = Long.parseLong(getInfo("Enter Year:", MatchType.Number));
+          checkCarModel();
           connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
           preparedStatement = connection
               .prepareStatement("select ID from CAR_MODEL where MAKE=? AND MODEL=? AND YEAR=?");
@@ -84,11 +78,15 @@ public class RegisterCar extends AbstractPage {
       displayChoices();
       switch (getChoiceFromInput()) {
         case 1:
-          register(car, strLastServiceDate);
+          register(car);
         case 2:
           cancel();
       }
     }
+
+  private void checkCarModel() {
+
+  }
 
   private void cancel() {
     Page customerLanding = new CustomerLanding(user);
@@ -96,30 +94,8 @@ public class RegisterCar extends AbstractPage {
   }
 
 
-  private void register(Car car, String strLastServiceDate) {
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection
-          .prepareStatement("insert into CAR values (?, ?, ?, ?, ?, ?, ?)");
-      preparedStatement.setString(1, car.getPlate());
-      preparedStatement.setLong(2, car.getCustomerId());
-      preparedStatement.setLong(3, car.getCarModelId());
-      preparedStatement.setDate(4, new java.sql.Date(car.getPurchaseDate().getTime()));
-      preparedStatement.setLong(5, car.getLastMileage());
-      preparedStatement.setLong(6, car.getLastServiceType());
-      if (strLastServiceDate.equals("")) {
-        preparedStatement.setNull(7, Types.DATE);
-      } else {
-        preparedStatement.setDate(7, new java.sql.Date(car.getLastServiceDate().getTime()));
-      }
-      preparedStatement.executeUpdate();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      System.out.println("Register Success.");
-      closeSqlConnection();
-      Page customerLanding = new CustomerLanding(user);
-      customerLanding.run();
-    }
+  private void register(Car car) {
+
   }
+  */
 }

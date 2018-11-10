@@ -1,28 +1,30 @@
 package edu.ncsu.csc.pages.employee.manager;
 
-import edu.ncsu.csc.entity.*;
+import edu.ncsu.csc.entity.Maintenance;
+import edu.ncsu.csc.entity.Part;
+import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
-import edu.ncsu.csc.pages.Page;
+import edu.ncsu.csc.repository.PartRepository;
 
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NewCarModel extends AbstractPage {
+class NewCarModel extends AbstractPage {
 
   private List<Part> availablePartList;
-  private List<BasicServicePart> servicePartList = new ArrayList<>();
   private List<Maintenance> serviceList = new ArrayList<>();
   private User manager;
 
   NewCarModel(User manager) {
     this.manager = manager;
-    this.availablePartList = getAvailablePartList();
+    PartRepository partRepository = new PartRepository();
+    this.availablePartList = partRepository.getAvailablePartList();
     choices.add("Add Car");
     choices.add("Go Back");
   }
 
+  /*
+    --this page is under rework--
   @Override
   public void run() {
     System.out.println("#newCarModel");
@@ -48,24 +50,13 @@ public class NewCarModel extends AbstractPage {
       carModel.setMake(scanner.nextLine());
       System.out.print("Enter model:");
       carModel.setModel(scanner.nextLine());
-      carModel.setYear(Long.parseLong(getInfo("Enter year:", MatchType.Number)));
-      try {
-        connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        preparedStatement = connection
-            .prepareStatement("select ID from CAR_MODEL where MAKE=? AND MODEL=? AND YEAR=?");
-        preparedStatement.setString(1, carModel.getMake());
-        preparedStatement.setString(2, carModel.getModel());
-        preparedStatement.setLong(3, carModel.getYear());
-        resultSet = preparedStatement.executeQuery();
-        if (resultSet.next()) {
-          System.out.println("This car model already exists.");
-        } else {
-          break;
-        }
-      } catch (SQLException e) {
-        e.printStackTrace();
-      } finally {
-        closeSqlConnection();
+      getInfo("Enter year:", MatchType.Number);
+      CarModelRepository carModelRepository = new CarModelRepository();
+      if (carModelRepository.getCarModelIdByMakeAndModel(carModel.getMake(), carModel.getModel()) == -1) {
+        break;
+      }
+      else {
+        System.out.println("This car model already exists");
       }
     } while (true);
     return carModel;
@@ -77,11 +68,11 @@ public class NewCarModel extends AbstractPage {
   }
 
   private void getServiceInfo(ServiceType serviceType) {
-    System.out.printf("Entering info for Service %s:\n", serviceType.toString());
+    System.out.printf("Entering info for %s:\n", serviceType.toString());
     Maintenance maintenance = new Maintenance();
     maintenance.setServiceType(serviceType);
     maintenance.setMile(Long.parseLong(getInfo("Enter mile for service:", MatchType.Number)));
-    maintenance.setMonth(Long.parseLong(getInfo("Enter month for service:", MatchType.Number)));
+    getInfo("Enter month for service:", MatchType.Number);
     getPartList(serviceType);
     serviceList.add(maintenance);
   }
@@ -93,41 +84,13 @@ public class NewCarModel extends AbstractPage {
     for (Part part : availablePartList) {
       System.out.printf("Part id:%d, Name:%s\n", part.getId(), part.getName());
     }
-    int partNumA = Integer.parseInt(getInfo("Enter total kinds of parts for service A:", MatchType.Number));
-    for (int i = 0; i < partNumA; i++) {
+    int partNum = Integer.parseInt(getInfo("Enter total kinds of parts for service:", MatchType.Number));
+    for (int i = 0; i < partNum; i++) {
       System.out.printf("Entering info for part #%d\n:", i);
       basicServicePart.setPartId(Long.parseLong(getInfo("Enter part id:", MatchType.Number)));
       basicServicePart.setQuantity(Long.parseLong(getInfo("Enter part quantity:", MatchType.Number)));
     }
     servicePartList.add(basicServicePart);
-  }
-
-  private List<Part> getAvailablePartList() {
-    List<Part> partList = new ArrayList<>();
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement("SELECT * FROM PART");
-      resultSet = preparedStatement.executeQuery();
-      while (resultSet.next()) {
-        partList.add(getPart());
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    return partList;
-  }
-
-  private Part getPart() {
-    Part part = null;
-    try {
-      part = new Part(resultSet.getLong("ID"),
-          resultSet.getString("NAME"),
-          resultSet.getLong("UNIT_PRICE"),
-          resultSet.getLong("DISTRIBUTOR_ID"));
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    return part;
   }
 
   private void addCar(CarModel carModel) {
@@ -172,4 +135,5 @@ public class NewCarModel extends AbstractPage {
     }
 
   }
+  */
 }
