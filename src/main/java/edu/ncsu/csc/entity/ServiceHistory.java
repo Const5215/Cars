@@ -4,8 +4,12 @@ import java.util.Date;
 
 public class ServiceHistory {
   private long id;
+  private long customerId;
+  private long centerId;
+  private long mileage;
   private String carPlate;
   private ServiceType serviceType;
+  private long diagnosisId;
   private Date startTime, endTime;
   private long totalLaborHour;
   private ServiceStatus serviceStatus;
@@ -14,15 +18,27 @@ public class ServiceHistory {
   public ServiceHistory() {
   }
 
-  public ServiceHistory(long id, String carPlate, ServiceType serviceType, Date startTime, Date endTime, long totalLaborHour, ServiceStatus serviceStatus, long mechanicId) {
+  public ServiceHistory(long id, long customerId, long centerId, long mileage, String carPlate, ServiceType serviceType, long diagnosisId, Date startTime, Date endTime, long totalLaborHour, ServiceStatus serviceStatus, long mechanicId) {
     this.id = id;
+    this.customerId = customerId;
+    this.centerId = centerId;
+    this.mileage = mileage;
     this.carPlate = carPlate;
     this.serviceType = serviceType;
+    this.diagnosisId = diagnosisId;
     this.startTime = startTime;
     this.endTime = endTime;
     this.totalLaborHour = totalLaborHour;
     this.serviceStatus = serviceStatus;
     this.mechanicId = mechanicId;
+  }
+
+  public long getMileage() {
+    return mileage;
+  }
+
+  public void setMileage(long mileage) {
+    this.mileage = mileage;
   }
 
   public long getId() {
@@ -31,6 +47,22 @@ public class ServiceHistory {
 
   public void setId(long id) {
     this.id = id;
+  }
+
+  public long getCustomerId() {
+    return customerId;
+  }
+
+  public void setCustomerId(long customerId) {
+    this.customerId = customerId;
+  }
+
+  public long getCenterId() {
+    return centerId;
+  }
+
+  public void setCenterId(long centerId) {
+    this.centerId = centerId;
   }
 
   public String getCarPlate() {
@@ -47,6 +79,14 @@ public class ServiceHistory {
 
   public void setServiceType(ServiceType serviceType) {
     this.serviceType = serviceType;
+  }
+
+  public long getDiagnosisId() {
+    return diagnosisId;
+  }
+
+  public void setDiagnosisId(long diagnosisId) {
+    this.diagnosisId = diagnosisId;
   }
 
   public Date getStartTime() {

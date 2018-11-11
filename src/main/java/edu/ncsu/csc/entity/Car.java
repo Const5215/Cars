@@ -7,24 +7,24 @@ public class Car {
     private Long customerId;
     private Long carModelId;
     private Date purchaseDate;
-    private Long lastMileage;
-    private Long lastServiceType;
-    private Date lastServiceDate;
+  private Long year;
 
     public Car() {
     }
 
-    public Car(String plate, Long customerId, Long carModelId, Date purchaseDate, Long lastMileage, Long lastServiceType, Date lastServiceDate) {
+  public Car(String plate, Long customerId, Long carModelId, Date purchaseDate, Long year) {
         this.plate = plate;
         this.customerId = customerId;
         this.carModelId = carModelId;
         this.purchaseDate = purchaseDate;
-        this.lastMileage = lastMileage;
-        this.lastServiceType = lastServiceType;
-        this.lastServiceDate = lastServiceDate;
+    this.year = year;
+  }
+
+  public String getPlate() {
+    return plate;
     }
 
-    public Car(String plate) {
+  public void setPlate(String plate) {
         this.plate = plate;
     }
 
@@ -52,36 +52,11 @@ public class Car {
         this.purchaseDate = purchaseDate;
     }
 
-    public Long getLastMileage() {
-        return lastMileage;
+  public Long getYear() {
+    return year;
     }
 
-    public void setLastMileage(Long lastMileage) {
-        this.lastMileage = lastMileage;
+  public void setYear(Long year) {
+    this.year = year;
     }
-
-    public Long getLastServiceType() {
-        return lastServiceType;
-    }
-
-    public void setLastServiceType(Long lastServiceType) {
-        this.lastServiceType = lastServiceType;
-    }
-
-    public Date getLastServiceDate() {
-        return lastServiceDate;
-    }
-
-    public void setLastServiceDate(Date lastServiceDate) {
-        this.lastServiceDate = lastServiceDate;
-    }
-
-    public String getPlate() {
-        return plate;
-    }
-
-    public void setPlate(String plate) {
-        this.plate = plate;
-    }
-
 }
