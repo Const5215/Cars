@@ -1,6 +1,7 @@
 package edu.ncsu.csc.pages.customer;
 
 import edu.ncsu.csc.entity.ServiceHistory;
+import edu.ncsu.csc.entity.ServiceStatus;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
@@ -24,6 +25,11 @@ public class Invoice extends AbstractPage {
     ServiceHistoryRepository serviceHistoryRepository = new ServiceHistoryRepository();
     List<ServiceHistory> serviceHistoryList =
         serviceHistoryRepository.getServiceHistoryListByCustomerId(customer.getId());
+    //filter by status:complete
+    for (ServiceHistory serviceHistory : serviceHistoryList) {
+      if (serviceHistory.getServiceStatus() != ServiceStatus.Complete)
+        serviceHistoryList.remove(serviceHistory);
+    }
     printServiceHistoryList(serviceHistoryList);
     displayChoices();
     switch (getChoiceFromInput()) {

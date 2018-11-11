@@ -1,6 +1,7 @@
 package edu.ncsu.csc.pages.employee.manager;
 
 import edu.ncsu.csc.entity.ServiceHistory;
+import edu.ncsu.csc.entity.ServiceStatus;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
@@ -22,6 +23,11 @@ class Invoices extends AbstractPage {
   public void run() {
     System.out.println("#invoices");
     List<edu.ncsu.csc.entity.ServiceHistory> serviceHistoryList = getServiceHistoryList();
+    //filter by status:complete
+    for (ServiceHistory serviceHistory : serviceHistoryList) {
+      if (serviceHistory.getServiceStatus() != ServiceStatus.Complete)
+        serviceHistoryList.remove(serviceHistory);
+    }
     printServiceHistoryList(serviceHistoryList);
     displayChoices();
     getChoiceFromInput();

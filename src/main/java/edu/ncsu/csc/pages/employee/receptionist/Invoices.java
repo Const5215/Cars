@@ -2,6 +2,7 @@ package edu.ncsu.csc.pages.employee.receptionist;
 
 import edu.ncsu.csc.entity.MatchType;
 import edu.ncsu.csc.entity.ServiceHistory;
+import edu.ncsu.csc.entity.ServiceStatus;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
@@ -29,7 +30,11 @@ class Invoices extends AbstractPage {
     User customer = customerRepository.getCustomerByEmail(email);
     List<edu.ncsu.csc.entity.ServiceHistory> serviceHistoryList =
         serviceHistoryRepository.getServiceHistoryListByCustomerId(customer.getId());
-
+    //filter by status:complete
+    for (ServiceHistory serviceHistory : serviceHistoryList) {
+      if (serviceHistory.getServiceStatus() != ServiceStatus.Complete)
+        serviceHistoryList.remove(serviceHistory);
+    }
     printServiceHistoryList(serviceHistoryList);
 
     displayChoices();
