@@ -1,13 +1,12 @@
 package edu.ncsu.csc.repository;
 
-import edu.ncsu.csc.entity.ServiceHistory;
-import edu.ncsu.csc.entity.ServiceStatus;
-import edu.ncsu.csc.entity.ServiceType;
+import edu.ncsu.csc.entity.*;
 import edu.ncsu.csc.pages.AbstractPage;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -131,5 +130,93 @@ public class ServiceHistoryRepository extends AbstractPage {
       serviceStatus = ServiceStatus.Ongoing;
     }
     return serviceStatus;
+  }
+
+  private Date getLatestServiceHistoryByCustomerIdAndDate(long customerId, Date startTime) {
+    Date latestServiceDate = null;
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection.prepareStatement(
+          "SELECT START_TIME FROM MAINTENANCE_HISTORY WHERE CUSTOMER_ID=? AND START_TIME<?");
+      preparedStatement.setLong(1, customerId);
+      preparedStatement.setDate(2, new java.sql.Date(startTime.getTime()));
+      resultSet = preparedStatement.executeQuery();
+      while (resultSet.next()) {
+        Date thsDate = resultSet.getDate("START_TIME");
+        if (latestServiceDate == null ||
+            latestServiceDate.getTime() < thsDate.getTime()) {
+          latestServiceDate = thsDate;
+        }
+      }
+      preparedStatement = connection.prepareStatement(
+          "SELECT START_TIME FROM REPAIR_HISTORY WHERE CUSTOMER_ID=? AND START_TIME<?");
+      preparedStatement.setLong(1, customerId);
+      preparedStatement.setDate(2, new java.sql.Date(startTime.getTime()));
+      resultSet = preparedStatement.executeQuery();
+      while (resultSet.next()) {
+        Date thsDate = resultSet.getDate("START_TIME");
+        if (latestServiceDate == null ||
+            latestServiceDate.getTime() < thsDate.getTime()) {
+          latestServiceDate = thsDate;
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
+    return latestServiceDate;
+  }
+
+  public float getTotalServiceCost(ServiceHistory serviceHistory) {
+    float totalServiceCost = 0;
+    BasicServiceRepository basicServiceRepository = new BasicServiceRepository();
+    List<Long> basicServiceIdList = basicServiceRepository.getBasicServiceIdListByServiceHistory(serviceHistory);
+    for (Long basicServiceId : basicServiceIdList) {
+      totalServiceCost += getPartCost(serviceHistory, basicServiceId);
+    }
+    return totalServiceCost;
+  }
+
+  public float getPartCost(ServiceHistory serviceHistory, Long basicServiceId) {
+    BasicServiceRepository basicServiceRepository = new BasicServiceRepository();
+    BasicServicePartRepository basicServicePartRepository = new BasicServicePartRepository();
+    CarRepository carRepository = new CarRepository();
+
+    BasicService basicService = basicServiceRepository.getBasicServiceByBasicServiceId(basicServiceId);
+    Car car = carRepository.getCarByCarPlate(serviceHistory.getCarPlate());
+    BasicServicePart basicServicePart =
+        basicServicePartRepository.getBasicServicePartByBasicServiceIdAndCarModelId(
+            basicServiceId, car.getCarModelId()
+        );
+    PartRepository partRepository = new PartRepository();
+    Part part = partRepository.getPartByPartId(basicServicePart.getPartId());
+    Date latestServiceDate = getLatestServiceHistoryByCustomerIdAndDate(
+        serviceHistory.getCustomerId(), serviceHistory.getStartTime());
+    if (latestServiceDate != null) {
+      if (part.getWarranty() == 0 ||
+          !checkWarrantyValid(part.getWarranty(), serviceHistory.getStartTime(),
+              latestServiceDate)) {
+        //invoice cost of parts and appropriate labor charge
+        return part.getUnitPrice() * basicServicePart.getQuantity() +
+            (basicService.getChargeRate() == 0 ? 50 : 65) * basicService.getLaborHour();
+      }
+      //else free service
+      else {
+        return 0;
+      }
+    } else {
+      //invoice only the cost of parts
+      return part.getUnitPrice() * basicServicePart.getQuantity();
+    }
+  }
+
+  private boolean checkWarrantyValid(long warranty, Date nowServiceDate, Date LastServiceDate) {
+    Calendar nowServiceCal = Calendar.getInstance();
+    nowServiceCal.setTime(nowServiceDate);
+    Calendar lastServiceCal = Calendar.getInstance();
+    lastServiceCal.setTime(LastServiceDate);
+    lastServiceCal.add(Calendar.MONTH, (int) warranty);
+    return lastServiceCal.getTime().getTime() > nowServiceCal.getTime().getTime();
   }
 }

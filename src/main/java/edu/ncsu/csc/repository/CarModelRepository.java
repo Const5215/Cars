@@ -7,7 +7,22 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class CarModelRepository extends AbstractPage {
-  public CarModel getCarModelByCarModelId(long carModelId) {
+  public void addCarModel(CarModel carModel) {
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection.prepareStatement(
+          "INSERT INTO CAR_MODEL VALUES (CAR_MODEL_ID_SEQ.nextval, ?, ?)");
+      preparedStatement.setString(1, carModel.getMake());
+      preparedStatement.setString(2, carModel.getModel());
+      preparedStatement.executeUpdate();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
+  }
+
+  CarModel getCarModelByCarModelId(long carModelId) {
     CarModel carModel = null;
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
