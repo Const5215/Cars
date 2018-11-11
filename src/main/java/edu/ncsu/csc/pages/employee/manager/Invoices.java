@@ -10,9 +10,8 @@ class Invoices extends AbstractPage {
     this.manager = manager;
     choices.add("Go Back");
   }
-  /*
-    --This page is under rework--
-  @Override
+
+  /*@Override
   public void run() {
     System.out.println("#invoices");
     List<ServiceHistory> serviceHistoryList = getServiceHistoryList(getCenterIdByEmployeeId(manager.getId()));

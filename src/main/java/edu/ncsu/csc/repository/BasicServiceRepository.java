@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class BasicServiceRepository extends AbstractPage {
-  BasicService getBasicServiceByBasicServiceId(long basicServiceId) {
+  public BasicService getBasicServiceByBasicServiceId(long basicServiceId) {
     BasicService basicService = null;
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);

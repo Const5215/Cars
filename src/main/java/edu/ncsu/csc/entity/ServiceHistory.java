@@ -11,14 +11,14 @@ public class ServiceHistory {
   private ServiceType serviceType;
   private long diagnosisId;
   private Date startTime, endTime;
-  private long totalLaborHour;
+  private float totalLaborHour;
   private ServiceStatus serviceStatus;
   private long mechanicId;
 
   public ServiceHistory() {
   }
 
-  public ServiceHistory(long id, long customerId, long centerId, long mileage, String carPlate, ServiceType serviceType, long diagnosisId, Date startTime, Date endTime, long totalLaborHour, ServiceStatus serviceStatus, long mechanicId) {
+  public ServiceHistory(long id, long customerId, long centerId, long mileage, String carPlate, ServiceType serviceType, long diagnosisId, Date startTime, Date endTime, float totalLaborHour, ServiceStatus serviceStatus, long mechanicId) {
     this.id = id;
     this.customerId = customerId;
     this.centerId = centerId;
@@ -105,11 +105,11 @@ public class ServiceHistory {
     this.endTime = endTime;
   }
 
-  public long getTotalLaborHour() {
+  public float getTotalLaborHour() {
     return totalLaborHour;
   }
 
-  public void setTotalLaborHour(long totalLaborHour) {
+  public void setTotalLaborHour(float totalLaborHour) {
     this.totalLaborHour = totalLaborHour;
   }
 

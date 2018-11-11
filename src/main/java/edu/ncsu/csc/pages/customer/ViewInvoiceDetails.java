@@ -48,23 +48,29 @@ public class ViewInvoiceDetails extends AbstractPage {
     System.out.println("Service End Time: " + serviceHistory.getEndTime());
     System.out.println("Licence Plate: " + serviceHistory.getCarPlate());
     System.out.println("Service Type: " + serviceHistory.getServiceType().toString());
-    printPartDetails(serviceHistory, basicServiceIdList, car.getCarModelId());
     System.out.println("Mechanic Name:" + mechanicName);
+    printPartDetails(serviceHistory, basicServiceIdList, car.getCarModelId());
     System.out.println("Total Service Cost: " + totalServiceCost);
   }
 
   private void printPartDetails(ServiceHistory serviceHistory, List<Long> basicServiceIdList, long carModelId) {
     BasicServicePartRepository basicServicePartRepository = new BasicServicePartRepository();
+    BasicServiceRepository basicServiceRepository = new BasicServiceRepository();
     PartRepository partRepository = new PartRepository();
     ServiceHistoryRepository serviceHistoryRepository = new ServiceHistoryRepository();
-
     for (long basicServiceId : basicServiceIdList) {
       BasicServicePart basicServicePart = basicServicePartRepository.getBasicServicePartByBasicServiceIdAndCarModelId(
           basicServiceId, carModelId
       );
+      BasicService basicService = basicServiceRepository.getBasicServiceByBasicServiceId(basicServiceId);
       Part part = partRepository.getPartByPartId(basicServicePart.getPartId());
-      double charge = serviceHistoryRepository.getPartCost(serviceHistory, basicServiceId);
-      System.out.printf("Part: %s Quantity: %d Charge: %f\n", part.getName(), basicServicePart.getQuantity(), charge);
+      System.out.printf("Part: %s Quantity: %d Part charge: %f/Labor hour:%f Labor charge:%f\n",
+          part.getName(),
+          basicServicePart.getQuantity(),
+          serviceHistoryRepository.getPartCost(serviceHistory, basicServiceId),
+          basicService.getLaborHour(),
+          serviceHistoryRepository.getLaborCost(serviceHistory, basicServiceId)
+      );
     }
   }
 
