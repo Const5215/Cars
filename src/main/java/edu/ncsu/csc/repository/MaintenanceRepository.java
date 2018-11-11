@@ -13,7 +13,7 @@ public class MaintenanceRepository extends AbstractPage {
       preparedStatement = connection.prepareStatement(
           "INSERT INTO MAINTENANCE VALUES (?, ? ,?)");
       preparedStatement.setLong(1, maintenance.getCarModelId());
-      preparedStatement.setString(2, maintenance.getServiceType().toString());
+      preparedStatement.setLong(2, maintenance.getServiceType().ordinal());
       preparedStatement.setLong(3, maintenance.getMile());
       preparedStatement.executeUpdate();
     } catch (SQLException e) {

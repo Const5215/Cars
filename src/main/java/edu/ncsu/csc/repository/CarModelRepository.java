@@ -57,8 +57,6 @@ public class CarModelRepository extends AbstractPage {
       resultSet = preparedStatement.executeQuery();
       if (resultSet.next()) {
         carModelId = resultSet.getLong("ID");
-      } else {
-        System.out.println("make&model not found");
       }
     } catch (SQLException e) {
       e.printStackTrace();

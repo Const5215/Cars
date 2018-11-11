@@ -117,7 +117,7 @@ public class AbstractPage implements Page {
           break;
         case Number:
           try {
-            Long num = Long.parseLong(scanner.nextLine());
+            Long num = Long.parseLong(result);
           } catch (NumberFormatException e) {
             matched = false;
           }

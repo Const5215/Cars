@@ -109,6 +109,7 @@ class NewCarModel extends AbstractPage {
       Maintenance maintenance = new Maintenance();
       ServiceType serviceType = ServiceType.values()[i];
       System.out.printf("Entering info for %s:\n", serviceType.toString());
+      maintenance.setServiceType(serviceType);
       maintenance.setMile(Long.parseLong(getInfo("Enter mile for maintenance:", MatchType.Number)));
       getInfo("Enter month for maintenance:", MatchType.Number);
       List<BasicServicePart> basicServicePartList = getBasicServicePartList(carModel);
