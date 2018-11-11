@@ -5,7 +5,6 @@ import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.util.ResultSetUtils;
 
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 

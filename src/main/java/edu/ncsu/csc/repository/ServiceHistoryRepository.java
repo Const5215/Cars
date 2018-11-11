@@ -9,9 +9,27 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class ServiceHistoryRepository extends AbstractPage {
+  public List<edu.ncsu.csc.entity.ServiceHistory> getServiceHistoryListByCenterId(Long centerId) {
+    List<edu.ncsu.csc.entity.ServiceHistory> serviceHistoryList = new ArrayList<>();
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection.prepareStatement("SELECT * FROM MAINTENANCE_HISTORY WHERE CENTER_ID=?");
+      preparedStatement.setLong(1, centerId);
+      resultSet = preparedStatement.executeQuery();
+      addMaintenanceHistory(serviceHistoryList);
+      preparedStatement = connection.prepareStatement("SELECT * FROM REPAIR_HISTORY WHERE CENTER_ID=?");
+      preparedStatement.setLong(1, centerId);
+      resultSet = preparedStatement.executeQuery();
+      addRepairHistory(serviceHistoryList);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
+    return serviceHistoryList;
+  }
 
   public List<edu.ncsu.csc.entity.ServiceHistory> getServiceHistoryListByCustomerId(Long customerId) {
     List<edu.ncsu.csc.entity.ServiceHistory> serviceHistoryList = new ArrayList<>();
@@ -20,52 +38,56 @@ public class ServiceHistoryRepository extends AbstractPage {
       preparedStatement = connection.prepareStatement("SELECT * FROM MAINTENANCE_HISTORY WHERE CUSTOMER_ID=?");
       preparedStatement.setLong(1, customerId);
       resultSet = preparedStatement.executeQuery();
-      while (resultSet.next()) {
-        edu.ncsu.csc.entity.ServiceHistory serviceHistory = new ServiceHistory();
-        serviceHistory.setStartTime(new java.util.Date(resultSet.getDate("START_TIME").getTime()));
-        serviceHistory.setEndTime(new java.util.Date(resultSet.getDate("END_TIME").getTime()));
-        long timeDiff = serviceHistory.getEndTime().getTime() - serviceHistory.getStartTime().getTime();
-        serviceHistory.setTotalLaborHour(TimeUnit.MILLISECONDS.toHours(timeDiff));
-        serviceHistory.setMechanicId(resultSet.getLong("MECHANIC_ID"));
-        serviceHistory.setCarPlate(resultSet.getString("CAR_PLATE"));
-        serviceHistory.setMileage(resultSet.getLong("MILEAGE"));
-        serviceHistory.setServiceStatus(
-            checkServiceHistoryStatus(serviceHistory.getStartTime(), serviceHistory.getEndTime())
-        );
-        serviceHistory.setServiceType(ServiceType.values()[resultSet.getInt("MAINTENANCE_TYPE")]);
-        serviceHistory.setId(resultSet.getLong("ID"));
-        serviceHistory.setCustomerId(resultSet.getLong("CUSTOMER_ID"));
-        serviceHistory.setCenterId(resultSet.getLong("CENTER_ID"));
-        serviceHistoryList.add(serviceHistory);
-      }
+      addMaintenanceHistory(serviceHistoryList);
       preparedStatement = connection.prepareStatement("SELECT * FROM REPAIR_HISTORY WHERE CUSTOMER_ID=?");
       preparedStatement.setLong(1, customerId);
       resultSet = preparedStatement.executeQuery();
-      while (resultSet.next()) {
-        edu.ncsu.csc.entity.ServiceHistory serviceHistory = new ServiceHistory();
-        serviceHistory.setStartTime(new java.util.Date(resultSet.getDate("START_TIME").getTime()));
-        serviceHistory.setEndTime(new java.util.Date(resultSet.getDate("END_TIME").getTime()));
-        long timeDiff = serviceHistory.getEndTime().getTime() - serviceHistory.getStartTime().getTime();
-        serviceHistory.setTotalLaborHour(TimeUnit.MILLISECONDS.toHours(timeDiff));
-        serviceHistory.setMechanicId(resultSet.getLong("MECHANIC_ID"));
-        serviceHistory.setCarPlate(resultSet.getString("CAR_PLATE"));
-        serviceHistory.setMileage(resultSet.getLong("MILEAGE"));
-        serviceHistory.setServiceStatus(
-            checkServiceHistoryStatus(serviceHistory.getStartTime(), serviceHistory.getEndTime())
-        );
-        serviceHistory.setServiceType(ServiceType.Repair);
-        serviceHistory.setDiagnosisId(resultSet.getLong("DIAGNOSIS_ID"));
-        serviceHistory.setId(resultSet.getLong("ID"));
-        serviceHistory.setCustomerId(resultSet.getLong("CUSTOMER_ID"));
-        serviceHistory.setCenterId(resultSet.getLong("CENTER_ID"));
-        serviceHistoryList.add(serviceHistory);
-      }
+      addRepairHistory(serviceHistoryList);
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
       closeSqlConnection();
     }
     return serviceHistoryList;
+  }
+
+  private void addMaintenanceHistory(List<ServiceHistory> serviceHistoryList) throws SQLException {
+    while (resultSet.next()) {
+      ServiceHistory serviceHistory = new ServiceHistory();
+      serviceHistory.setStartTime(new Date(resultSet.getDate("START_TIME").getTime()));
+      serviceHistory.setEndTime(new Date(resultSet.getDate("END_TIME").getTime()));
+      serviceHistory.setMechanicId(resultSet.getLong("MECHANIC_ID"));
+      serviceHistory.setCarPlate(resultSet.getString("CAR_PLATE"));
+      serviceHistory.setMileage(resultSet.getLong("MILEAGE"));
+      serviceHistory.setServiceStatus(
+          checkServiceHistoryStatus(serviceHistory.getStartTime(), serviceHistory.getEndTime())
+      );
+      serviceHistory.setServiceType(ServiceType.values()[resultSet.getInt("MAINTENANCE_TYPE")]);
+      serviceHistory.setId(resultSet.getLong("ID"));
+      serviceHistory.setCustomerId(resultSet.getLong("CUSTOMER_ID"));
+      serviceHistory.setCenterId(resultSet.getLong("CENTER_ID"));
+      serviceHistoryList.add(serviceHistory);
+    }
+  }
+
+  private void addRepairHistory(List<ServiceHistory> serviceHistoryList) throws SQLException {
+    while (resultSet.next()) {
+      ServiceHistory serviceHistory = new ServiceHistory();
+      serviceHistory.setStartTime(new Date(resultSet.getDate("START_TIME").getTime()));
+      serviceHistory.setEndTime(new Date(resultSet.getDate("END_TIME").getTime()));
+      serviceHistory.setMechanicId(resultSet.getLong("MECHANIC_ID"));
+      serviceHistory.setCarPlate(resultSet.getString("CAR_PLATE"));
+      serviceHistory.setMileage(resultSet.getLong("MILEAGE"));
+      serviceHistory.setServiceStatus(
+          checkServiceHistoryStatus(serviceHistory.getStartTime(), serviceHistory.getEndTime())
+      );
+      serviceHistory.setServiceType(ServiceType.Repair);
+      serviceHistory.setDiagnosisId(resultSet.getLong("DIAGNOSIS_ID"));
+      serviceHistory.setId(resultSet.getLong("ID"));
+      serviceHistory.setCustomerId(resultSet.getLong("CUSTOMER_ID"));
+      serviceHistory.setCenterId(resultSet.getLong("CENTER_ID"));
+      serviceHistoryList.add(serviceHistory);
+    }
   }
 
   public ServiceHistory getServiceHistoryByServiceId(long serviceId) {
@@ -85,8 +107,6 @@ public class ServiceHistoryRepository extends AbstractPage {
         serviceHistory.setServiceType(ServiceType.values()[resultSet.getInt("MAINTENANCE_TYPE")]);
         serviceHistory.setStartTime(new java.util.Date(resultSet.getDate("START_TIME").getTime()));
         serviceHistory.setEndTime(new java.util.Date(resultSet.getDate("END_TIME").getTime()));
-        long timeDiff = serviceHistory.getEndTime().getTime() - serviceHistory.getStartTime().getTime();
-        serviceHistory.setTotalLaborHour(TimeUnit.MILLISECONDS.toHours(timeDiff));
         serviceHistory.setServiceStatus(checkServiceHistoryStatus(serviceHistory.getStartTime(), serviceHistory.getEndTime()));
         serviceHistory.setMechanicId(resultSet.getLong("MECHANIC_ID"));
       } else {
@@ -104,8 +124,6 @@ public class ServiceHistoryRepository extends AbstractPage {
           serviceHistory.setDiagnosisId(resultSet.getLong("DIAGNOSIS_ID"));
           serviceHistory.setStartTime(resultSet.getDate("START_TIME"));
           serviceHistory.setEndTime(resultSet.getDate("END_TIME"));
-          long timeDiff = serviceHistory.getEndTime().getTime() - serviceHistory.getStartTime().getTime();
-          serviceHistory.setTotalLaborHour(TimeUnit.MILLISECONDS.toHours(timeDiff));
           serviceHistory.setServiceStatus(
               checkServiceHistoryStatus(serviceHistory.getStartTime(), serviceHistory.getEndTime())
           );
@@ -182,7 +200,7 @@ public class ServiceHistoryRepository extends AbstractPage {
     return getPartCost(serviceHistory, basicServiceId) + getLaborCost(serviceHistory, basicServiceId);
   }
 
-  public float getLaborCost(ServiceHistory serviceHistory, Long basicServiceId) {
+  private float getLaborCost(ServiceHistory serviceHistory, Long basicServiceId) {
     BasicServiceRepository basicServiceRepository = new BasicServiceRepository();
     BasicServicePartRepository basicServicePartRepository = new BasicServicePartRepository();
     CarRepository carRepository = new CarRepository();
@@ -214,7 +232,7 @@ public class ServiceHistoryRepository extends AbstractPage {
     }
   }
 
-  public float getPartCost(ServiceHistory serviceHistory, Long basicServiceId) {
+  private float getPartCost(ServiceHistory serviceHistory, Long basicServiceId) {
     BasicServicePartRepository basicServicePartRepository = new BasicServicePartRepository();
     CarRepository carRepository = new CarRepository();
 
@@ -251,5 +269,49 @@ public class ServiceHistoryRepository extends AbstractPage {
     lastServiceCal.setTime(LastServiceDate);
     lastServiceCal.add(Calendar.MONTH, (int) warranty);
     return lastServiceCal.getTime().getTime() <= nowServiceCal.getTime().getTime();
+  }
+
+  public void printServiceHistory(ServiceHistory serviceHistory) {
+    EmployeeRepository employeeRepository = new EmployeeRepository();
+
+    String mechanicName = employeeRepository.getEmployeeNameByEmployeeId(serviceHistory.getMechanicId());
+    System.out.println("Service ID: " + serviceHistory.getId());
+    System.out.println("Service Start Time: " + serviceHistory.getStartTime());
+    System.out.println("Service End Time: " + serviceHistory.getEndTime());
+    System.out.println("Licence Plate: " + serviceHistory.getCarPlate());
+    System.out.println("Service Type: " + serviceHistory.getServiceType().toString());
+    System.out.println("Mechanic Name:" + mechanicName);
+    float totalServiceCost = printPartDetails(serviceHistory);
+    System.out.println("Total Service Cost: " + totalServiceCost);
+  }
+
+  public float printPartDetails(ServiceHistory serviceHistory) {
+    CarRepository carRepository = new CarRepository();
+    BasicServiceRepository basicServiceRepository = new BasicServiceRepository();
+    BasicServicePartRepository basicServicePartRepository = new BasicServicePartRepository();
+    PartRepository partRepository = new PartRepository();
+
+    float totalServiceCost = 0;
+    List<Long> basicServiceIdList = basicServiceRepository.getBasicServiceIdListByServiceHistory(serviceHistory);
+    Car car = carRepository.getCarByCarPlate(serviceHistory.getCarPlate());
+    ServiceHistoryRepository serviceHistoryRepository = new ServiceHistoryRepository();
+    for (long basicServiceId : basicServiceIdList) {
+      BasicServicePart basicServicePart = basicServicePartRepository.getBasicServicePartByBasicServiceIdAndCarModelId(
+          basicServiceId, car.getCarModelId()
+      );
+      BasicService basicService = basicServiceRepository.getBasicServiceByBasicServiceId(basicServiceId);
+      Part part = partRepository.getPartByPartId(basicServicePart.getPartId());
+      float partCost = serviceHistoryRepository.getPartCost(serviceHistory, basicServiceId);
+      float laborCost = serviceHistoryRepository.getLaborCost(serviceHistory, basicServiceId);
+      System.out.printf("Part: %s Quantity: %d Part charge: %f/Labor hour:%f Labor charge:%f\n",
+          part.getName(),
+          basicServicePart.getQuantity(),
+          partCost,
+          basicService.getLaborHour(),
+          laborCost
+      );
+      totalServiceCost += partCost + laborCost;
+    }
+    return totalServiceCost;
   }
 }

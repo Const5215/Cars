@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class BasicServicePartRepository extends AbstractPage {
+
   public void addBasicServicePart(BasicServicePart basicServicePart) {
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
@@ -45,7 +46,7 @@ public class BasicServicePartRepository extends AbstractPage {
     return basicServiceId;
   }
 
-  public BasicServicePart getBasicServicePartByBasicServiceIdAndCarModelId(long basicServiceId, long carModelId) {
+  BasicServicePart getBasicServicePartByBasicServiceIdAndCarModelId(long basicServiceId, long carModelId) {
     BasicServicePart basicServicePart = new BasicServicePart();
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
