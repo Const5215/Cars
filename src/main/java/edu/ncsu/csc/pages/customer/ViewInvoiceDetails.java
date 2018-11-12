@@ -8,10 +8,8 @@ import edu.ncsu.csc.repository.ServiceHistoryRepository;
 
 public class ViewInvoiceDetails extends AbstractPage {
   private User customer;
-  private ServiceHistoryRepository serviceHistoryRepository;
   ViewInvoiceDetails(User customer) {
     this.customer = customer;
-    serviceHistoryRepository = new ServiceHistoryRepository();
     choices.add("Go Back");
   }
 
@@ -19,6 +17,7 @@ public class ViewInvoiceDetails extends AbstractPage {
   public void run() {
     System.out.println("#viewInvoiceDetails");
 
+    ServiceHistoryRepository serviceHistoryRepository = new ServiceHistoryRepository();
     ServiceHistory serviceHistory;
     do {
       System.out.print("Enter Service ID:");
@@ -26,15 +25,13 @@ public class ViewInvoiceDetails extends AbstractPage {
       serviceHistory = serviceHistoryRepository.getServiceHistoryByServiceId(serviceId);
     } while (serviceHistory == null);
 
-    printServiceHistory(serviceHistory);
+    serviceHistoryRepository.printServiceHistory(serviceHistory);
     displayChoices();
     getChoiceFromInput();
     goBack();
   }
 
-  private void printServiceHistory(ServiceHistory serviceHistory) {
 
-  }
 
   private void goBack() {
     Page invoice = new Invoice(customer);

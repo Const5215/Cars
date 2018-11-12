@@ -34,6 +34,22 @@ public class CustomerRepository extends AbstractPage {
     return customer;
   }
 
+  public void updateTable(String type, String val, long customerId) {
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      String query = "UPDATE CUSTOMER SET $type=? WHERE ID=?";
+      query = query.replace("$type", type);
+      preparedStatement = connection.prepareStatement(query);
+      preparedStatement.setString(1, val);
+      preparedStatement.setLong(2, customerId);
+      preparedStatement.executeUpdate();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
+  }
+
   public String getCustomerNameByCustomerId(long customerId) {
     String customerName = "";
     try {

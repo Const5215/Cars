@@ -31,11 +31,6 @@ public class ViewProfile extends AbstractPage {
     goBack();
   }
 
-  private List<Car> getCustomerCarList() {
-    CarRepository carRepository = new CarRepository();
-    return carRepository.getCarListByCustomerId(customer.getId());
-  }
-
   private void printProfile() {
     System.out.println("Customer ID: " + customer.getId());
     System.out.println("Name: " + customer.getName());

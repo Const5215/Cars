@@ -16,15 +16,19 @@ public class CarRepository extends AbstractPage {
     this.carModelRepository = new CarModelRepository();
   }
 
-  public long getCustomerIdByCarPlate(String carPlate) {
-    long customerId = -1;
+  public Car getCarByCarPlate(String carPlate) {
+    Car car = new Car();
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
       preparedStatement = connection.prepareStatement("SELECT * FROM CAR WHERE PLATE=?");
       preparedStatement.setString(1, carPlate);
       resultSet = preparedStatement.executeQuery();
       if (resultSet.next()) {
-        customerId = resultSet.getLong("CUSTOMER_ID");
+        car.setPlate(resultSet.getString("PLATE"));
+        car.setCustomerId(resultSet.getLong("CUSTOMER_ID"));
+        car.setCarModelId(resultSet.getLong("CAR_MODEL_ID"));
+        car.setYear(resultSet.getLong("YEAR"));
+        car.setPurchaseDate(new java.util.Date(resultSet.getDate("PURCHASE_DATE").getTime()));
       } else {
         System.out.println("car plate not found.");
       }
@@ -33,7 +37,7 @@ public class CarRepository extends AbstractPage {
     } finally {
       closeSqlConnection();
     }
-    return customerId;
+    return car;
   }
 
   public List<Car> getCarListByCustomerId(Long customerId) {

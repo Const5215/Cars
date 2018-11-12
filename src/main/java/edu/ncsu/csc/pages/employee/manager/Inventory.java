@@ -30,7 +30,7 @@ public class Inventory extends AbstractPage {
   }
 
   private void printInventoryPartList(List<edu.ncsu.csc.entity.Inventory> inventoryList) {
-    System.out.printf("Total part nums:%d\n", inventoryList.size());
+    System.out.printf("Total part kinds:%d\n", inventoryList.size());
     PartRepository partRepository = new PartRepository();
     for (int i = 0; i < inventoryList.size(); i++) {
       Part part = partRepository.getPartByPartId(inventoryList.get(i).getPartId());

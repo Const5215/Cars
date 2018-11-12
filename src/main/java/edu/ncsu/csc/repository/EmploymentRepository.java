@@ -92,4 +92,21 @@ public class EmploymentRepository extends AbstractPage {
     return compensation;
   }
 
+  public void addEmployment(Employment employment) {
+    try {
+      employment.setEmployeeId(resultSet.getLong("ID"));
+      preparedStatement.executeUpdate();
+      preparedStatement = connection.prepareStatement("INSERT INTO EMPLOYMENT values (?, ?, ?, ?, ?)");
+      preparedStatement.setLong(1, employment.getEmployeeId());
+      preparedStatement.setLong(2, employment.getCenterId());
+      preparedStatement.setLong(3, employment.getPosition().ordinal());
+      preparedStatement.setFloat(4, employment.getCompensation());
+      preparedStatement.setDate(5, new java.sql.Date(employment.getStartDate().getTime()));
+      preparedStatement.executeUpdate();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
+  }
 }

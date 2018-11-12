@@ -34,11 +34,12 @@ public class PartRepository extends AbstractPage {
     return part;
   }
 
-  public List<Part> getAvailablePartList() {
+  public List<Part> getPartListByMake(String make) {
     List<Part> partList = new ArrayList<>();
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement("SELECT * FROM PART");
+      preparedStatement = connection.prepareStatement("SELECT * FROM PART WHERE MAKE=?");
+      preparedStatement.setString(1, make);
       resultSet = preparedStatement.executeQuery();
       while (resultSet.next()) {
         Part part = new Part();
@@ -58,5 +59,4 @@ public class PartRepository extends AbstractPage {
     }
     return partList;
   }
-
 }
