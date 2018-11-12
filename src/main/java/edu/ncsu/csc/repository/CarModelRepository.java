@@ -5,6 +5,8 @@ import edu.ncsu.csc.pages.AbstractPage;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CarModelRepository extends AbstractPage {
   public void addCarModel(CarModel carModel) {
@@ -64,5 +66,27 @@ public class CarModelRepository extends AbstractPage {
       closeSqlConnection();
     }
     return carModelId;
+  }
+
+  public List<CarModel> getCarModelList() {
+    List<CarModel> carModelList = new ArrayList<>();
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection.prepareStatement(
+          "SELECT * FROM CAR_MODEL");
+      resultSet = preparedStatement.executeQuery();
+      while (resultSet.next()) {
+        CarModel carModel = new CarModel();
+        carModel.setId(resultSet.getLong("ID"));
+        carModel.setMake(resultSet.getString("MAKE"));
+        carModel.setModel(resultSet.getString("MODEL"));
+        carModelList.add(carModel);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
+    return carModelList;
   }
 }

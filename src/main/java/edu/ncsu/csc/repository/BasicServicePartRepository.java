@@ -46,7 +46,7 @@ public class BasicServicePartRepository extends AbstractPage {
     return basicServiceId;
   }
 
-  BasicServicePart getBasicServicePartByBasicServiceIdAndCarModelId(long basicServiceId, long carModelId) {
+  public BasicServicePart getBasicServicePartByBasicServiceIdAndCarModelId(long basicServiceId, long carModelId) {
     BasicServicePart basicServicePart = new BasicServicePart();
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
