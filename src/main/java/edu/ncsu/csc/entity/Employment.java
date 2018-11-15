@@ -5,14 +5,14 @@ import java.util.Date;
 public class Employment {
   private long employeeId;
   private long centerId;
-  private long position;
+  private Role position;
   private float compensation;
   private Date startDate;
 
   public Employment() {
   }
 
-  public Employment(long employeeId, long centerId, long position, float compensation, Date startDate) {
+  public Employment(long employeeId, long centerId, Role position, float compensation, Date startDate) {
     this.employeeId = employeeId;
     this.centerId = centerId;
     this.position = position;
@@ -36,11 +36,11 @@ public class Employment {
     this.centerId = centerId;
   }
 
-  public long getPosition() {
+  public Role getPosition() {
     return position;
   }
 
-  public void setPosition(long position) {
+  public void setPosition(Role position) {
     this.position = position;
   }
 

@@ -1,35 +1,27 @@
 package edu.ncsu.csc.entity;
 
 public class BasicServicePart {
-  private long carModelId;
-  private String name;
+  private long basicServiceId;
   private long partId;
+  private long carModelId;
   private long quantity;
 
   public BasicServicePart() {
   }
 
-  public BasicServicePart(long carModelId, String name, long partId, long quantity) {
-    this.carModelId = carModelId;
-    this.name = name;
+  public BasicServicePart(long basicServiceId, long partId, long carModelId, long quantity) {
+    this.basicServiceId = basicServiceId;
     this.partId = partId;
+    this.carModelId = carModelId;
     this.quantity = quantity;
   }
 
-  public long getCarModelId() {
-    return carModelId;
+  public long getBasicServiceId() {
+    return basicServiceId;
   }
 
-  public void setCarModelId(long carModelId) {
-    this.carModelId = carModelId;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
+  public void setBasicServiceId(long basicServiceId) {
+    this.basicServiceId = basicServiceId;
   }
 
   public long getPartId() {
@@ -38,6 +30,14 @@ public class BasicServicePart {
 
   public void setPartId(long partId) {
     this.partId = partId;
+  }
+
+  public long getCarModelId() {
+    return carModelId;
+  }
+
+  public void setCarModelId(long carModelId) {
+    this.carModelId = carModelId;
   }
 
   public long getQuantity() {

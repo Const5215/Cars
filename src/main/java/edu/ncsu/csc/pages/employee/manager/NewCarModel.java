@@ -3,42 +3,65 @@ package edu.ncsu.csc.pages.employee.manager;
 import edu.ncsu.csc.entity.*;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
+import edu.ncsu.csc.repository.BasicServicePartRepository;
+import edu.ncsu.csc.repository.CarModelRepository;
+import edu.ncsu.csc.repository.MaintenanceRepository;
+import edu.ncsu.csc.repository.PartRepository;
+import javafx.util.Pair;
 
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NewCarModel extends AbstractPage {
+class NewCarModel extends AbstractPage {
 
-  private List<Part> availablePartList;
-  private List<BasicServicePart> servicePartList = new ArrayList<>();
   private List<Maintenance> serviceList = new ArrayList<>();
   private User manager;
 
   NewCarModel(User manager) {
     this.manager = manager;
-    this.availablePartList = getAvailablePartList();
     choices.add("Add Car");
     choices.add("Go Back");
   }
+
 
   @Override
   public void run() {
     System.out.println("#newCarModel");
 
     CarModel carModel = getCarModel();
-
-    getServiceInfo(ServiceType.Maintenance_A);
-    getServiceInfo(ServiceType.Maintenance_B);
-    getServiceInfo(ServiceType.Maintenance_C);
+    List<Pair<Maintenance, List<BasicServicePart>>> serviceDetailList = getServiceDetailList(carModel);
     displayChoices();
     switch (getChoiceFromInput()) {
       case 1:
-        addCar(carModel);
+        addCar(carModel, serviceDetailList);
       case 2:
         goBack();
     }
+  }
+
+  private void addCar(CarModel carModel, List<Pair<Maintenance, List<BasicServicePart>>> serviceDetailList) {
+      CarModelRepository carModelRepository = new CarModelRepository();
+    carModelRepository.addCarModel(carModel);
+      long carModelId = carModelRepository.getCarModelIdByMakeAndModel(carModel.getMake(), carModel.getModel());
+      carModel.setId(carModelId);
+      for (Pair<Maintenance, List<BasicServicePart>> serviceDetail : serviceDetailList) {
+        serviceDetail.getKey().setCarModelId(carModelId);
+        MaintenanceRepository maintenanceRepository = new MaintenanceRepository();
+        maintenanceRepository.addMaintenance(serviceDetail.getKey());
+        for (BasicServicePart basicServicePart : serviceDetail.getValue()) {
+          BasicServicePartRepository basicServicePartRepository = new BasicServicePartRepository();
+          basicServicePart.setBasicServiceId(
+              basicServicePartRepository.getBasicServiceIdByPartId(basicServicePart.getPartId())
+          );
+          basicServicePart.setCarModelId(carModelId);
+          basicServicePartRepository.addBasicServicePart(basicServicePart);
+        }
+      }
+  }
+
+  private void goBack() {
+    Page managerLanding = new ManagerLanding(manager);
+    managerLanding.run();
   }
 
   private CarModel getCarModel() {
@@ -48,128 +71,52 @@ public class NewCarModel extends AbstractPage {
       carModel.setMake(scanner.nextLine());
       System.out.print("Enter model:");
       carModel.setModel(scanner.nextLine());
-      carModel.setYear(Long.parseLong(getInfo("Enter year:", MatchType.Number)));
-      try {
-        connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        preparedStatement = connection
-            .prepareStatement("select ID from CAR_MODEL where MAKE=? AND MODEL=? AND YEAR=?");
-        preparedStatement.setString(1, carModel.getMake());
-        preparedStatement.setString(2, carModel.getModel());
-        preparedStatement.setLong(3, carModel.getYear());
-        resultSet = preparedStatement.executeQuery();
-        if (resultSet.next()) {
-          System.out.println("This car model already exists.");
-        } else {
-          break;
-        }
-      } catch (SQLException e) {
-        e.printStackTrace();
-      } finally {
-        closeSqlConnection();
+      getInfo("Enter year:", MatchType.Number);
+      CarModelRepository carModelRepository = new CarModelRepository();
+      if (carModelRepository.getCarModelIdByMakeAndModel(carModel.getMake(), carModel.getModel()) == -1) {
+        break;
+      }
+      else {
+        System.out.println("This car model already exists");
       }
     } while (true);
     return carModel;
   }
 
-  private void goBack() {
-    Page managerLanding = new ManagerLanding(manager);
-    managerLanding.run();
-  }
-
-  private void getServiceInfo(ServiceType serviceType) {
-    System.out.printf("Entering info for Service %s:\n", serviceType.toString());
-    Maintenance maintenance = new Maintenance();
-    maintenance.setServiceType(serviceType);
-    maintenance.setMile(Long.parseLong(getInfo("Enter mile for service:", MatchType.Number)));
-    maintenance.setMonth(Long.parseLong(getInfo("Enter month for service:", MatchType.Number)));
-    getPartList(serviceType);
-    serviceList.add(maintenance);
-  }
-
-  private void getPartList(ServiceType serviceType) {
-    BasicServicePart basicServicePart = new BasicServicePart();
-    basicServicePart.setName(serviceType.toString());
+  private List<BasicServicePart> getBasicServicePartList(CarModel carModel) {
+    PartRepository partRepository = new PartRepository();
+    List<Part> partList = partRepository.getPartListByMake(carModel.getMake());
+    List<BasicServicePart> basicServicePartList = new ArrayList<>();
     System.out.println("available part id listed below:");
-    for (Part part : availablePartList) {
+    for (Part part : partList) {
       System.out.printf("Part id:%d, Name:%s\n", part.getId(), part.getName());
     }
-    int partNumA = Integer.parseInt(getInfo("Enter total kinds of parts for service A:", MatchType.Number));
-    for (int i = 0; i < partNumA; i++) {
-      System.out.printf("Entering info for part #%d\n:", i);
+    int partNum = Integer.parseInt(
+        getInfo("Enter total kinds of (parts)/(basic services) for service:", MatchType.Number));
+    for (int i = 0; i < partNum; i++) {
+      BasicServicePart basicServicePart = new BasicServicePart();
+      System.out.printf("Entering info for part #%d\n:", i + 1);
       basicServicePart.setPartId(Long.parseLong(getInfo("Enter part id:", MatchType.Number)));
       basicServicePart.setQuantity(Long.parseLong(getInfo("Enter part quantity:", MatchType.Number)));
+      basicServicePartList.add(basicServicePart);
     }
-    servicePartList.add(basicServicePart);
+    return basicServicePartList;
   }
 
-  private List<Part> getAvailablePartList() {
-    List<Part> partList = new ArrayList<>();
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement("SELECT * FROM PART");
-      resultSet = preparedStatement.executeQuery();
-      while (resultSet.next()) {
-//        partList.add(getPart());
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
+  private List<Pair<Maintenance, List<BasicServicePart>>> getServiceDetailList(CarModel carModel) {
+    List<Pair<Maintenance, List<BasicServicePart>>> serviceDetailList = new ArrayList<>();
+    for (int i = 0; i < 3; i++) {
+      Maintenance maintenance = new Maintenance();
+      ServiceType serviceType = ServiceType.values()[i];
+      System.out.printf("Entering info for %s:\n", serviceType.toString());
+      maintenance.setServiceType(serviceType);
+      maintenance.setMile(Long.parseLong(getInfo("Enter mile for maintenance:", MatchType.Number)));
+      getInfo("Enter month for maintenance:", MatchType.Number);
+      List<BasicServicePart> basicServicePartList = getBasicServicePartList(carModel);
+      Pair<Maintenance, List<BasicServicePart>> serviceDetail = new Pair<>(maintenance, basicServicePartList);
+      serviceDetailList.add(serviceDetail);
     }
-    return partList;
+    return serviceDetailList;
   }
 
-  private Part getPart() {
-    Part part = null;
-    try {
-      part = new Part(resultSet.getLong("ID"),
-          resultSet.getString("NAME"),
-          resultSet.getLong("UNIT_PRICE"),
-          resultSet.getLong("DISTRIBUTOR_ID"));
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    return part;
-  }
-
-  private void addCar(CarModel carModel) {
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement(
-          "INSERT INTO CAR_MODEL VALUES (CAR_MODEL_ID_SEQ.nextval, ?, ?, ?)");
-      preparedStatement.setString(1, carModel.getMake());
-      preparedStatement.setString(2, carModel.getModel());
-      preparedStatement.setLong(3, carModel.getYear());
-      preparedStatement.executeUpdate();
-      preparedStatement = connection.prepareStatement(
-          "SELECT * FROM CAR_MODEL WHERE MAKE=? AND MODEL=? AND YEAR=?");
-      preparedStatement.setString(1, carModel.getMake());
-      preparedStatement.setString(2, carModel.getModel());
-      preparedStatement.setLong(3, carModel.getYear());
-      resultSet = preparedStatement.executeQuery();
-      carModel.setId(resultSet.getLong("ID"));
-      preparedStatement = connection.prepareStatement("INSERT INTO MAINTENANCE VALUES (?, ?, ?, ?)");
-      for (Maintenance aServiceList : serviceList) {
-        aServiceList.setCarModelId(carModel.getId());
-        preparedStatement.setLong(1, aServiceList.getCarModelId());
-        preparedStatement.setLong(2, aServiceList.getServiceType().ordinal());
-        preparedStatement.setLong(3, aServiceList.getMile());
-        preparedStatement.setLong(4, aServiceList.getMonth());
-        preparedStatement.executeUpdate();
-      }
-      preparedStatement = connection.prepareStatement(
-          "INSERT INTO BASIC_SERVICE_PART VALUES (?, ? ,? ,?)");
-      for (BasicServicePart aServicePartList : servicePartList) {
-        aServicePartList.setCarModelId(carModel.getId());
-        preparedStatement.setLong(1, aServicePartList.getCarModelId());
-        preparedStatement.setString(2, aServicePartList.getName());
-        preparedStatement.setLong(3, aServicePartList.getPartId());
-        preparedStatement.setLong(4, aServicePartList.getQuantity());
-        preparedStatement.executeUpdate();
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      closeSqlConnection();
-    }
-
-  }
 }

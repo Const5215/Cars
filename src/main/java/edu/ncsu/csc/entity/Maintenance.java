@@ -4,7 +4,6 @@ public class Maintenance {
   private long carModelId;
   private ServiceType serviceType;
   private long mile;
-  private long month;
 
   public Maintenance() {
   }
@@ -13,7 +12,6 @@ public class Maintenance {
     this.carModelId = carModelId;
     this.serviceType = serviceType;
     this.mile = mile;
-    this.month = month;
   }
 
   public long getCarModelId() {
@@ -38,13 +36,5 @@ public class Maintenance {
 
   public void setMile(long mile) {
     this.mile = mile;
-  }
-
-  public long getMonth() {
-    return month;
-  }
-
-  public void setMonth(long month) {
-    this.month = month;
   }
 }
