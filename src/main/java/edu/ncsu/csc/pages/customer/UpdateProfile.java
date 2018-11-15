@@ -4,16 +4,14 @@ import edu.ncsu.csc.entity.MatchType;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
-
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import edu.ncsu.csc.repository.CustomerRepository;
 
 public class UpdateProfile extends AbstractPage {
 
-  private User user;
+  private User customer;
 
-  UpdateProfile(User user) {
-    this.user = user;
+  UpdateProfile(User customer) {
+    this.customer = customer;
     choices.add("Name");
     choices.add("Address");
     choices.add("Phone Number");
@@ -48,50 +46,39 @@ public class UpdateProfile extends AbstractPage {
   }
 
   private void goBack() {
-    Page profile = new Profile(user);
+    Page profile = new Profile(customer);
     profile.run();
   }
 
   private void updateAddress() {
     System.out.print("Enter new address: ");
-    user.setAddress(scanner.nextLine());
-    updateTable("ADDRESS", user.getAddress());
+    customer.setAddress(scanner.nextLine());
+    CustomerRepository customerRepository = new CustomerRepository();
+    customerRepository.updateTable("ADDRESS", customer.getAddress(), customer.getId());
     System.out.println("Address updated.");
   }
 
   private void updatePhone() {
-    user.setPhone(getInfo("Enter new phone number (e.g. 123-456-7890): ", MatchType.Phone));
-    updateTable("PHONE", user.getPhone());
+    customer.setPhone(getInfo("Enter new phone number (e.g. 123-456-7890): ", MatchType.Phone));
+    CustomerRepository customerRepository = new CustomerRepository();
+    customerRepository.updateTable("PHONE", customer.getPhone(), customer.getId());
     System.out.println("Phone updated.");
   }
 
   private void updateName() {
     System.out.print("Enter new name: ");
-    user.setName(scanner.nextLine());
-    updateTable("NAME", user.getName());
+    customer.setName(scanner.nextLine());
+    CustomerRepository customerRepository = new CustomerRepository();
+    customerRepository.updateTable("NAME", customer.getName(), customer.getId());
     System.out.println("Name updated.");
   }
 
   private void updatePassword() {
     System.out.print("Enter new password: ");
-    user.setPassword(scanner.nextLine());
-    updateTable("PASSWORD", user.getPassword());
+    customer.setPassword(scanner.nextLine());
+    CustomerRepository customerRepository = new CustomerRepository();
+    customerRepository.updateTable("PASSWORD", customer.getPassword(), customer.getId());
     System.out.println("Password updated.");
   }
 
-  private void updateTable(String type, String val) {
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      String query = "UPDATE CUSTOMER SET $type=? WHERE ID=?";
-      query = query.replace("$type", type);
-      preparedStatement = connection.prepareStatement(query);
-      preparedStatement.setString(1, val);
-      preparedStatement.setLong(2, user.getId());
-      preparedStatement.executeUpdate();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      closeSqlConnection();
-    }
-  }
 }

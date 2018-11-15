@@ -2,13 +2,16 @@ package edu.ncsu.csc.pages.employee.receptionist;
 
 import edu.ncsu.csc.entity.MatchType;
 import edu.ncsu.csc.entity.ServiceHistory;
+import edu.ncsu.csc.entity.ServiceStatus;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
+import edu.ncsu.csc.repository.CustomerRepository;
+import edu.ncsu.csc.repository.ServiceHistoryRepository;
 
 import java.util.List;
 
-public class Invoices extends AbstractPage {
+class Invoices extends AbstractPage {
   private User receptionist;
 
   Invoices(User receptionist) {
@@ -19,8 +22,19 @@ public class Invoices extends AbstractPage {
   @Override
   public void run() {
     System.out.println("#invoices");
+
+    CustomerRepository customerRepository = new CustomerRepository();
+    ServiceHistoryRepository serviceHistoryRepository = new ServiceHistoryRepository();
+
     String email = getInfo("Enter customer email address: ", MatchType.Email);
-    List<ServiceHistory> serviceHistoryList = getServiceHistoryListByCustomerId(getCustomerIdByEmail(email));
+    User customer = customerRepository.getCustomerByEmail(email);
+    List<edu.ncsu.csc.entity.ServiceHistory> serviceHistoryList =
+        serviceHistoryRepository.getServiceHistoryListByCustomerId(customer.getId());
+    //filter by status:complete
+    for (ServiceHistory serviceHistory : serviceHistoryList) {
+      if (serviceHistory.getServiceStatus() != ServiceStatus.Complete)
+        serviceHistoryList.remove(serviceHistory);
+    }
     printServiceHistoryList(serviceHistoryList);
 
     displayChoices();
@@ -28,12 +42,14 @@ public class Invoices extends AbstractPage {
     goBack();
   }
 
-  private void printServiceHistoryList(List<ServiceHistory> serviceHistoryList) {
+  private void printServiceHistoryList(List<edu.ncsu.csc.entity.ServiceHistory> serviceHistoryList) {
+    ServiceHistoryRepository serviceHistoryRepository = new ServiceHistoryRepository();
+
+    System.out.printf("Customer has %d service list.\n", serviceHistoryList.size());
     for (int i = 0; i < serviceHistoryList.size(); i++) {
       ServiceHistory serviceHistory = serviceHistoryList.get(i);
-      System.out.printf("Customer has %d service list.\n", serviceHistoryList.size());
       System.out.printf("Service #%d details:\n", i);
-      printServiceHistory(serviceHistory);
+      serviceHistoryRepository.printServiceHistory(serviceHistory);
     }
   }
 
@@ -41,4 +57,5 @@ public class Invoices extends AbstractPage {
     Page receptionistLanding = new ReceptionistLanding(receptionist);
     receptionistLanding.run();
   }
+
 }
