@@ -13,6 +13,11 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * RecRegisterCar class used for Receptionist to register car for customer
+ * NOTICE: differ from {@link edu.ncsu.csc.pages.customer.RegisterCar}
+ *
+ */
 public class RecRegisterCar extends AbstractPage {
   private User user;
 
@@ -121,9 +126,10 @@ public class RecRegisterCar extends AbstractPage {
         register(car);
         break;
       case 2:
-        Page receptionistLanding = new ReceptionistLanding(user);
-        receptionistLanding.run();
+        break;
     }
+    Page receptionistLanding = new ReceptionistLanding(user);
+    receptionistLanding.run();
   }
 
   private Date getADate(String msg) {

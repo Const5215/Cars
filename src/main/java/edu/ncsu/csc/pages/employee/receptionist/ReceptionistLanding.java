@@ -47,6 +47,17 @@ public class ReceptionistLanding extends AbstractPage {
       case 4:
         serviceHistory();
         break;
+      case 5:
+        scheduleService();
+        break;
+      case 6:
+        rescheduleService();
+        break;
+      case 7:
+        invoices();
+        break;
+      case 8:
+        dailyTaskUpdateInventory();
     }
   }
 
@@ -72,5 +83,29 @@ public class ReceptionistLanding extends AbstractPage {
     // Case 4: link to Receptionist: Service History
     ServiceHistory serviceHistory = new ServiceHistory(receptionist);
     serviceHistory.run();
+  }
+
+  private void scheduleService() {
+    // Case 5: link to Receptionist: Schedule Service
+    Page scheduleService = new ScheduleService(receptionist);
+    scheduleService.run();
+  }
+
+  private void rescheduleService() {
+    // Case 6: link to Receptionist: Reschedule Service(Page 1)
+    Page rescheduleService = new RescheduleServicePage_1(receptionist);
+    rescheduleService.run();
+  }
+
+  private void invoices() {
+    // Case 7: link to Receptionist: Invoices
+    Page invoices = new Invoices(receptionist);
+    invoices.run();
+  }
+
+  private void dailyTaskUpdateInventory() {
+    // Case 8: link to Receptionist: Daily Task-Update Inventory
+    Page dailyTaskUpdateInventory = new DailyTaskUpdateInventory(receptionist);
+    dailyTaskUpdateInventory.run();
   }
 }
