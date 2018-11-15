@@ -9,7 +9,5 @@ public class App {
   public static void main(String[] args) {
     Page home = new Home();
     home.run();
-//    Test test = new Test();
-//    test.run();
   }
 }

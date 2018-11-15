@@ -3,11 +3,8 @@ package edu.ncsu.csc.pages.employee.receptionist;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
-import edu.ncsu.csc.pages.employee.EmployeeProfile;
-import edu.ncsu.csc.pages.employee.EmployeeViewCustomerProfile;
 import edu.ncsu.csc.pages.employee.Profile;
 import edu.ncsu.csc.pages.employee.ViewCustomerProfile;
-import edu.ncsu.csc.pages.start.Home;
 
 public class ReceptionistLanding extends AbstractPage {
 
@@ -25,6 +22,7 @@ public class ReceptionistLanding extends AbstractPage {
     choices.add("Reschedule Service");
     choices.add("Invoices");
     choices.add("Daily Task-Update Inventory");
+    choices.add("Daily Task-Record Inventory");
     choices.add("Logout");
   }
 
@@ -46,18 +44,21 @@ public class ReceptionistLanding extends AbstractPage {
       case 3:
         registerCar();
         break;
+      case 4:
+        serviceHistory();
+        break;
     }
   }
 
   private void profile() {
     // Case 1:  link to Employee: Profile
-    Page profile = new EmployeeProfile(receptionist);
+    Page profile = new Profile(receptionist);
     profile.run();
   }
 
   private void viewCustomerProfile() {
     // Case 2:  link to Employee: View Customer Profile
-    Page viewCustomerProfile = new EmployeeViewCustomerProfile(receptionist);
+    Page viewCustomerProfile = new ViewCustomerProfile(receptionist);
     viewCustomerProfile.run();
   }
 
@@ -65,5 +66,11 @@ public class ReceptionistLanding extends AbstractPage {
     // Case 3: link to Receptionist: Register Car
     RecRegisterCar recRegisterCar = new RecRegisterCar(receptionist);
     recRegisterCar.run();
+  }
+
+  private void serviceHistory() {
+    // Case 4: link to Receptionist: Service History
+    ServiceHistory serviceHistory = new ServiceHistory(receptionist);
+    serviceHistory.run();
   }
 }
