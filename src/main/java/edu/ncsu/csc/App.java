@@ -2,6 +2,7 @@ package edu.ncsu.csc;
 
 import edu.ncsu.csc.pages.Page;
 import edu.ncsu.csc.pages.start.Home;
+import edu.ncsu.csc.pages.start.Test;
 
 public class App {
 
