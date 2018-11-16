@@ -75,8 +75,8 @@ public class ReceptionistLanding extends AbstractPage {
 
   private void registerCar() {
     // Case 3: link to Receptionist: Register Car
-    RecRegisterCar recRegisterCar = new RecRegisterCar(receptionist);
-    recRegisterCar.run();
+    Page registerCar = new edu.ncsu.csc.pages.employee.receptionist.RegisterCar(receptionist);
+    registerCar.run();
   }
 
   private void serviceHistory() {

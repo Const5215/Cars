@@ -200,7 +200,7 @@ public class ServiceHistoryRepository extends AbstractRepository {
     return serviceHistories;
   }
 
-  public ServiceHistory getLatestMaintenanceHistoryByCarPlate(String carPlate) {
+  public ServiceHistory getLastServiceHistoryByCarPlate(String carPlate) {
     ServiceHistory serviceHistory = null;
 
     try {

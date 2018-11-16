@@ -1,6 +1,6 @@
 package edu.ncsu.csc.pages.employee.receptionist;
 
-import edu.ncsu.csc.entity.MatchType;
+import edu.ncsu.csc.controller.ServiceController;
 import edu.ncsu.csc.entity.ServiceHistory;
 import edu.ncsu.csc.entity.ServiceStatus;
 import edu.ncsu.csc.entity.User;
@@ -13,9 +13,15 @@ import java.util.List;
 
 class Invoices extends AbstractPage {
   private User receptionist;
+  private CustomerRepository customerRepository;
+  private ServiceHistoryRepository serviceHistoryRepository;
+  private ServiceController serviceController;
 
   Invoices(User receptionist) {
     this.receptionist = receptionist;
+    this.customerRepository = new CustomerRepository();
+    this.serviceHistoryRepository = new ServiceHistoryRepository();
+    this.serviceController = new ServiceController();
     choices.add("Go Back");
   }
 
@@ -23,13 +29,10 @@ class Invoices extends AbstractPage {
   public void run() {
     System.out.println("#invoices");
 
-    CustomerRepository customerRepository = new CustomerRepository();
-    ServiceHistoryRepository serviceHistoryRepository = new ServiceHistoryRepository();
-
-    String email = getInfo("Enter customer email address: ", MatchType.Email);
+    String email = getEmailFromInput("Enter customer email address: ");
     User customer = customerRepository.getCustomerByEmail(email);
     List<edu.ncsu.csc.entity.ServiceHistory> serviceHistoryList =
-        serviceHistoryRepository.getServiceHistoryListByCustomerId(customer.getId());
+        serviceHistoryRepository.getServiceHistoriesByCustomerId(customer.getId());
     //filter by status:complete
     for (ServiceHistory serviceHistory : serviceHistoryList) {
       if (serviceHistory.getServiceStatus() != ServiceStatus.Complete)
@@ -43,13 +46,11 @@ class Invoices extends AbstractPage {
   }
 
   private void printServiceHistoryList(List<edu.ncsu.csc.entity.ServiceHistory> serviceHistoryList) {
-    ServiceHistoryRepository serviceHistoryRepository = new ServiceHistoryRepository();
-
     System.out.printf("Customer has %d service list.\n", serviceHistoryList.size());
     for (int i = 0; i < serviceHistoryList.size(); i++) {
       ServiceHistory serviceHistory = serviceHistoryList.get(i);
       System.out.printf("Service #%d details:\n", i);
-      serviceHistoryRepository.printServiceHistory(serviceHistory);
+      serviceController.printServiceHistory(serviceHistory);
     }
   }
 
