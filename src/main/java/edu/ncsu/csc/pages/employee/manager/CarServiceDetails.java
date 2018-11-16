@@ -1,13 +1,20 @@
 package edu.ncsu.csc.pages.employee.manager;
 
-import edu.ncsu.csc.entity.*;
+import edu.ncsu.csc.entity.BasicService;
+import edu.ncsu.csc.entity.BasicServicePart;
+import edu.ncsu.csc.entity.CarModel;
+import edu.ncsu.csc.entity.Maintenance;
+import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
-import edu.ncsu.csc.repository.*;
-
+import edu.ncsu.csc.repository.BasicServicePartRepository;
+import edu.ncsu.csc.repository.CarModelRepository;
+import edu.ncsu.csc.repository.MaintenanceDetailRepository;
+import edu.ncsu.csc.repository.MaintenanceRepository;
 import java.util.List;
 
 public class CarServiceDetails extends AbstractPage {
+
   private User manager;
 
   CarServiceDetails(User manager) {
@@ -17,42 +24,40 @@ public class CarServiceDetails extends AbstractPage {
 
   @Override
   public void run() {
-    System.out.println("#carServiceDetails");
+    System.out.println("# Car Service Details");
 
-    printCarServiceDetails();
-    displayChoices();
-    getChoiceFromInput();
-    goBack();
-  }
-
-  private void printCarServiceDetails() {
     CarModelRepository carModelRepository = new CarModelRepository();
     MaintenanceRepository maintenanceRepository = new MaintenanceRepository();
-    ServiceDetailRepository serviceDetailRepository = new ServiceDetailRepository();
+    MaintenanceDetailRepository maintenanceDetailRepository = new MaintenanceDetailRepository();
     BasicServicePartRepository basicServicePartRepository = new BasicServicePartRepository();
-    PartRepository partRepository = new PartRepository();
-    List<CarModel> carModelList = carModelRepository.getCarModelList();
-    System.out.printf("%d Car Model recorded in total.\n", carModelList.size());
-    for (int i = 0; i < carModelList.size(); i++) {
-      System.out.printf("Details for car model #%d:\n", i);
-      CarModel carModel = carModelList.get(i);
-      System.out.println("Make: " + carModel.getMake());
-      System.out.println("Model: " + carModel.getModel());
-      List<Maintenance> maintenanceList = maintenanceRepository.getMaintenanceListByCarModelId(carModel.getId());
-      for (Maintenance maintenance : maintenanceList) {
-        System.out.printf("%s details:\n", maintenance.getServiceType().toString());
-        System.out.println("Mile: " + maintenance.getMile());
-        List<BasicService> basicServiceList = serviceDetailRepository.getBasicServiceListByMakeAndModelAndMaintenanceType(
-            carModel.getMake(), carModel.getModel(), maintenance.getServiceType()
-        );
-        for (BasicService basicService : basicServiceList) {
-          BasicServicePart basicServicePart = basicServicePartRepository.getBasicServicePartByBasicServiceIdAndCarModelId(
-              basicService.getId(), carModel.getId());
-          Part part = partRepository.getPartByPartId(basicServicePart.getPartId());
-          System.out.printf("Part Name: %s Quantity: %d\n", part.getName(), basicServicePart.getQuantity());
+    List<CarModel> carModels = carModelRepository.getAllCarModels();
+    List<Maintenance> maintenances;
+    List<BasicService> basicServices;
+    BasicServicePart basicServicePart;
+
+    for (CarModel carModel : carModels) {
+      System.out.printf("%s %s\n", carModel.getMake(), carModel.getModel());
+      maintenances = maintenanceRepository.getAllMaintenanceByCarModelId(carModel.getId());
+      for (Maintenance maintenance : maintenances) {
+        System.out
+            .printf("Service %c Mileage: %d miles", 'A' + maintenance.getServiceType().ordinal(),
+                maintenance.getMileage());
+        basicServices = maintenanceDetailRepository
+            .getAllBasicServicesByCarModelIdAndMaintenanceType(carModel.getId(),
+                maintenance.getServiceType());
+        for (BasicService basicService : basicServices) {
+          basicServicePart = basicServicePartRepository
+              .getBasicServicePartByBasicServiceIdAndCarModelId(basicService.getId(),
+                  carModel.getId());
+          System.out.printf("\tPart ID: %d\tQuantity: %d\n", basicServicePart.getPartId(),
+              basicServicePart.getQuantity());
         }
       }
     }
+
+    displayChoices();
+    getChoiceFromInput();
+    goBack();
   }
 
   private void goBack() {

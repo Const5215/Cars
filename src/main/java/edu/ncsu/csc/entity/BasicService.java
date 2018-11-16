@@ -1,26 +1,27 @@
 package edu.ncsu.csc.entity;
 
 public class BasicService {
-  private long id;
+
+  private Long id;
   private String name;
-  private float laborHour;
-  private long chargeRate;
+  private Float laborHour;
+  private Integer chargeRate;
 
   public BasicService() {
   }
 
-  public BasicService(long id, String name, float laborHour, long chargeRate) {
+  public BasicService(Long id, String name, Float laborHour, Integer chargeRate) {
     this.id = id;
     this.name = name;
     this.laborHour = laborHour;
     this.chargeRate = chargeRate;
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(long id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
@@ -32,19 +33,19 @@ public class BasicService {
     this.name = name;
   }
 
-  public float getLaborHour() {
+  public Float getLaborHour() {
     return laborHour;
   }
 
-  public void setLaborHour(float laborHour) {
+  public void setLaborHour(Float laborHour) {
     this.laborHour = laborHour;
   }
 
-  public long getChargeRate() {
+  public Integer getChargeRate() {
     return chargeRate;
   }
 
-  public void setChargeRate(long chargeRate) {
+  public void setChargeRate(Integer chargeRate) {
     this.chargeRate = chargeRate;
   }
 }

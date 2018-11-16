@@ -1,7 +1,6 @@
 package edu.ncsu.csc.pages.employee.manager;
 
 import edu.ncsu.csc.entity.Employment;
-import edu.ncsu.csc.entity.MatchType;
 import edu.ncsu.csc.entity.Role;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
@@ -9,84 +8,62 @@ import edu.ncsu.csc.pages.Page;
 import edu.ncsu.csc.repository.EmployeeRepository;
 import edu.ncsu.csc.repository.EmploymentRepository;
 
-import java.text.ParseException;
-
 public class AddNewEmployees extends AbstractPage {
-  private User manager;
+
+  private EmployeeRepository employeeRepository;
   private EmploymentRepository employmentRepository;
+  private User manager;
+  private User employee;
+  private Employment employment;
 
   AddNewEmployees(User manager) {
-    this.manager = manager;
+    employeeRepository = new EmployeeRepository();
     employmentRepository = new EmploymentRepository();
+    this.manager = manager;
+    employee = new User();
+    employment = new Employment();
     choices.add("Add");
     choices.add("Go Back");
   }
 
   @Override
   public void run() {
-    System.out.println("#addNewEmployees");
+    System.out.println("# Add New Employees");
 
-    User employee = getEmployee();
-    Employment employment = getEmployment(employee);
+    employee.setName(getStringFromInput("Enter name: "));
+    employee.setAddress(getStringFromInput("Enter address: "));
+
+    while (true) {
+      String email = getEmailFromInput("Enter email address: ");
+      if (employeeRepository.getIdByEmail(email) == null) {
+        employee.setEmail(email);
+        break;
+      } else {
+        System.out.println("This email address is already used");
+      }
+    }
+
+    employee.setPhone(getPhoneFromInput("Enter phone number (e.g. 123-456-7890): "));
+    employee.setRole(getRoleFromInput());
+    employment.setStartDate(getDateFromInput("Enter start date (MM/DD/YYYY): "));
+    employment.setCompensation(getCompensationFromInput());
+    employment.setCenterId(employmentRepository.getCenterIdByEmployeeId(manager.getId()));
+
     displayChoices();
     switch (getChoiceFromInput()) {
       case 1:
-        addNewEmployee(employee, employment);
-        System.out.println("Employee added.");
+        add();
       case 2:
         goBack();
     }
   }
 
-  private Employment getEmployment(User employee) {
-    Employment employment = new Employment();
-    String strStartDate = getInfo("Enter start date(YYYY-MM-DD):", MatchType.Date);
-    try {
-      employment.setStartDate(dateFormat.parse(strStartDate));
-    } catch (ParseException e) {
-      e.printStackTrace();
-    }
-    employment.setCenterId(
-        employmentRepository.getCenterIdByEmployeeId(manager.getId()));
-    employment.setPosition(employee.getRole());
-    System.out.print("Enter compensation:");
-    employment.setCompensation(Float.parseFloat(scanner.nextLine()));
-    return employment;
-  }
-
-  private User getEmployee() {
-    User employee = new User();
-    System.out.print("Enter Name:");
-    employee.setName(scanner.nextLine());
-    System.out.print("Enter Address:");
-    employee.setAddress(scanner.nextLine());
-    employee.setEmail(getInfo("Enter email Address:", MatchType.Email));
-    employee.setPhone(getInfo("Enter phone number:", MatchType.Phone));
-    Role role;
-    label:
-    do {
-      System.out.print("Enter role(receptionist/mechanic):");
-      String strRole = scanner.nextLine();
-      switch (strRole) {
-        case "receptionist":
-          role = Role.Receptionist;
-          break label;
-        case "mechanic":
-          role = Role.Mechanic;
-          break label;
-        default:
-          System.out.println("Invalid input");
-          break;
-      }
-      if (employmentRepository.oneReceptionistCheck(
-          employmentRepository.getCenterIdByEmployeeId(manager.getId())
-      )) {
-        System.out.println("This service center already have a receptionist.");
-      }
-    } while (true);
-    employee.setRole(role);
-    employee.setPassword("12345678");
-    return employee;
+  private void add() {
+    employeeRepository.add(employee);
+    employment.setEmployeeId(employeeRepository.getIdByEmail(employee.getEmail()));
+    employmentRepository.add(employment);
+    System.out.printf(
+        "Successfully add new employee, employee ID is %d\n", employment.getEmployeeId());
   }
 
   private void goBack() {
@@ -94,13 +71,42 @@ public class AddNewEmployees extends AbstractPage {
     managerLanding.run();
   }
 
-  private void addNewEmployee(User employee, Employment employment) {
-    EmployeeRepository employeeRepository = new EmployeeRepository();
-    employeeRepository.addEmployee(employee);
-    employee.setId(employeeRepository.getEmployeeIdByEmail(employee.getEmail()));
-    employment.setEmployeeId(employee.getId());
-    EmploymentRepository employmentRepository = new EmploymentRepository();
-    employmentRepository.addEmployment(employment);
+  private Role getRoleFromInput() {
+    while (true) {
+      System.out.print("Enter role (Receptionist/Mechanic): ");
+      String role = scanner.nextLine();
+
+      if (role.equals("Receptionist")) {
+        Long centerId = employmentRepository.getCenterIdByEmployeeId(manager.getId());
+        if (employmentRepository.getReceptionistByCenterId(centerId) == null) {
+          return Role.Receptionist;
+        } else {
+          System.out.println("A center must have only one receptionist");
+        }
+      } else if (role.equals("Mechanic")) {
+        return Role.Mechanic;
+      } else {
+        System.out.println("Invalid role");
+      }
+    }
   }
 
+  private Float getCompensationFromInput() {
+    Float compensation;
+
+    while (true) {
+      System.out.print("Enter compensation: ");
+
+      try {
+        compensation = Float.parseFloat(scanner.nextLine());
+      } catch (NumberFormatException e) {
+        System.out.println("Invalid user ID");
+        continue;
+      }
+
+      break;
+    }
+
+    return compensation;
+  }
 }

@@ -2,7 +2,11 @@ package edu.ncsu.csc.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.*;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,18 +79,7 @@ public class ResultSetUtils {
      * @param columnName 待转换字符串 (xxxx_yyyy_zzzz 数据库列名形式)
      * @return 转换成POJO的字段名 (java驼峰式命名xxxxYyyyZzzz)
      */
-    public static String convertToFieldName(String columnName) {
-        String[] split = columnName.split("_");
-        StringBuilder stringBuilder = new StringBuilder(split[0]);
 
-        if (split.length > 1) {
-            for (int i = 1; i < split.length; i++) {
-                stringBuilder.append(changeFirstCharacterCase(split[i], true));
-            }
-        }
-
-        return stringBuilder.toString();
-    }
 
     /**
      * copy from package org.springframework.util.StringUtils

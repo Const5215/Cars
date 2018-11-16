@@ -1,6 +1,5 @@
 package edu.ncsu.csc.pages.customer;
 
-import edu.ncsu.csc.entity.MatchType;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
@@ -8,9 +7,11 @@ import edu.ncsu.csc.repository.CustomerRepository;
 
 public class UpdateProfile extends AbstractPage {
 
+  private CustomerRepository customerRepository;
   private User customer;
 
   UpdateProfile(User customer) {
+    customerRepository = new CustomerRepository();
     this.customer = customer;
     choices.add("Name");
     choices.add("Address");
@@ -21,12 +22,11 @@ public class UpdateProfile extends AbstractPage {
 
   @Override
   public void run() {
-    int choice;
-    do {
-      System.out.println("#Update Profile");
+    System.out.println("# Update Profile");
+
+    while (true) {
       displayChoices();
-      choice = getChoiceFromInput();
-      switch (choice) {
+      switch (getChoiceFromInput()) {
         case 1:
           updateName();
           break;
@@ -42,43 +42,29 @@ public class UpdateProfile extends AbstractPage {
         case 5:
           goBack();
       }
-    } while (choice != 5);
-  }
-
-  private void goBack() {
-    Page profile = new Profile(customer);
-    profile.run();
-  }
-
-  private void updateAddress() {
-    System.out.print("Enter new address: ");
-    customer.setAddress(scanner.nextLine());
-    CustomerRepository customerRepository = new CustomerRepository();
-    customerRepository.updateTable("ADDRESS", customer.getAddress(), customer.getId());
-    System.out.println("Address updated.");
-  }
-
-  private void updatePhone() {
-    customer.setPhone(getInfo("Enter new phone number (e.g. 123-456-7890): ", MatchType.Phone));
-    CustomerRepository customerRepository = new CustomerRepository();
-    customerRepository.updateTable("PHONE", customer.getPhone(), customer.getId());
-    System.out.println("Phone updated.");
+    }
   }
 
   private void updateName() {
-    System.out.print("Enter new name: ");
-    customer.setName(scanner.nextLine());
-    CustomerRepository customerRepository = new CustomerRepository();
-    customerRepository.updateTable("NAME", customer.getName(), customer.getId());
-    System.out.println("Name updated.");
+    customer.setName(getStringFromInput("Enter new name: "));
+  }
+
+  private void updateAddress() {
+    customer.setAddress(getStringFromInput("Enter new address: "));
+  }
+
+  private void updatePhone() {
+    customer.setPhone(getPhoneFromInput());
   }
 
   private void updatePassword() {
-    System.out.print("Enter new password: ");
-    customer.setPassword(scanner.nextLine());
-    CustomerRepository customerRepository = new CustomerRepository();
-    customerRepository.updateTable("PASSWORD", customer.getPassword(), customer.getId());
-    System.out.println("Password updated.");
+    customer.setPassword(getStringFromInput("Enter new password: "));
   }
 
+  private void goBack() {
+    customerRepository.update(customer);
+
+    Page profile = new Profile(customer);
+    profile.run();
+  }
 }

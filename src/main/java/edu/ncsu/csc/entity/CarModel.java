@@ -1,6 +1,7 @@
 package edu.ncsu.csc.entity;
 
 public class CarModel {
+
   private Long id;
   private String make;
   private String model;

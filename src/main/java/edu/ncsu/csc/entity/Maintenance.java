@@ -1,24 +1,25 @@
 package edu.ncsu.csc.entity;
 
 public class Maintenance {
-  private long carModelId;
+
+  private Long carModelId;
   private ServiceType serviceType;
-  private long mile;
+  private Integer mileage;
 
   public Maintenance() {
   }
 
-  public Maintenance(long carModelId, ServiceType serviceType, long mile, long month) {
+  public Maintenance(Long carModelId, ServiceType serviceType, Integer mileage) {
     this.carModelId = carModelId;
     this.serviceType = serviceType;
-    this.mile = mile;
+    this.mileage = mileage;
   }
 
-  public long getCarModelId() {
+  public Long getCarModelId() {
     return carModelId;
   }
 
-  public void setCarModelId(long carModelId) {
+  public void setCarModelId(Long carModelId) {
     this.carModelId = carModelId;
   }
 
@@ -30,11 +31,11 @@ public class Maintenance {
     this.serviceType = serviceType;
   }
 
-  public long getMile() {
-    return mile;
+  public Integer getMileage() {
+    return mileage;
   }
 
-  public void setMile(long mile) {
-    this.mile = mile;
+  public void setMileage(Integer mileage) {
+    this.mileage = mileage;
   }
 }

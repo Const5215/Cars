@@ -7,10 +7,10 @@ import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
 import edu.ncsu.csc.repository.EmployeeRepository;
 import edu.ncsu.csc.repository.ServiceHistoryRepository;
-
 import java.util.List;
 
 public class Invoice extends AbstractPage {
+
   private User customer;
 
   Invoice(User customer) {
@@ -21,14 +21,16 @@ public class Invoice extends AbstractPage {
 
   @Override
   public void run() {
-    System.out.println("#Invoice");
+    System.out.println("# Invoice");
+
     ServiceHistoryRepository serviceHistoryRepository = new ServiceHistoryRepository();
     List<ServiceHistory> serviceHistoryList =
         serviceHistoryRepository.getServiceHistoryListByCustomerId(customer.getId());
     //filter by status:complete
     for (ServiceHistory serviceHistory : serviceHistoryList) {
-      if (serviceHistory.getServiceStatus() != ServiceStatus.Complete)
+      if (serviceHistory.getServiceStatus() != ServiceStatus.Complete) {
         serviceHistoryList.remove(serviceHistory);
+      }
     }
     printServiceHistoryList(serviceHistoryList);
     displayChoices();
@@ -46,7 +48,8 @@ public class Invoice extends AbstractPage {
     for (int i = 0; i < serviceHistoryList.size(); i++) {
       ServiceHistory serviceHistory = serviceHistoryList.get(i);
       EmployeeRepository employeeRepository = new EmployeeRepository();
-      String mechanicName = employeeRepository.getEmployeeNameByEmployeeId(serviceHistory.getMechanicId());
+      String mechanicName = employeeRepository
+          .getEmployeeNameByEmployeeId(serviceHistory.getMechanicId());
       ServiceHistoryRepository serviceHistoryRepository = new ServiceHistoryRepository();
       float totalServiceCost = serviceHistoryRepository.getTotalServiceCost(serviceHistory);
       System.out.printf("Details for service #%d:\n", i);

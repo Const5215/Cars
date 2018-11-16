@@ -22,7 +22,7 @@ public class ViewInvoiceDetails extends AbstractPage {
     do {
       System.out.print("Enter Service ID:");
       long serviceId = Long.parseLong(scanner.nextLine());
-      serviceHistory = serviceHistoryRepository.getServiceHistoryByServiceId(serviceId);
+      serviceHistory = serviceHistoryRepository.getServiceHistoryById(serviceId);
     } while (serviceHistory == null);
 
     serviceHistoryRepository.printServiceHistory(serviceHistory);

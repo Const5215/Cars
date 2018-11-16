@@ -1,29 +1,29 @@
 package edu.ncsu.csc.repository;
 
-import edu.ncsu.csc.pages.AbstractPage;
-
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-class RepairRepository extends AbstractPage {
-  List<Long> getBasicServiceIdListByDiagnosisId(long diagnosisId) {
-    List<Long> basicServiceIdList = new ArrayList<>();
+public class RepairRepository extends AbstractRepository {
+
+  public List<Long> getBasicServiceIdsByDiagnosisId(Long diagnosisId) {
+    List<Long> basicServiceIds = new ArrayList<Long>();
+
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement("SELECT * FROM REPAIR WHERE DIAGNOSIS_ID=?");
+      preparedStatement = connection.prepareStatement("select * from REPAIR where DIAGNOSIS_ID=?");
       preparedStatement.setLong(1, diagnosisId);
       resultSet = preparedStatement.executeQuery();
       while (resultSet.next()) {
-        long basicServiceId = resultSet.getLong("BASIC_SERVICE_ID");
-        basicServiceIdList.add(basicServiceId);
+        basicServiceIds.add(resultSet.getLong("BASIC_SERVICE_ID"));
       }
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
       closeSqlConnection();
     }
-    return basicServiceIdList;
+
+    return basicServiceIds;
   }
 }

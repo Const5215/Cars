@@ -1,5 +1,6 @@
 package edu.ncsu.csc.pages.employee;
 
+import edu.ncsu.csc.entity.Center;
 import edu.ncsu.csc.entity.Employment;
 import edu.ncsu.csc.entity.Role;
 import edu.ncsu.csc.entity.User;
@@ -9,6 +10,7 @@ import edu.ncsu.csc.repository.CenterRepository;
 import edu.ncsu.csc.repository.EmploymentRepository;
 
 public class ViewProfile extends AbstractPage {
+
   private User employee;
 
   ViewProfile(User employee) {
@@ -18,30 +20,32 @@ public class ViewProfile extends AbstractPage {
 
   @Override
   public void run() {
-    System.out.println("#ViewProfile");
-    printProfile();
+    System.out.println("# ViewProfile");
+
+    EmploymentRepository employmentRepository = new EmploymentRepository();
+    CenterRepository centerRepository = new CenterRepository();
+    Employment employment = employmentRepository.getEmploymentByEmployeeId(employee.getId());
+    Center center = centerRepository.getCenterById(employment.getCenterId());
+
+    System.out.printf("Employee ID: %d\n", employee.getId());
+    System.out.printf("Name: %s\n", employee.getName());
+    System.out.printf("Address: %s\n", employee.getAddress());
+    System.out.printf("Email: %s\n", employee.getEmail());
+    System.out.printf("Phone: %s", employee.getPhone());
+    System.out.printf("Service center: %s", center.getName());
+    System.out.printf("Role: %s\n", employment.getPosition().toString());
+    System.out.printf("Start date: %s\n", dateFormat.format(employment.getStartDate()));
+    System.out.printf("Compensation: $%.2f per %s\n", employment.getCompensation(),
+        employment.getPosition() == Role.Mechanic ? "hour" : "month");
+
     displayChoices();
     getChoiceFromInput();
+    goBack();
+  }
+
+  private void goBack() {
     Page profile = new Profile(employee);
     profile.run();
   }
-
-  private void printProfile() {
-    System.out.println("Employee ID: " + employee.getId());
-    System.out.println("Name: " + employee.getName());
-    System.out.println("Address: " + employee.getAddress());
-    System.out.println("Email: " + employee.getEmail());
-    System.out.println("Phone: " + employee.getPhone());
-    EmploymentRepository employmentRepository = new EmploymentRepository();
-    Employment employment = employmentRepository.getEmploymentByEmployeeId(employee.getId());
-    float compensation = employmentRepository.getCompensationByEmployeeId(employee.getId());
-    CenterRepository centerRepository = new CenterRepository();
-    System.out.println("Service Center: " + centerRepository.getCenterNameByCenterId(employment.getCenterId()));
-    System.out.printf("Role: %s\n", employment.getPosition().toString());
-    System.out.printf("Start date: %s\n", employment.getStartDate());
-    System.out.println("Compensation: " + compensation);
-    System.out.println("Compensation Frequency: " + (employment.getPosition() == Role.Mechanic ? "Hourly" : "Monthly"));
-  }
-
 }
 

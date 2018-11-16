@@ -2,104 +2,19 @@ package edu.ncsu.csc.repository;
 
 import edu.ncsu.csc.entity.Employment;
 import edu.ncsu.csc.entity.Role;
-import edu.ncsu.csc.pages.AbstractPage;
-
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class EmploymentRepository extends AbstractPage {
+public class EmploymentRepository extends AbstractRepository {
 
-  public boolean oneReceptionistCheck(long centerId) {
+  public void add(Employment employment) {
     try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement(
-          "SELECT * FROM EMPLOYMENT WHERE CENTER_ID=? AND POSITION=?");
-      preparedStatement.setLong(1, centerId);
-      preparedStatement.setLong(2, Role.Receptionist.ordinal());
-      resultSet = preparedStatement.executeQuery();
-      return resultSet.next();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      closeSqlConnection();
-    }
-    return false;
-  }
-
-  public long getCenterIdByEmployeeId(long employeeId) {
-    long centerId = -1;
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement("SELECT CENTER_ID FROM EMPLOYMENT WHERE EMPLOYEE_ID=?");
-      preparedStatement.setLong(1, employeeId);
-      resultSet = preparedStatement.executeQuery();
-      if (resultSet.next()) {
-        centerId = resultSet.getLong("CENTER_ID");
-      } else {
-        System.out.println("Center Id not found");
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      closeSqlConnection();
-    }
-    return centerId;
-  }
-
-  public Employment getEmploymentByEmployeeId(long employeeId) {
-    Employment employment = null;
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement(
-          "SELECT * FROM EMPLOYMENT WHERE EMPLOYEE_ID=?");
-      preparedStatement.setLong(1, employeeId);
-      resultSet = preparedStatement.executeQuery();
-      if (resultSet.next()) {
-        employment = new Employment();
-        employment.setEmployeeId(resultSet.getLong("EMPLOYEE_ID"));
-        employment.setCenterId(resultSet.getLong("CENTER_ID"));
-        employment.setPosition(Role.values()[resultSet.getInt("POSITION")]);
-        employment.setCompensation(resultSet.getFloat("COMPENSATION"));
-        employment.setStartDate(resultSet.getDate("START_DATE"));
-      } else {
-        System.out.println("employee id not found");
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      closeSqlConnection();
-    }
-    return employment;
-  }
-
-  public float getCompensationByEmployeeId(long employeeId) {
-    float compensation = 0;
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement("SELECT * FROM EMPLOYMENT WHERE EMPLOYEE_ID=?");
-      preparedStatement.setLong(1, employeeId);
-      resultSet = preparedStatement.executeQuery();
-      if (resultSet.next()) {
-        compensation = resultSet.getFloat("COMPENSATION");
-      } else {
-        System.out.println("employee Id not found.");
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      closeSqlConnection();
-    }
-    return compensation;
-  }
-
-  public void addEmployment(Employment employment) {
-    try {
-      employment.setEmployeeId(resultSet.getLong("ID"));
       preparedStatement.executeUpdate();
-      preparedStatement = connection.prepareStatement("INSERT INTO EMPLOYMENT values (?, ?, ?, ?, ?)");
+      preparedStatement = connection
+          .prepareStatement("insert into EMPLOYMENT values (?, ?, ?, ?, ?)");
       preparedStatement.setLong(1, employment.getEmployeeId());
       preparedStatement.setLong(2, employment.getCenterId());
-      preparedStatement.setLong(3, employment.getPosition().ordinal());
+      preparedStatement.setInt(3, employment.getPosition().ordinal());
       preparedStatement.setFloat(4, employment.getCompensation());
       preparedStatement.setDate(5, new java.sql.Date(employment.getStartDate().getTime()));
       preparedStatement.executeUpdate();
@@ -108,5 +23,78 @@ public class EmploymentRepository extends AbstractPage {
     } finally {
       closeSqlConnection();
     }
+  }
+
+  public Employment getEmploymentByEmployeeId(Long employeeId) {
+    Employment employment = null;
+
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection
+          .prepareStatement("select * from EMPLOYMENT where EMPLOYEE_ID=?");
+      preparedStatement.setLong(1, employeeId);
+      resultSet = preparedStatement.executeQuery();
+      if (resultSet.next()) {
+        employment = new Employment(
+            resultSet.getLong("EMPLOYEE_ID"),
+            resultSet.getLong("CENTER_ID"),
+            Role.values()[resultSet.getInt("POSITION")],
+            resultSet.getFloat("COMPENSATION"),
+            resultSet.getDate("START_DATE")
+        );
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
+
+    return employment;
+  }
+
+  public Employment getReceptionistByCenterId(Long centerId) {
+    Employment receptionist = null;
+
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection
+          .prepareStatement("select * from EMPLOYMENT where CENTER_ID=? and POSITION=1");
+      preparedStatement.setLong(1, centerId);
+      resultSet = preparedStatement.executeQuery();
+      if (resultSet.next()) {
+        receptionist = new Employment(
+            resultSet.getLong("EMPLOYEE_ID"),
+            resultSet.getLong("CENTER_ID"),
+            Role.Receptionist,
+            resultSet.getFloat("COMPENSATION"),
+            resultSet.getDate("START_DATE")
+        );
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return receptionist;
+  }
+
+  public Long getCenterIdByEmployeeId(Long employeeId) {
+    Long centerId = null;
+
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection
+          .prepareStatement("select * from EMPLOYMENT where EMPLOYEE_ID=?");
+      preparedStatement.setLong(1, employeeId);
+      resultSet = preparedStatement.executeQuery();
+      if (resultSet.next()) {
+        centerId = resultSet.getLong("CENTER_ID");
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
+
+    return centerId;
   }
 }

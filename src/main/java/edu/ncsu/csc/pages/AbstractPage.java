@@ -1,13 +1,10 @@
 package edu.ncsu.csc.pages;
 
-import edu.ncsu.csc.entity.MatchType;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -15,18 +12,16 @@ import java.util.regex.Pattern;
 
 public class AbstractPage implements Page {
 
-  protected static final String URL = "jdbc:oracle:thin:@orca.csc.ncsu.edu:1521:orcl01";
-  protected static final String USERNAME = "";
-  protected static final String PASSWORD = "";
-  protected Connection connection;
-  protected PreparedStatement preparedStatement;
-  protected ResultSet resultSet;
   protected Scanner scanner;
   protected List<String> choices;
-  protected SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+  protected DateFormat dateFormat;
+  protected DateFormat timeFormat;
+
   protected AbstractPage() {
     scanner = new Scanner(System.in);
-    choices = new ArrayList<>();
+    choices = new ArrayList<String>();
+    dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+    timeFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
   }
 
   public void run() {
@@ -61,86 +56,55 @@ public class AbstractPage implements Page {
     } while (true);
   }
 
-  protected void closeSqlConnection() {
-    if (connection != null) {
-      try {
-        connection.close();
-      } catch (SQLException e) {
-        e.printStackTrace();
-      }
-    }
+  protected String getStringFromInput(String prompt) {
+    System.out.print(prompt);
+    return scanner.nextLine();
+  }
 
-    if (preparedStatement != null) {
-      try {
-        preparedStatement.close();
-      } catch (SQLException e) {
-        e.printStackTrace();
-      }
-    }
+  protected Date getDateFromInput(String prompt) {
+    Date date;
 
-    if (resultSet != null) {
+    while (true) {
+      System.out.print(prompt);
+
       try {
-        resultSet.close();
-      } catch (SQLException e) {
-        e.printStackTrace();
+        date = dateFormat.parse(scanner.nextLine());
+      } catch (ParseException e) {
+        System.out.println("Invalid date");
+        continue;
       }
+
+      return date;
     }
   }
 
-  protected String getInfo(String info, MatchType matchType) {
-    String result;
-    do {
-      System.out.print(info);
-      result = scanner.nextLine();
-      boolean matched = true;
-      String targetRegex;
-      Pattern pattern;
-      Matcher matcher;
-      switch (matchType) {
-        case Email:
-          targetRegex = "^[\\w.%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$";
-          pattern = Pattern.compile(targetRegex);
-          matcher = pattern.matcher(result);
-          matched = matcher.matches();
-          break;
-        case Phone:
-          targetRegex = "^\\d{3}-\\d{3}-\\d{4}$";
-          pattern = Pattern.compile(targetRegex);
-          matcher = pattern.matcher(result);
-          matched = matcher.matches();
-          break;
-        case Date:
-          targetRegex = "^[0-9][0-9][0-9][0-9]-[0-3][0-9]-[0-3][0-9]$";
-          pattern = Pattern.compile(targetRegex);
-          matcher = pattern.matcher(result);
-          matched = matcher.matches();
-          break;
-        case Number:
-          try {
-            Long num = Long.parseLong(result);
-          } catch (NumberFormatException e) {
-            matched = false;
-          }
-      }
-      if (matched) {
-        break;
+  protected String getPhoneFromInput(String prompt) {
+    while (true) {
+      String phone = getStringFromInput(prompt);
+      Pattern pattern = Pattern.compile("^\\d{3}-\\d{3}-\\d{4}$");
+      Matcher matcher = pattern.matcher(phone);
+
+      if (matcher.matches()) {
+        return phone;
       } else {
-        switch (matchType) {
-          case Email:
-            System.out.println("Invalid email");
-            break;
-          case Phone:
-            System.out.println("Invalid phone");
-            break;
-          case Date:
-            System.out.println("Invalid date");
-            break;
-          case Number:
-            System.out.println("Invalid number");
-        }
+        System.out.println("Invalid phone number");
       }
-    } while (true);
-    return result;
+    }
   }
+
+  protected String getEmailFromInput(String prompt) {
+    while (true) {
+      String email = getStringFromInput(prompt).toLowerCase();
+      Pattern pattern = Pattern.compile("^[\\w.%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
+      Matcher matcher = pattern.matcher(email);
+
+      if (matcher.matches()) {
+        return email;
+      } else {
+        System.out.println("Invalid email address");
+      }
+    }
+  }
+
 
 }

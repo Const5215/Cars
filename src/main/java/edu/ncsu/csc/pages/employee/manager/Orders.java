@@ -5,6 +5,7 @@ import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
 
 public class Orders extends AbstractPage {
+
   private User manager;
 
   Orders(User manager) {
@@ -29,9 +30,9 @@ public class Orders extends AbstractPage {
     }
   }
 
-  private void goBack() {
-    Page managerLanding = new ManagerLanding(manager);
-    managerLanding.run();
+  private void orderHistory() {
+    Page orderHistory = new OrderHistory(manager);
+    orderHistory.run();
   }
 
   private void newOrder() {
@@ -39,8 +40,8 @@ public class Orders extends AbstractPage {
     newOrder.run();
   }
 
-  private void orderHistory() {
-    Page orderHistory = new OrderHistory(manager);
-    orderHistory.run();
+  private void goBack() {
+    Page managerLanding = new ManagerLanding(manager);
+    managerLanding.run();
   }
 }

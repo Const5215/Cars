@@ -2,32 +2,33 @@ package edu.ncsu.csc.entity;
 
 public class Part {
 
-  private long id;
+  private Long id;
   private String name;
   private String make;
-  private float unitPrice;
-  private long warranty;
-  private long delivery_window;
-  private long distributorId;
+  private Float unitPrice;
+  private Integer warranty;
+  private Integer deliveryWindow;
+  private Long distributorId;
 
   public Part() {
   }
 
-  public Part(long id, String name, String make, float unitPrice, long warranty, long delivery_window, long distributorId) {
+  public Part(Long id, String name, String make, Float unitPrice, Integer warranty,
+      Integer deliveryWindow, Long distributorId) {
     this.id = id;
     this.name = name;
     this.make = make;
     this.unitPrice = unitPrice;
     this.warranty = warranty;
-    this.delivery_window = delivery_window;
+    this.deliveryWindow = deliveryWindow;
     this.distributorId = distributorId;
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(long id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
@@ -47,35 +48,35 @@ public class Part {
     this.make = make;
   }
 
-  public float getUnitPrice() {
+  public Float getUnitPrice() {
     return unitPrice;
   }
 
-  public void setUnitPrice(float unitPrice) {
+  public void setUnitPrice(Float unitPrice) {
     this.unitPrice = unitPrice;
   }
 
-  public long getWarranty() {
+  public Integer getWarranty() {
     return warranty;
   }
 
-  public void setWarranty(long warranty) {
+  public void setWarranty(Integer warranty) {
     this.warranty = warranty;
   }
 
-  public long getDelivery_window() {
-    return delivery_window;
+  public Integer getDeliveryWindow() {
+    return deliveryWindow;
   }
 
-  public void setDelivery_window(long delivery_window) {
-    this.delivery_window = delivery_window;
+  public void setDeliveryWindow(Integer deliveryWindow) {
+    this.deliveryWindow = deliveryWindow;
   }
 
-  public long getDistributorId() {
+  public Long getDistributorId() {
     return distributorId;
   }
 
-  public void setDistributorId(long distributorId) {
+  public void setDistributorId(Long distributorId) {
     this.distributorId = distributorId;
   }
 }

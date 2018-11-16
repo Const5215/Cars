@@ -12,13 +12,14 @@ public class Profile extends AbstractPage {
     this.customer = customer;
     choices.add("View Profile");
     choices.add("Update Profile");
-    choices.add("Go back");
+    choices.add("Go Back");
   }
 
   @Override
   public void run() {
     System.out.println("# Profile");
     displayChoices();
+
     switch (getChoiceFromInput()) {
       case 1:
         viewProfile();
@@ -31,11 +32,6 @@ public class Profile extends AbstractPage {
     }
   }
 
-  private void goBack() {
-    Page customerLanding = new CustomerLanding(customer);
-    customerLanding.run();
-  }
-
   private void viewProfile() {
     Page viewProfile = new ViewProfile(customer);
     viewProfile.run();
@@ -44,5 +40,10 @@ public class Profile extends AbstractPage {
   private void updateProfile() {
     Page updateProfile = new UpdateProfile(customer);
     updateProfile.run();
+  }
+
+  private void goBack() {
+    Page customerLanding = new CustomerLanding(customer);
+    customerLanding.run();
   }
 }

@@ -65,5 +65,4 @@ public class CustomerLanding extends AbstractPage {
     Page home = new Home();
     home.run();
   }
-
 }

@@ -1,5 +1,6 @@
 package edu.ncsu.csc.pages.start;
 
+import edu.ncsu.csc.entity.Employment;
 import edu.ncsu.csc.entity.Role;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
@@ -7,15 +8,20 @@ import edu.ncsu.csc.pages.Page;
 import edu.ncsu.csc.pages.customer.CustomerLanding;
 import edu.ncsu.csc.pages.employee.manager.ManagerLanding;
 import edu.ncsu.csc.pages.employee.receptionist.ReceptionistLanding;
-
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import edu.ncsu.csc.repository.CustomerRepository;
+import edu.ncsu.csc.repository.EmployeeRepository;
+import edu.ncsu.csc.repository.EmploymentRepository;
 
 public class Login extends AbstractPage {
 
-  private User user;
+  private CustomerRepository customerRepository;
+  private EmployeeRepository employeeRepository;
+  private EmploymentRepository employmentRepository;
 
   Login() {
+    customerRepository = new CustomerRepository();
+    employeeRepository = new EmployeeRepository();
+    employmentRepository = new EmploymentRepository();
     choices.add("Sign-In");
     choices.add("Go Back");
   }
@@ -27,7 +33,7 @@ public class Login extends AbstractPage {
 
     System.out.println("# Login");
 
-    do {
+    while (true) {
       System.out.print("Enter user ID: ");
 
       try {
@@ -37,93 +43,61 @@ public class Login extends AbstractPage {
         continue;
       }
 
-      System.out.print("Enter password: ");
-      password = scanner.nextLine();
+      password = getStringFromInput("Enter password: ");
 
       displayChoices();
 
       switch (getChoiceFromInput()) {
         case 1:
-          user = signIn(id, password);
-
-          if (user == null) {
-            System.out.println("Login incorrect");
-            continue;
-          }
-
-          switch (user.getRole()) {
-            case Customer:
-              Page customer = new CustomerLanding(user);
-              customer.run();
-              break;
-            case Manager:
-              Page manager = new ManagerLanding(user);
-              manager.run();
-              break;
-            case Receptionist:
-              Page receptionist = new ReceptionistLanding(user);
-              receptionist.run();
-              break;
-            case Mechanic:
-              System.out.println("Permission denied");
-              break;
-          }
-
-          user = null;
-          break;
+          signIn(id, password);
         case 2:
-          Page home = new Home();
-          home.run();
+          goBack();
       }
-    } while (user == null);
+    }
   }
 
-  private User signIn(Long id, String password) {
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement(
-          "select NAME, EMAIL, PHONE, ADDRESS, POSITION from EMPLOYEE, EMPLOYMENT where ID=EMPLOYEE_ID and ID=? and PASSWORD=?");
-      preparedStatement.setLong(1, id);
-      preparedStatement.setString(2, password);
-      resultSet = preparedStatement.executeQuery();
-      while (resultSet.next()) {
-        String name = resultSet.getString("NAME");
-        String email = resultSet.getString("EMAIL");
-        String phone = resultSet.getString("PHONE");
-        String address = resultSet.getString("ADDRESS");
-        Role role = Role.values()[resultSet.getInt("POSITION")];
-        user = new User(id, password, name, email, phone, address, role);
+  private void signIn(Long id, String password) {
+    User user = employeeRepository.getEmployeeById(id);
+
+    if (user == null) {
+      user = customerRepository.getCustomerById(id);
+      if (user == null) {
+        System.out.println("Login incorrect");
+        return;
+      } else {
+        user.setRole(Role.Customer);
       }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      closeSqlConnection();
+    } else {
+      Employment employment = employmentRepository.getEmploymentByEmployeeId(id);
+      user.setRole(employment.getPosition());
     }
 
-    if (user != null) {
-      return user;
+    if (!user.getPassword().equals(password)) {
+      System.out.println("Login incorrect");
+      return;
     }
 
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement(
-          "select NAME, EMAIL, PHONE, ADDRESS from CUSTOMER where ID=? and PASSWORD=?");
-      preparedStatement.setLong(1, id);
-      preparedStatement.setString(2, password);
-      resultSet = preparedStatement.executeQuery();
-      while (resultSet.next()) {
-        String name = resultSet.getString("NAME");
-        String email = resultSet.getString("EMAIL");
-        String phone = resultSet.getString("PHONE");
-        String address = resultSet.getString("ADDRESS");
-        user = new User(id, password, name, email, phone, address, Role.Customer);
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      closeSqlConnection();
+    switch (user.getRole()) {
+      case Customer:
+        Page customer = new CustomerLanding(user);
+        customer.run();
+        break;
+      case Manager:
+        Page manager = new ManagerLanding(user);
+        manager.run();
+        break;
+      case Receptionist:
+        Page receptionist = new ReceptionistLanding(user);
+        receptionist.run();
+        break;
+      case Mechanic:
+        System.out.println("Permission denied");
+        break;
     }
+  }
 
-    return user;
+  private void goBack() {
+    Page home = new Home();
+    home.run();
   }
 }

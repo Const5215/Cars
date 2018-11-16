@@ -1,19 +1,18 @@
 package edu.ncsu.csc.repository;
 
 import edu.ncsu.csc.entity.CarModel;
-import edu.ncsu.csc.pages.AbstractPage;
-
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CarModelRepository extends AbstractPage {
-  public void addCarModel(CarModel carModel) {
+public class CarModelRepository extends AbstractRepository {
+
+  public void add(CarModel carModel) {
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement(
-          "INSERT INTO CAR_MODEL VALUES (CAR_MODEL_ID_SEQ.nextval, ?, ?)");
+      preparedStatement = connection
+          .prepareStatement("insert into CAR_MODEL values (CAR_MODEL_ID_SEQ.nextval, ?, ?)");
       preparedStatement.setString(1, carModel.getMake());
       preparedStatement.setString(2, carModel.getModel());
       preparedStatement.executeUpdate();
@@ -24,69 +23,72 @@ public class CarModelRepository extends AbstractPage {
     }
   }
 
-  CarModel getCarModelByCarModelId(long carModelId) {
+  public CarModel getCarModelById(Long id) {
     CarModel carModel = null;
+
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement(
-          "select * FROM CAR_MODEL WHERE ID=?");
-      preparedStatement.setLong(1, carModelId);
+      preparedStatement = connection.prepareStatement("select * from CAR_MODEL where ID=?");
+      preparedStatement.setLong(1, id);
       resultSet = preparedStatement.executeQuery();
       if (resultSet.next()) {
-        carModel = new CarModel();
-        carModel.setId(resultSet.getLong("ID"));
-        carModel.setMake(resultSet.getString("MAKE"));
-        carModel.setModel(resultSet.getString("MODEL"));
-      } else {
-        System.out.println("car model id not found.");
+        carModel = new CarModel(
+            resultSet.getLong("ID"),
+            resultSet.getString("MAKE"),
+            resultSet.getString("MODEL")
+        );
       }
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
       closeSqlConnection();
     }
+
     return carModel;
   }
 
-  public long getCarModelIdByMakeAndModel(String make, String model) {
-    long carModelId = -1;
+  public Long getIdByMakeAndModel(String make, String model) {
+    Long id = null;
+
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement(
-          "SELECT * FROM CAR_MODEL WHERE MAKE=? AND MODEL=?");
+      preparedStatement = connection
+          .prepareStatement("select * from CAR_MODEL where MAKE=? and MODEL=?");
       preparedStatement.setString(1, make);
       preparedStatement.setString(2, model);
       resultSet = preparedStatement.executeQuery();
       if (resultSet.next()) {
-        carModelId = resultSet.getLong("ID");
+        id = resultSet.getLong("ID");
       }
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
       closeSqlConnection();
     }
-    return carModelId;
+
+    return id;
   }
 
-  public List<CarModel> getCarModelList() {
-    List<CarModel> carModelList = new ArrayList<>();
+  public List<CarModel> getAllCarModels() {
+    List<CarModel> carModels = new ArrayList<CarModel>();
+
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement(
-          "SELECT * FROM CAR_MODEL");
+      preparedStatement = connection.prepareStatement("select * from CAR_MODEL");
       resultSet = preparedStatement.executeQuery();
       while (resultSet.next()) {
-        CarModel carModel = new CarModel();
-        carModel.setId(resultSet.getLong("ID"));
-        carModel.setMake(resultSet.getString("MAKE"));
-        carModel.setModel(resultSet.getString("MODEL"));
-        carModelList.add(carModel);
+        carModels.add(new CarModel(
+            resultSet.getLong("ID"),
+            resultSet.getString("MAKE"),
+            resultSet.getString("MODEL")
+        ));
       }
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
       closeSqlConnection();
     }
-    return carModelList;
+
+    return carModels;
   }
 }
