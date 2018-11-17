@@ -1,5 +1,6 @@
 package edu.ncsu.csc.repository;
 
+import edu.ncsu.csc.entity.Role;
 import edu.ncsu.csc.entity.User;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -107,5 +108,33 @@ public class EmployeeRepository extends AbstractRepository {
     }
 
     return name;
+  }
+
+  public User getMechanicByName(String name) {
+    User mechanic = null;
+
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection.prepareStatement(
+          "SELECT * FROM EMPLOYEE, EMPLOYMENT WHERE ID=EMPLOYEE_ID AND NAME=? AND POSITION=?");
+      preparedStatement.setString(1, name);
+      preparedStatement.setLong(2, Role.Mechanic.ordinal());
+      resultSet = preparedStatement.executeQuery();
+      if (resultSet.next()) {
+        mechanic = new User(resultSet.getLong("ID"),
+          resultSet.getString("PASSWORD"),
+          resultSet.getString("NAME"),
+          resultSet.getString("EMAIL"),
+          resultSet.getString("PHONE"),
+          resultSet.getString("ADDRESS")
+        );
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
+
+    return mechanic;
   }
 }

@@ -1,14 +1,23 @@
 package edu.ncsu.csc.pages.customer;
 
+import edu.ncsu.csc.entity.Car;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
 
 public class ScheduleMaintenancePage_1 extends AbstractPage {
   private User customer;
-
+  private Car car;
+  private Integer currentMileage;
+  private User preferredMechanic;
   ScheduleMaintenancePage_1(User customer) {
+  }
+
+  public ScheduleMaintenancePage_1(User customer, Car car, Integer currentMileage, User preferredMechanic) {
     this.customer = customer;
+    this.car = car;
+    this.currentMileage = currentMileage;
+    this.preferredMechanic = preferredMechanic;
     choices.add("Find Service Date");
     choices.add("Go Back");
   }
