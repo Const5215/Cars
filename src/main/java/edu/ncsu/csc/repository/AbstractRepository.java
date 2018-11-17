@@ -8,8 +8,8 @@ import java.sql.SQLException;
 public class AbstractRepository {
 
   protected static final String URL = "jdbc:oracle:thin:@orca.csc.ncsu.edu:1521:orcl01";
-  protected static final String USERNAME = "";
-  protected static final String PASSWORD = "";
+  protected static final String USERNAME = "hwang75";
+  protected static final String PASSWORD = "-swap255";
   protected Connection connection;
   protected PreparedStatement preparedStatement;
   protected ResultSet resultSet;
