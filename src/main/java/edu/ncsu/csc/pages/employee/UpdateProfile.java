@@ -59,11 +59,11 @@ public class UpdateProfile extends AbstractPage {
   }
 
   private void updateEmailAddress() {
-    employee.setEmail(getEmailFromInput());
+    employee.setEmail(getEmailFromInput("Enter new email address: "));
   }
 
   private void updatePhone() {
-    employee.setPhone(getPhoneFromInput());
+    employee.setPhone(getPhoneFromInput("Enter new phone number (e.g. 123-456-7890): "));
   }
 
   private void updatePassword() {

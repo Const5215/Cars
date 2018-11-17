@@ -21,7 +21,7 @@ import java.util.List;
 
 public class ServiceController {
 
-  public List<BasicServicePart> getAllBasicServicePartsByServiceHistory(
+  static public List<BasicServicePart> getAllBasicServicePartsByServiceHistory(
       ServiceHistory serviceHistory) {
     BasicServicePartRepository basicServicePartRepository = new BasicServicePartRepository();
     MaintenanceDetailRepository maintenanceDetailRepository = new MaintenanceDetailRepository();
@@ -52,43 +52,44 @@ public class ServiceController {
     return basicServiceParts;
   }
 
-  public Float getTotalServiceCost(ServiceHistory serviceHistory) {
+  static public Float getTotalServiceCost(ServiceHistory serviceHistory) {
+    List<BasicServicePart> basicServiceParts = getAllBasicServicePartsByServiceHistory(
+        serviceHistory);
     Float totalServiceCost = 0f;
 
-    BasicServiceRepository basicServiceRepository = new BasicServiceRepository();
-    List<Long> basicServiceIdList = basicServiceRepository
-        .getBasicServiceIdListByServiceHistory(serviceHistory);
-    for (Long basicServiceId : basicServiceIdList) {
-      totalServiceCost += getBasicServiceCost(serviceHistory, basicServiceId);
+    for (BasicServicePart basicServicePart : basicServiceParts) {
+      totalServiceCost += getBasicServiceCost(serviceHistory, basicServicePart);
     }
 
     return totalServiceCost;
   }
 
-  private Float getBasicServiceCost(ServiceHistory serviceHistory, Long basicServiceId) {
-    return getPartCost(serviceHistory, basicServiceId) + getLaborCost(serviceHistory,
-        basicServiceId);
-  }
-
-  private Float getLaborCost(ServiceHistory serviceHistory, Long basicServiceId) {
+  static private Float getBasicServiceCost(ServiceHistory serviceHistory,
+      BasicServicePart basicServicePart) {
     BasicServiceRepository basicServiceRepository = new BasicServiceRepository();
     BasicServicePartRepository basicServicePartRepository = new BasicServicePartRepository();
     CarRepository carRepository = new CarRepository();
-
     BasicService basicService = basicServiceRepository
-        .getBasicServiceByBasicServiceId(basicServiceId);
+        .getBasicServiceById(basicServicePart.getBasicServiceId());
     Car car = carRepository.getCarByPlate(serviceHistory.getCarPlate());
+
+    return getPartCost(serviceHistory, basicServicePart) + getLaborCost(serviceHistory,
+        basicServicePart);
+  }
+
+  static private Float getLaborCost(ServiceHistory serviceHistory,
+      BasicServicePart basicServicePart) {
+
     BasicServicePart basicServicePart =
         basicServicePartRepository.getBasicServicePartByBasicServiceIdAndCarModelId(
-            basicServiceId, car.getCarModelId()
-        );
+            basicServiceId, car.getCarModelId());
     PartRepository partRepository = new PartRepository();
     Part part = partRepository.getPartById(basicServicePart.getPartId());
     Date latestServiceDate = getLatestServiceHistoryByCustomerIdAndStartTime(
         serviceHistory.getCustomerId(), serviceHistory.getStartTime());
     if (latestServiceDate != null) {
       if (part.getWarranty() == 0 ||
-          checkWarrantyInvalid(part.getWarranty(), serviceHistory.getStartTime(),
+          isWarrantyValid(part.getWarranty(), serviceHistory.getStartTime(),
               latestServiceDate)) {
         //invoice cost of parts and appropriate labor charge
         return (basicService.getChargeRate() == 0 ? 50 : 65) * basicService.getLaborHour();
@@ -103,7 +104,8 @@ public class ServiceController {
     }
   }
 
-  private float getPartCost(ServiceHistory serviceHistory, Long basicServiceId) {
+  static private float getPartCost(ServiceHistory serviceHistory,
+      BasicServicePart basicServicePart) {
     BasicServicePartRepository basicServicePartRepository = new BasicServicePartRepository();
     CarRepository carRepository = new CarRepository();
 
@@ -118,7 +120,7 @@ public class ServiceController {
         serviceHistory.getCustomerId(), serviceHistory.getStartTime());
     if (latestServiceDate != null) {
       if (part.getWarranty() == 0 ||
-          checkWarrantyInvalid(part.getWarranty(), serviceHistory.getStartTime(),
+          isWarrantyValid(part.getWarranty(), serviceHistory.getStartTime(),
               latestServiceDate)) {
         //invoice cost of parts and appropriate labor charge
         return part.getUnitPrice() * basicServicePart.getQuantity();
@@ -133,12 +135,21 @@ public class ServiceController {
     }
   }
 
-  private boolean checkWarrantyInvalid(long warranty, Date nowServiceDate, Date LastServiceDate) {
+  private Boolean isWarrantyValid(BasicServicePart basicServicePart, Integer warranty) {
+    PartRepository partRepository = new PartRepository();
+    Part part = partRepository.getPartById(basicServicePart.getPartId());
+
+    if (part.getWarranty() == 0) {
+      return Boolean.FALSE;
+    } else {
+
+    }
+
     Calendar nowServiceCal = Calendar.getInstance();
     nowServiceCal.setTime(nowServiceDate);
     Calendar lastServiceCal = Calendar.getInstance();
     lastServiceCal.setTime(LastServiceDate);
-    lastServiceCal.add(Calendar.MONTH, (int) warranty);
+    lastServiceCal.add(Calendar.MONTH, warranty);
     return lastServiceCal.getTime().getTime() <= nowServiceCal.getTime().getTime();
   }
 
