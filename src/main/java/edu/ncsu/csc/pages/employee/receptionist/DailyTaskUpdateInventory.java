@@ -4,6 +4,7 @@ import edu.ncsu.csc.entity.Role;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
+import edu.ncsu.csc.repository.AbstractRepository;
 import edu.ncsu.csc.repository.EmploymentRepository;
 
 import java.sql.Date;
@@ -21,6 +22,7 @@ import java.text.SimpleDateFormat;
  * TODO test
  */
 public class DailyTaskUpdateInventory extends AbstractPage {
+
     private User receptionist;
     private long centerId;
     /**
@@ -72,7 +74,7 @@ public class DailyTaskUpdateInventory extends AbstractPage {
      * @return bool: if the decrementing successful
      */
     private boolean countPartsOrderedToday() {
-
+        /*
         try {
             connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             preparedStatement = connection.prepareStatement(
@@ -95,6 +97,8 @@ public class DailyTaskUpdateInventory extends AbstractPage {
         }
 
         return true;
+        */
+        return true;
     }
 
     private boolean countPartsUsedToday() {
@@ -105,7 +109,7 @@ public class DailyTaskUpdateInventory extends AbstractPage {
     }
 
     private boolean decrementParts(long partId, long quantity) {
-
+        /*
         if (canBeDecrement(partId, quantity)) {
             try {
                 connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
@@ -122,7 +126,8 @@ public class DailyTaskUpdateInventory extends AbstractPage {
         } else {
             return false;
         }
-
+        return true;
+        */
         return true;
     }
 
@@ -134,6 +139,7 @@ public class DailyTaskUpdateInventory extends AbstractPage {
      * @return
      */
     private boolean canBeDecrement(long partId, long quantity) {
+      /*
         try {
             connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             preparedStatement = connection.prepareStatement(
@@ -153,6 +159,8 @@ public class DailyTaskUpdateInventory extends AbstractPage {
         }
 
         return true;
+      */
+      return true;
     }
 
     private void goBack() {

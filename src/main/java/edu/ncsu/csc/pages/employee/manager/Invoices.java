@@ -1,5 +1,6 @@
 package edu.ncsu.csc.pages.employee.manager;
 
+import edu.ncsu.csc.controller.ServiceController;
 import edu.ncsu.csc.entity.ServiceHistory;
 import edu.ncsu.csc.entity.ServiceStatus;
 import edu.ncsu.csc.entity.User;
@@ -14,9 +15,16 @@ import java.util.List;
 
 class Invoices extends AbstractPage {
   private User manager;
-
+  private CustomerRepository customerRepository;
+  private EmployeeRepository employeeRepository;
+  private ServiceHistoryRepository serviceHistoryRepository;
+  private ServiceController serviceController;
   Invoices(User manager) {
     this.manager = manager;
+    customerRepository = new CustomerRepository();
+    employeeRepository = new EmployeeRepository();
+    serviceHistoryRepository = new ServiceHistoryRepository();
+    serviceController = new ServiceController();
     choices.add("Go Back");
   }
 
@@ -35,26 +43,19 @@ class Invoices extends AbstractPage {
   }
 
   private void printServiceHistoryList(List<edu.ncsu.csc.entity.ServiceHistory> serviceHistoryList) {
-    CustomerRepository customerRepository = new CustomerRepository();
-    EmployeeRepository employeeRepository = new EmployeeRepository();
-    ServiceHistoryRepository serviceHistoryRepository = new ServiceHistoryRepository();
 
     System.out.printf("Your Center has %d completed service history in total.\n", serviceHistoryList.size());
     for (int i = 0; i < serviceHistoryList.size(); i++) {
       ServiceHistory serviceHistory = serviceHistoryList.get(i);
       System.out.printf("Service #%d details:\n", i);
       System.out.println("Service ID: " + serviceHistory.getId());
-      System.out.println("Customer Name: " + customerRepository.getCustomerNameByCustomerId(
-          serviceHistory.getCustomerId()
-      ));
+      System.out.println("Customer Name: " + customerRepository.getCustomerById(serviceHistory.getCustomerId()).getName());
       System.out.println("Service Start Time: " + serviceHistory.getStartTime());
       System.out.println("Service End Time: " + serviceHistory.getEndTime());
       System.out.println("Licence Plate: " + serviceHistory.getCarPlate());
       System.out.println("Service Type: " + serviceHistory.getServiceType().toString());
-      System.out.println("Mechanic Name: " + employeeRepository.getEmployeeNameByEmployeeId(
-          serviceHistory.getMechanicId()
-      ));
-      float totalServiceCost = serviceHistoryRepository.printPartDetails(serviceHistory);
+      System.out.println("Mechanic Name: " + employeeRepository.getNameById(serviceHistory.getMechanicId()));
+      float totalServiceCost = serviceController.printPartDetails(serviceHistory);
       System.out.println("Total Service Cost: " + totalServiceCost);
     }
   }
@@ -65,7 +66,7 @@ class Invoices extends AbstractPage {
     List<edu.ncsu.csc.entity.ServiceHistory> serviceHistoryList;
 
     long centerId = employmentRepository.getCenterIdByEmployeeId(manager.getId());
-    serviceHistoryList = serviceHistoryRepository.getServiceHistoryListByCenterId(centerId);
+    serviceHistoryList = serviceHistoryRepository.getServiceHistoriesByCenterId(centerId);
     return serviceHistoryList;
   }
 

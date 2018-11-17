@@ -30,10 +30,11 @@ public class CustomerRepository extends AbstractRepository {
       preparedStatement = connection.prepareStatement(
           "update CUSTOMER set PASSWORD=?, NAME=?, EMAIL=?, PHONE=?, ADDRESS=? where ID=?");
       preparedStatement.setString(1, customer.getPassword());
-      preparedStatement.setString(2, customer.getEmail());
-      preparedStatement.setString(3, customer.getPhone());
-      preparedStatement.setString(4, customer.getAddress());
-      preparedStatement.setLong(5, customer.getId());
+      preparedStatement.setString(2, customer.getName());
+      preparedStatement.setString(3, customer.getEmail());
+      preparedStatement.setString(4, customer.getPhone());
+      preparedStatement.setString(5, customer.getAddress());
+      preparedStatement.setLong(6, customer.getId());
       preparedStatement.executeUpdate();
     } catch (SQLException e) {
       e.printStackTrace();

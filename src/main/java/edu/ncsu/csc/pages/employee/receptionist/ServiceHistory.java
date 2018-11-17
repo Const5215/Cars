@@ -1,6 +1,6 @@
 package edu.ncsu.csc.pages.employee.receptionist;
 
-import edu.ncsu.csc.entity.MatchType;
+import edu.ncsu.csc.controller.ServiceController;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
@@ -11,21 +11,24 @@ import java.util.List;
 
 public class ServiceHistory extends AbstractPage {
   private User receptionist;
+  private ServiceHistoryRepository serviceHistoryRepository;
+  private CustomerRepository customerRepository;
+  private ServiceController serviceController;
 
   ServiceHistory(User receptionist) {
     this.receptionist = receptionist;
+    this.serviceHistoryRepository = new ServiceHistoryRepository();
+    this.customerRepository = new CustomerRepository();
+    this.serviceController = new ServiceController();
     choices.add("Go Back");
   }
 
   @Override
   public void run() {
-    ServiceHistoryRepository serviceHistoryRepository = new ServiceHistoryRepository();
-    CustomerRepository customerRepository = new CustomerRepository();
-
-    String email = getInfo("Enter customer email address:", MatchType.Email);
+    String email = getEmailFromInput("Enter customer email address:");
     User customer = customerRepository.getCustomerByEmail(email);
     List<edu.ncsu.csc.entity.ServiceHistory> serviceHistoryList =
-        serviceHistoryRepository.getServiceHistoryListByCustomerId(customer.getId());
+        serviceHistoryRepository.getServiceHistoriesByCustomerId(customer.getId());
 
     printServiceHistory(serviceHistoryList);
     displayChoices();
@@ -34,8 +37,7 @@ public class ServiceHistory extends AbstractPage {
   }
 
   private void printServiceHistory(List<edu.ncsu.csc.entity.ServiceHistory> serviceHistoryList) {
-    ServiceHistoryRepository serviceHistoryRepository = new ServiceHistoryRepository();
-    serviceHistoryRepository.printServiceHistoryListWithoutDetail(serviceHistoryList);
+    serviceController.printServiceHistoryListWithoutDetail(serviceHistoryList);
   }
 
   private void goBack() {

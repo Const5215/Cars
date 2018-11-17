@@ -33,7 +33,7 @@ public class MaintenanceDetailRepository extends AbstractRepository {
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
       preparedStatement = connection.prepareStatement(
-          "select * from MAINTENANCE_DETAIL where CAR_MODEL_ID=? and MAINTENANCE_TYPE<=?");
+          "select * from BASIC_SERVICE, MAINTENANCE_DETAIL where ID = BASIC_SERVICE_ID and CAR_MODEL_ID=? and MAINTENANCE_TYPE<=?");
       preparedStatement.setLong(1, carModelId);
       preparedStatement.setLong(2, maintenanceType.ordinal());
       resultSet = preparedStatement.executeQuery();
