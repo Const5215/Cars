@@ -1,24 +1,10 @@
 package edu.ncsu.csc.controller;
 
-import edu.ncsu.csc.entity.BasicService;
-import edu.ncsu.csc.entity.BasicServicePart;
-import edu.ncsu.csc.entity.Car;
-import edu.ncsu.csc.entity.Part;
-import edu.ncsu.csc.entity.ServiceHistory;
-import edu.ncsu.csc.entity.ServiceType;
+import edu.ncsu.csc.entity.*;
 import edu.ncsu.csc.pages.AbstractPage;
-import edu.ncsu.csc.repository.BasicServicePartRepository;
-import edu.ncsu.csc.repository.BasicServiceRepository;
-import edu.ncsu.csc.repository.CarRepository;
-import edu.ncsu.csc.repository.EmployeeRepository;
-import edu.ncsu.csc.repository.MaintenanceDetailRepository;
-import edu.ncsu.csc.repository.PartRepository;
-import edu.ncsu.csc.repository.RepairRepository;
-import edu.ncsu.csc.repository.ServiceHistoryRepository;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import edu.ncsu.csc.repository.*;
+
+import java.util.*;
 
 public class ServiceController extends AbstractPage {
 
@@ -237,6 +223,97 @@ public class ServiceController extends AbstractPage {
       totalServiceCost += partCost + laborCost;
     }
     return totalServiceCost;
+  }
+
+  public long getCustomerServiceCenterId(User customer) {
+    String[] addressParts = customer.getAddress().split(" ");
+    String post = addressParts[addressParts.length-1].substring(0,2);
+    if (post.equals("27")) {
+      return 1;
+    } else if (post.equals("28")) {
+      return 2;
+    } else {
+      System.out.println("Error: do not find customer service center");
+      return -1;
+    }
+  }
+
+  public User getRandomMechanicByCenter(Long centerId) {
+    EmploymentRepository employmentRepository = new EmploymentRepository();
+    EmployeeRepository employeeRepository = new EmployeeRepository();
+
+    List<Long> mechanicIdList = employmentRepository.getMechanicsByCenterId(centerId);
+    long pickId = mechanicIdList.get((int) (new Random().nextInt(mechanicIdList.size()-1)));
+    return employeeRepository.getEmployeeById(pickId);
+  }
+
+  public java.sql.Date getTomorrow() {
+    Calendar cal = Calendar.getInstance();
+    cal.add(Calendar.DAY_OF_MONTH, 1);
+    cal.set(Calendar.HOUR_OF_DAY, 8);
+    cal.set(Calendar.MINUTE, 0);
+    cal.set(Calendar.SECOND, 0);
+    cal.set(Calendar.MILLISECOND, 0);
+    return new java.sql.Date(cal.getTimeInMillis());
+  }
+
+  public java.sql.Date getBasicServiceDate(ServiceHistory serviceHistory, BasicServicePart basicServicePart) {
+    java.sql.Date basicServiceDate;
+    InventoryRepository inventoryRepository = new InventoryRepository();
+
+    //first see if we can do without orders - both internal and external ones - by checking local inventory and ongoing orders
+    basicServiceDate = getNoOrderDate(serviceHistory, basicServicePart);
+    if (!basicServiceDate.equals(null)) {
+      return basicServiceDate;
+    }
+
+    //else place orders
+    Inventory otherInventory = inventoryRepository.getInventoryByCenterIdAndPartId(
+        3-serviceHistory.getCenterId(), basicServicePart.getPartId()
+    );
+
+
+    return basicServiceDate;
+  }
+
+  private java.sql.Date getNoOrderDate(ServiceHistory serviceHistory, BasicServicePart basicServicePart) {
+    InventoryRepository inventoryRepository = new InventoryRepository();
+    OrderRepository orderRepository = new OrderRepository();
+
+    //demand quantity is this request plus all unfinished request concerning this part
+    Integer demandQuantity = getDemandQuantity(serviceHistory, basicServicePart);
+    Inventory localInventory = inventoryRepository.getInventoryByCenterIdAndPartId(
+        serviceHistory.getCenterId(), basicServicePart.getPartId()
+    );
+    if (localInventory.getAvailableQuantity() >= demandQuantity) {
+      //we have enough right now
+      localInventory.setAvailableQuantity(
+          localInventory.getAvailableQuantity() - basicServicePart.getQuantity()
+      );
+      inventoryRepository.update(localInventory);
+      return getTomorrow();
+    }
+
+    Integer baseQuantity = localInventory.getAvailableQuantity();
+    List<Order> orderList = orderRepository.getOrdersByToIdAndPartIdAndStatus(
+        serviceHistory.getCenterId(), basicServicePart.getPartId(), ServiceStatus.Pending
+    );
+    for(Order order : orderList) {
+      baseQuantity += order.getQuantity();
+      if (baseQuantity >= demandQuantity) {
+        //we have enough after a certain order arrives
+        localInventory.setAvailableQuantity(0);
+        inventoryRepository.update(localInventory);
+
+      }
+    }
+    return null;
+  }
+
+  private Integer getDemandQuantity(ServiceHistory serviceHistory, BasicServicePart basicServicePart) {
+    Integer demandQuantity = basicServicePart.getQuantity();
+    //not finished yet
+    return demandQuantity;
   }
 
 }

@@ -28,8 +28,8 @@ public class ScheduleRepairPage_2 extends AbstractPage {
   }
 
   private void goBack() {
-    Page scheduleRepairPage_1 = new ScheduleRepairPage_1(customer);
-    scheduleRepairPage_1.run();
+    //Page scheduleRepairPage_1 = new ScheduleRepairPage_1(customer);
+    //scheduleRepairPage_1.run();
   }
 
   private void repairOnDate() {

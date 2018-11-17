@@ -4,6 +4,8 @@ import edu.ncsu.csc.entity.Employment;
 import edu.ncsu.csc.entity.Role;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EmploymentRepository extends AbstractRepository {
 
@@ -97,4 +99,26 @@ public class EmploymentRepository extends AbstractRepository {
 
     return centerId;
   }
+
+  public List<Long> getMechanicsByCenterId(Long centerId) {
+    List<Long> mechanicIdList = new ArrayList<Long>();
+
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection
+          .prepareStatement("select * from EMPLOYMENT where CENTER_ID=? AND POSITION=?");
+      preparedStatement.setLong(1, centerId);
+      preparedStatement.setLong(2, Role.Mechanic.ordinal());
+      resultSet = preparedStatement.executeQuery();
+      while(resultSet.next()) {
+        mechanicIdList.add(resultSet.getLong("EMPLOYEE_ID"));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
+    return mechanicIdList;
+  }
+
 }
