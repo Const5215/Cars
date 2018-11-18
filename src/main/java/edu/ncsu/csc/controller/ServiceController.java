@@ -442,6 +442,22 @@ public class ServiceController extends AbstractPage {
         System.out.println("Invalid input");
       }
     }while(true);
+    updateInventory(serviceHistory);
+  }
+
+  private void updateInventory(ServiceHistory serviceHistory) {
+    CustomerRepository customerRepository = new CustomerRepository();
+    InventoryRepository inventoryRepository = new InventoryRepository();
+
+    User customer = customerRepository.getCustomerById(serviceHistory.getCustomerId());
+    List<BasicServicePart> basicServicePartList = getAllBasicServicePartsByServiceHistory(serviceHistory);
+    for (BasicServicePart basicServicePart : basicServicePartList) {
+      Inventory inventory = inventoryRepository.getInventoryByCenterIdAndPartId(
+          getCustomerServiceCenterId(customer), basicServicePart.getPartId()
+      );
+      inventory.setAvailableQuantity(inventory.getAvailableQuantity()-basicServicePart.getQuantity());
+      inventoryRepository.update(inventory);
+    }
   }
 
 }
