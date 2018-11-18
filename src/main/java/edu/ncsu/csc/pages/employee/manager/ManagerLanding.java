@@ -112,7 +112,7 @@ public class ManagerLanding extends AbstractPage {
   }
 
   private void payroll() {
-    Page payroll = new Payroll(manager);
+    Page payroll = new ViewPayroll(manager);
     payroll.run();
   }
 

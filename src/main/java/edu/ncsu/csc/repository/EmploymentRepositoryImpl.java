@@ -1,4 +1,4 @@
-package edu.ncsu.csc.pages.employee.manager;
+package edu.ncsu.csc.repository;
 
 import edu.ncsu.csc.entity.Employment;
 import edu.ncsu.csc.entity.User;
@@ -6,7 +6,6 @@ import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.util.ResultSetUtils;
 
 import java.sql.DriverManager;
-import java.sql.SQLException;
 
 public class EmploymentRepositoryImpl extends AbstractPage implements IEmploymentRepository {
     @Override
@@ -25,5 +24,12 @@ public class EmploymentRepositoryImpl extends AbstractPage implements IEmploymen
         }
         if (employment == null) return -1;
         return employment.getCenterId();
+    }
+
+    public static void main(String[] args){
+        IEmploymentRepository employmentRepository = new EmploymentRepositoryImpl();
+        User user = new User();
+        user.setId(187658163L);
+        employmentRepository.getCenterId(user);
     }
 }

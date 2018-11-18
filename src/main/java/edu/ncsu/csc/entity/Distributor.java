@@ -14,7 +14,7 @@ public class Distributor implements Serializable {
 
     private List<ExternalOrder> externalOrders;
 
-    protected Distributor() {
+    public Distributor() {
     }
 
     public Distributor(

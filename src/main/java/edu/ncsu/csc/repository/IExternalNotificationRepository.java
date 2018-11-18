@@ -1,4 +1,4 @@
-package edu.ncsu.csc.pages.employee.manager;
+package edu.ncsu.csc.repository;
 
 import edu.ncsu.csc.entity.ExternalNotification;
 

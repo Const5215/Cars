@@ -5,6 +5,7 @@ import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
 import edu.ncsu.csc.repository.EmploymentRepository;
+import edu.ncsu.csc.repository.InventoryRepositoryImpl;
 import edu.ncsu.csc.repository.PartRepository;
 
 import java.util.List;

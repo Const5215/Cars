@@ -11,19 +11,13 @@ public class InternalOrder implements Serializable {
 
     private Date orderDate;
 
-    private Date deliveryDate;
+    private Date expectedDeliveryDate;
+
+    private Date actualDeliveryDate;
 
     private Float total;
 
-    private OrderStatus status;
-
-    //private Part part;
-
-//    private Center fromCenter;
-//
-//    private Center toCenter;
-
-    private InternalNotification internalNotification;
+    private int status;
 
     private Long partId;
 
@@ -35,22 +29,20 @@ public class InternalOrder implements Serializable {
     public InternalOrder() {
     }
 
-    public InternalOrder(
-                         Center toCenter, InternalNotification internalNotification) {
+    public InternalOrder(Long id, Integer quantity, Date orderDate, Date expectedDeliveryDate, Date actualDeliveryDate, Float total, int status, Long partId, Long toId, Long fromId) {
+        this.id = id;
         this.quantity = quantity;
         this.orderDate = orderDate;
-        this.deliveryDate = deliveryDate;
+        this.expectedDeliveryDate = expectedDeliveryDate;
+        this.actualDeliveryDate = actualDeliveryDate;
         this.total = total;
         this.status = status;
-//        this.part = part;
-//        this.fromCenter = fromCenter;
-//        this.toCenter = toCenter;
-        this.internalNotification = internalNotification;
         this.partId = partId;
         this.toId = toId;
         this.fromId = fromId;
-
     }
+
+
 
     public Long getId() {
         return id;
@@ -75,15 +67,29 @@ public class InternalOrder implements Serializable {
     public void setOrderDate(Date orderDate) {
         this.orderDate = orderDate;
     }
-
-    public Date getDeliveryDate() {
-        return deliveryDate;
+    public Date getExpectedDeliveryDate() {
+        return expectedDeliveryDate;
     }
 
-    public void setDeliveryDate(Date deliveryDate) {
-        this.deliveryDate = deliveryDate;
+    public void setExpectedDeliveryDate(Date expectedDeliveryDate) {
+        this.expectedDeliveryDate = expectedDeliveryDate;
     }
 
+    public Date getActualDeliveryDate() {
+        return actualDeliveryDate;
+    }
+
+    public void setActualDeliveryDate(Date actualDeliveryDate) {
+        this.actualDeliveryDate = actualDeliveryDate;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
     public Float getTotal() {
         return total;
     }
@@ -92,43 +98,11 @@ public class InternalOrder implements Serializable {
         this.total = total;
     }
 
-    public OrderStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(OrderStatus status) {
-        this.status = status;
-    }
-
-//    public Part getPart() {
-//        return part;
-//    }
-//
-//    public void setPart(Part part) {
-//        this.part = part;
-//    }
-
     public Long getPartId() { return partId; }
 
     public void setPartId(Long partId) {
         this.partId = partId;
     }
-
-//    public Center getFromCenter() {
-//        return fromCenter;
-//    }
-//
-//    public void setFromCenter(Center fromCenter) {
-//        this.fromCenter = fromCenter;
-//    }
-//
-//    public Center getToCenter() {
-//        return toCenter;
-//    }
-//
-//    public void setToCenter(Center toCenter) {
-//        this.toCenter = toCenter;
-//    }
 
     public Long getToId() { return toId; }
 
@@ -142,11 +116,5 @@ public class InternalOrder implements Serializable {
         this.fromId = fromId;
     }
 
-    public InternalNotification getInternalNotification() {
-        return internalNotification;
-    }
-
-    public void setInternalNotification(InternalNotification internalNotification) {
-        this.internalNotification = internalNotification;
-    }
 }
+

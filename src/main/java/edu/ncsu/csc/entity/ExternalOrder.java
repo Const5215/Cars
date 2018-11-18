@@ -11,11 +11,13 @@ public class ExternalOrder implements Serializable {
 
     private Date orderDate;
 
-    private Date deliveryDate;
+    private Date expectDeliveryDate;
+
+    private Date actualDeliveryDate;
 
     private Float total;
 
-    private OrderStatus status;
+    private int status;
 
     private ExternalNotification externalNotification;
 
@@ -29,19 +31,18 @@ public class ExternalOrder implements Serializable {
     public ExternalOrder() {
     }
 
-    public ExternalOrder(
-                         Distributor distributor, ExternalNotification externalNotification) {
+    public ExternalOrder(Long id, Integer quantity, Date orderDate, Date expectDeliveryDate, Date actualDeliveryDate, Float total, int status, ExternalNotification externalNotification, Long partId, Long centerId, Long distributorId) {
+        this.id = id;
         this.quantity = quantity;
         this.orderDate = orderDate;
-        this.deliveryDate = deliveryDate;
+        this.expectDeliveryDate = expectDeliveryDate;
+        this.actualDeliveryDate = actualDeliveryDate;
         this.total = total;
         this.status = status;
         this.externalNotification = externalNotification;
         this.partId = partId;
-        this.distributorId = distributorId;
         this.centerId = centerId;
-
-
+        this.distributorId = distributorId;
     }
 
     public Long getId() {
@@ -66,12 +67,20 @@ public class ExternalOrder implements Serializable {
         this.orderDate = orderDate;
     }
 
-    public Date getDeliveryDate() {
-        return deliveryDate;
+    public Date getExpectDeliveryDate() {
+        return expectDeliveryDate;
     }
 
-    public void setDeliveryDate(Date deliveryDate) {
-        this.deliveryDate = deliveryDate;
+    public void setExpectDeliveryDate(Date expectDeliveryDate) {
+        this.expectDeliveryDate = expectDeliveryDate;
+    }
+
+    public Date getActualDeliveryDate() {
+        return actualDeliveryDate;
+    }
+
+    public void setActualDeliveryDate(Date actualDeliveryDate) {
+        this.actualDeliveryDate = actualDeliveryDate;
     }
 
     public Float getTotal() {
@@ -82,20 +91,13 @@ public class ExternalOrder implements Serializable {
         this.total = total;
     }
 
-    public OrderStatus getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(OrderStatus status) {
+    public void setStatus(int status) {
         this.status = status;
     }
-
-    public ExternalNotification getExternalNotification() {
-        return externalNotification;
-    }
-
-    public void setExternalNotification(ExternalNotification externalNotification) {
-        this.externalNotification = externalNotification; }
 
     public Long getPartId() { return partId; }
 
