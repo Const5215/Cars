@@ -2,9 +2,12 @@ package edu.ncsu.csc.repository;
 
 import edu.ncsu.csc.entity.ServiceHistory;
 import edu.ncsu.csc.entity.ServiceType;
+
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class ServiceHistoryRepository extends AbstractRepository {
@@ -231,17 +234,15 @@ public class ServiceHistoryRepository extends AbstractRepository {
     return serviceHistory;
   }
 
-  public List<ServiceHistory> getServiceHistoriesByCustomerIdAndCarPlate(Long customerId,
-      String carPlate) {
+  public List<ServiceHistory> getServiceHistoriesByCarPlate(String carPlate) {
     List<ServiceHistory> serviceHistories = new ArrayList<ServiceHistory>();
 
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
       preparedStatement = connection
           .prepareStatement(
-              "select * from MAINTENANCE_HISTORY where CUSTOMER_ID=? and CAR_PLATE=?");
-      preparedStatement.setLong(1, customerId);
-      preparedStatement.setString(2, carPlate);
+              "select * from MAINTENANCE_HISTORY where CAR_PLATE=?");
+      preparedStatement.setString(1, carPlate);
       resultSet = preparedStatement.executeQuery();
       while (resultSet.next()) {
         serviceHistories.add(new ServiceHistory(
@@ -264,9 +265,8 @@ public class ServiceHistoryRepository extends AbstractRepository {
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
       preparedStatement = connection
-          .prepareStatement("select * from REPAIR_HISTORY where CUSTOMER_ID=? and CAR_PLATE=?");
-      preparedStatement.setLong(1, customerId);
-      preparedStatement.setString(2, carPlate);
+          .prepareStatement("select * from REPAIR_HISTORY where CAR_PLATE=?");
+      preparedStatement.setString(1, carPlate);
       resultSet = preparedStatement.executeQuery();
       while (resultSet.next()) {
         serviceHistories.add(new ServiceHistory(
@@ -287,6 +287,53 @@ public class ServiceHistoryRepository extends AbstractRepository {
       closeSqlConnection();
     }
 
+    return serviceHistories;
+  }
+
+  public List<ServiceHistory> getServiceHistoriesBetweenDate(Date startDate, Date endDate) {
+    List<ServiceHistory> serviceHistories = new ArrayList<ServiceHistory>();
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection
+          .prepareStatement("select * from MAINTENANCE_HISTORY where END_TIME > ? and END_TIME < ?");
+      preparedStatement.setDate(1, startDate);
+      preparedStatement.setDate(2, endDate);
+      resultSet = preparedStatement.executeQuery();
+      while (resultSet.next()) {
+        serviceHistories.add(new ServiceHistory(
+            resultSet.getLong("ID"),
+            resultSet.getLong("CUSTOMER_ID"),
+            resultSet.getString("CAR_PLATE"),
+            resultSet.getLong("CENTER_ID"),
+            ServiceType.values()[resultSet.getInt("MAINTENANCE_TYPE")],
+            resultSet.getInt("MILEAGE"),
+            resultSet.getDate("START_TIME"),
+            resultSet.getDate("END_TIME"),
+            resultSet.getLong("MECHANIC_ID")));
+      }
+      preparedStatement = connection
+          .prepareStatement("select * from REPAIR_HISTORY where END_TIME > ? and END_TIME < ?");
+      preparedStatement.setDate(1, startDate);
+      preparedStatement.setDate(2, endDate);
+      resultSet = preparedStatement.executeQuery();
+      while (resultSet.next()) {
+        serviceHistories.add(new ServiceHistory(
+            resultSet.getLong("ID"),
+            resultSet.getLong("CUSTOMER_ID"),
+            resultSet.getString("CAR_PLATE"),
+            resultSet.getLong("CENTER_ID"),
+            ServiceType.Repair,
+            resultSet.getInt("MILEAGE"),
+            resultSet.getDate("START_TIME"),
+            resultSet.getDate("END_TIME"),
+            resultSet.getLong("MECHANIC_ID"),
+            resultSet.getLong("DIAGNOSIS_ID")));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
     return serviceHistories;
   }
 }
