@@ -24,7 +24,7 @@ public class ViewServiceHistory extends AbstractPage {
 
     ServiceHistoryRepository serviceHistoryRepository = new ServiceHistoryRepository();
     List<ServiceHistory> serviceHistories = serviceHistoryRepository
-        .getServiceHistoriesByCustomerId(customer.getId());
+        .getAllServiceHistoriesByCustomerId(customer.getId());
     System.out.println(
         "Service ID\tLicense Plate\tMechanic ID\tService Start Time\tService End Time\tService Status\tService Type\n");
     Date current = new Date();

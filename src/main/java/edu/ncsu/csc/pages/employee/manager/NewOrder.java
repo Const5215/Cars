@@ -1,6 +1,6 @@
 package edu.ncsu.csc.pages.employee.manager;
 
-import edu.ncsu.csc.entity.ExternalOrder;
+import edu.ncsu.csc.entity.Order;
 import edu.ncsu.csc.entity.OrderStatus;
 import edu.ncsu.csc.entity.Part;
 import edu.ncsu.csc.entity.User;
@@ -8,15 +8,16 @@ import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
 import edu.ncsu.csc.repository.*;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
 public class NewOrder extends AbstractPage {
   private User manager;
   private PartRepository partRepository = new PartRepository();
-  private ExternalOrder externalOrder = new ExternalOrder();
-  private IExternalOrderRepository externalOrderRepository = new ExternalOrderRepositoryImpl();
-  private IEmploymentRepository employmentRepository = new EmploymentRepositoryImpl();
+  private Order externalOrder = new Order();
+  private ExternalOrderRepository externalOrderRepository = new ExternalOrderRepository();
+  private EmploymentRepository employmentRepository = new EmploymentRepository();
 
   NewOrder(User manager) {
     this.manager = manager;
@@ -42,11 +43,11 @@ public class NewOrder extends AbstractPage {
   }
 
   private int printPart(){
-    List<Part> partList = partRepository.getAvailablePartList();
+    List<Part> partList = partRepository.getAllParts();
     System.out.println("=======================");
     System.out.println("   Part Information");
     for (Part part : partList){
-      System.out.println("Id : " + part.getId() + "\tName :" + part.getName());
+      System.out.println(part.getId() + ": " + part.getName());
     }
     System.out.println("=======================");
     return partList.size();
@@ -55,12 +56,12 @@ public class NewOrder extends AbstractPage {
   private void inputOrder(int partNum) {
     String partId;
     do {
-      System.out.println("Please enter part id:");
+      System.out.print("Please enter part id:");
       partId = scanner.nextLine();
-    } while (!partId.matches("^[1-9][0-9]*$") && Integer.valueOf(partId) <= partNum);
+    } while (!partId.matches("^[1-9][0-9]*$") || Integer.valueOf(partId) > partNum);
     String quantity;
     do {
-      System.out.println("please input quantity:");
+      System.out.print("please input quantity:");
       quantity = scanner.nextLine();
     } while(!quantity.matches("^[1-9][0-9]*$"));
     externalOrder.setPartId(Long.parseLong(partId));
@@ -68,21 +69,21 @@ public class NewOrder extends AbstractPage {
   }
 
   private void placeOrder(){
-    Part part = partRepository.getPartByPartId(externalOrder.getPartId());
+    Part part = partRepository.getPartById(externalOrder.getPartId());
+    Long centerId = employmentRepository.getCenterIdByEmployeeId(manager.getId());
     externalOrder.setTotal(externalOrder.getQuantity() * part.getUnitPrice());
     externalOrder.setDistributorId(part.getDistributorId());
-    externalOrder.setCenterId(employmentRepository.getCenterId(manager));
+    externalOrder.setCenterId(centerId);
     Calendar calendar = Calendar.getInstance();
-    calendar.add(Calendar.DATE, (int) part.getDelivery_window());
-    externalOrder.setExpectDeliveryDate(calendar.getTime());
+    calendar.add(Calendar.DATE, part.getDeliveryWindow());
+    externalOrder.setExpectedDeliveryDate(calendar.getTime());
     externalOrder.setStatus(OrderStatus.Pending.getStatus());
-    externalOrderRepository.saveExternalOrder(externalOrder);
-  }
-
-  public static void main(String[] args) {
-    User user = new User();
-    user.setId(1L);
-    NewOrder newOrder = new NewOrder(user);
-    newOrder.run();
+    int result_status = externalOrderRepository.saveExternalOrder(externalOrder);
+    if (result_status != 0) {
+      Long id = externalOrderRepository.lastExternalOrderId(centerId);
+      System.out.println("Order ID: " + id);
+      System.out.println("Estimated date of fulfillment: " +
+              new SimpleDateFormat("YYYY-MM-dd").format(calendar.getTime()));
+    }
   }
 }

@@ -79,7 +79,7 @@ public class PayrollController {
 
         for (ServiceHistory serviceHistory : serviceHistories) {
           basicServiceParts
-              .addAll(ServiceController.getAllBasicServicePartsByServiceHistory(serviceHistory));
+              .addAll(new ServiceController().getAllBasicServicePartsByServiceHistory(serviceHistory));
         }
 
         for (BasicServicePart basicServicePart : basicServiceParts) {

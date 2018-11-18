@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InternalOrderReposotory extends AbstractRepository {
+public class InternalOrderRepository extends AbstractRepository {
 
     public List<Order> getInternalOrder(long centerId) {
         List<Order> orderList = new ArrayList<>();
@@ -13,8 +13,22 @@ public class InternalOrderReposotory extends AbstractRepository {
         try{
             connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, String.valueOf(centerId));
+            preparedStatement.setLong(1, centerId);
             resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                Order order = new Order();
+                order.setId(resultSet.getLong("ID"));
+                order.setPartId(resultSet.getLong("PART_ID"));
+                order.setQuantity(resultSet.getInt("QUANTITY"));
+                order.setTotal(resultSet.getFloat("TOTAL"));
+                order.setOrderDate(resultSet.getDate("ORDER_DATE"));
+                order.setExpectedDeliveryDate(resultSet.getDate("EXPECTED_DELIVERY_DATE"));
+                order.setActualDeliveryDate(resultSet.getDate("ACTUAL_DELIVERY_DATE"));
+                order.setStatus(resultSet.getInt("STATUS"));
+                order.setFromId(resultSet.getLong("FROM_ID"));
+                order.setToId(resultSet.getLong("TO_ID"));
+                orderList.add(order);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

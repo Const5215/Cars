@@ -26,7 +26,7 @@ public class Invoice extends AbstractPage {
 
     ServiceHistoryRepository serviceHistoryRepository = new ServiceHistoryRepository();
     List<ServiceHistory> serviceHistoryList =
-        serviceHistoryRepository.getServiceHistoriesByCustomerId(customer.getId());
+        serviceHistoryRepository.getAllServiceHistoriesByCustomerId(customer.getId());
     //filter by status:complete
     for (ServiceHistory serviceHistory : serviceHistoryList) {
       if (serviceHistory.getServiceStatus() != ServiceStatus.Complete) {
