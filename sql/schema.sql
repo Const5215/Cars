@@ -219,7 +219,7 @@ create table BASIC_SERVICE_PART
   CAR_MODEL_ID     NUMBER not null,
   QUANTITY         NUMBER not null,
   constraint BASIC_SERVICE_PART_PK
-  primary key (BASIC_SERVICE_ID, PART_ID, CAR_MODEL_ID),
+  primary key (BASIC_SERVICE_ID, CAR_MODEL_ID),
   constraint BASIC_SERVICE_CAR_MODEL_ID_FK
   foreign key (CAR_MODEL_ID) references CAR_MODEL,
   constraint BASIC_SERVICE_ID_FK
@@ -315,11 +315,6 @@ create sequence CUSTOMER_ID_SEQ
   nocache
 /
 
-create sequence CENTER_ID_SEQ
-  start with 3
-  nocache
-/
-
 create sequence EMPLOYEE_ID_SEQ
   start with 100000000
   nocache
@@ -330,7 +325,7 @@ create sequence ORDER_ID_SEQ
   nocache
 /
 
-create sequence SERVICE_HISTORY_ID
+create sequence SERVICE_HISTORY_ID_SEQ
   start with 17
   nocache
 /

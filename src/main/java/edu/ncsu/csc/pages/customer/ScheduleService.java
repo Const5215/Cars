@@ -16,7 +16,7 @@ public class ScheduleService extends AbstractPage {
 
   @Override
   public void run() {
-    System.out.println("#scheduleService");
+    System.out.println("# Schedule Service");
 
     displayChoices();
     switch (getChoiceFromInput()) {
@@ -31,9 +31,9 @@ public class ScheduleService extends AbstractPage {
     }
   }
 
-  private void goBack() {
-    Page customerService = new Service(customer);
-    customerService.run();
+  private void scheduleMaintenance() {
+    Page scheduleMaintenancePage_1 = new ScheduleMaintenancePage_1(customer);
+    scheduleMaintenancePage_1.run();
   }
 
   private void scheduleRepair() {
@@ -41,8 +41,8 @@ public class ScheduleService extends AbstractPage {
     scheduleRepairPage_1.run();
   }
 
-  private void scheduleMaintenance() {
-    Page scheduleMaintenancePage_1 = new ScheduleMaintenancePage_1(customer);
-    scheduleMaintenancePage_1.run();
+  private void goBack() {
+    Page customerService = new Service(customer);
+    customerService.run();
   }
 }

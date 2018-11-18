@@ -14,28 +14,15 @@ public class Profile extends AbstractPage {
     this.employee = employee;
     choices.add("View Profile");
     choices.add("Update Profile");
-    choices.add("Go back");
-  }
-
-  static void appropriateLandingPage(User employee) {
-    switch (employee.getRole()) {
-      case Manager:
-        Page managerLanding = new ManagerLanding(employee);
-        managerLanding.run();
-        break;
-      case Receptionist:
-        Page receptionistLanding = new ReceptionistLanding(employee);
-        receptionistLanding.run();
-    }
+    choices.add("Go Back");
   }
 
   @Override
   public void run() {
-    int choice;
     System.out.println("# Profile");
     displayChoices();
-    choice = getChoiceFromInput();
-    switch (choice) {
+
+    switch (getChoiceFromInput()) {
       case 1:
         viewProfile();
         break;
@@ -43,7 +30,7 @@ public class Profile extends AbstractPage {
         updateProfile();
         break;
       case 3:
-        appropriateLandingPage(employee);
+        goBack();
     }
   }
 
@@ -55,5 +42,18 @@ public class Profile extends AbstractPage {
   private void updateProfile() {
     Page updateProfile = new UpdateProfile(employee);
     updateProfile.run();
+  }
+
+  private void goBack() {
+    switch (employee.getRole()) {
+      case Manager:
+        Page managerLanding = new ManagerLanding(employee);
+        managerLanding.run();
+        break;
+      case Receptionist:
+        Page receptionistLanding = new ReceptionistLanding(employee);
+        receptionistLanding.run();
+        break;
+    }
   }
 }

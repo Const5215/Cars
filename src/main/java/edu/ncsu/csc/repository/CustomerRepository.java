@@ -1,76 +1,119 @@
 package edu.ncsu.csc.repository;
 
 import edu.ncsu.csc.entity.User;
-import edu.ncsu.csc.pages.AbstractPage;
-
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class CustomerRepository extends AbstractPage {
+public class CustomerRepository extends AbstractRepository {
 
-  public User getCustomerByEmail(String email) {
-    User customer = null;
+  public void add(User customer) {
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement("SELECT * from CUSTOMER WHERE EMAIL=?");
-      preparedStatement.setString(1, email);
+      preparedStatement = connection
+          .prepareStatement("insert into CUSTOMER values (CUSTOMER_ID_SEQ.nextval, ?, ?, ?, ?, ?)");
+      preparedStatement.setString(1, customer.getPassword());
+      preparedStatement.setString(2, customer.getName());
+      preparedStatement.setString(3, customer.getEmail());
+      preparedStatement.setString(4, customer.getPhone());
+      preparedStatement.setString(5, customer.getAddress());
+      preparedStatement.executeUpdate();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
+  }
+
+  public void update(User customer) {
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection.prepareStatement(
+          "update CUSTOMER set PASSWORD=?, NAME=?, EMAIL=?, PHONE=?, ADDRESS=? where ID=?");
+      preparedStatement.setString(1, customer.getPassword());
+      preparedStatement.setString(2, customer.getName());
+      preparedStatement.setString(3, customer.getEmail());
+      preparedStatement.setString(4, customer.getPhone());
+      preparedStatement.setString(5, customer.getAddress());
+      preparedStatement.setLong(6, customer.getId());
+      preparedStatement.executeUpdate();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
+  }
+
+  public User getCustomerById(Long id) {
+    User customer = null;
+
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection.prepareStatement("select * from CUSTOMER where ID=?");
+      preparedStatement.setLong(1, id);
       resultSet = preparedStatement.executeQuery();
       if (resultSet.next()) {
-        customer = new User();
-        customer.setId(resultSet.getLong("ID"));
-        customer.setPassword(resultSet.getString("PASSWORD"));
-        customer.setName(resultSet.getString("NAME"));
-        customer.setEmail(resultSet.getString("EMAIL"));
-        customer.setPhone(resultSet.getString("PHONE"));
-        customer.setAddress(resultSet.getString("ADDRESS"));
-      } else {
-        System.out.println("Email Address Not Found");
+        customer = new User(
+            resultSet.getLong("ID"),
+            resultSet.getString("PASSWORD"),
+            resultSet.getString("NAME"),
+            resultSet.getString("EMAIL"),
+            resultSet.getString("PHONE"),
+            resultSet.getString("ADDRESS")
+        );
       }
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
       closeSqlConnection();
     }
+
     return customer;
   }
 
-  public String getCustomerNameByCustomerId(long customerId) {
-    String customerName = "";
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement("SELECT * FROM CUSTOMER WHERE ID=?");
-      preparedStatement.setLong(1, customerId);
-      resultSet = preparedStatement.executeQuery();
-      if (resultSet.next()) {
-        customerName = resultSet.getString("NAME");
-      } else {
-        System.out.println("customer Id not found.");
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      closeSqlConnection();
-    }
-    return customerName;
-  }
+  public User getCustomerByEmail(String email) {
+    User customer = null;
 
-  public boolean checkUsedEmail(String email) {
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
       preparedStatement = connection.prepareStatement("select * from CUSTOMER where EMAIL=?");
       preparedStatement.setString(1, email);
       resultSet = preparedStatement.executeQuery();
       if (resultSet.next()) {
-        System.out.println("This email address is already used.");
-        return true;
-      } else {
-        return false;
+        customer = new User(
+            resultSet.getLong("ID"),
+            resultSet.getString("PASSWORD"),
+            resultSet.getString("NAME"),
+            resultSet.getString("EMAIL"),
+            resultSet.getString("PHONE"),
+            resultSet.getString("ADDRESS")
+        );
       }
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
       closeSqlConnection();
     }
-    return true;
+
+    return customer;
+  }
+
+  public Long getIdByEmail(String email) {
+    Long id = null;
+
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection.prepareStatement("select * from CUSTOMER where EMAIL=?");
+      preparedStatement.setString(1, email);
+      resultSet = preparedStatement.executeQuery();
+      if (resultSet.next()) {
+        id = resultSet.getLong("ID");
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
+
+    return id;
   }
 }

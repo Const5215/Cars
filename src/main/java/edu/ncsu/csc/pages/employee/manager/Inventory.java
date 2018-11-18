@@ -5,12 +5,12 @@ import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
 import edu.ncsu.csc.repository.EmploymentRepository;
-import edu.ncsu.csc.repository.InventoryRepositoryImpl;
+import edu.ncsu.csc.repository.InventoryRepository;
 import edu.ncsu.csc.repository.PartRepository;
-
 import java.util.List;
 
 public class Inventory extends AbstractPage {
+
   private User manager;
 
   Inventory(User manager) {
@@ -20,37 +20,28 @@ public class Inventory extends AbstractPage {
 
   @Override
   public void run() {
-    System.out.println("#inventory");
+    System.out.println("# Inventory");
 
-    List<edu.ncsu.csc.entity.Inventory> inventoryList = getInventoryPartList();
+    PartRepository partRepository = new PartRepository();
+    InventoryRepository inventoryRepository = new InventoryRepository();
+    EmploymentRepository employmentRepository = new EmploymentRepository();
+    Long centerId = employmentRepository.getCenterIdByEmployeeId(manager.getId());
+    List<Part> parts = partRepository.getAllParts();
+    edu.ncsu.csc.entity.Inventory inventory;
 
-    printInventoryPartList(inventoryList);
+    System.out.println(
+        "Part ID\tPart Name\tQuantity\tUnit Price\tMinimum Quantity Threshold\tMinimum Order Threshold\n");
+
+    for (Part part : parts) {
+      inventory = inventoryRepository.getInventoryByCenterIdAndPartId(centerId, part.getId());
+      System.out.printf("%d\t%s\t%d\t%f\t%d\t%d\n",
+          part.getId(), part.getName(), inventory.getCurrentQuantity(), part.getUnitPrice(),
+          inventory.getMinThreshold(), inventory.getMinOrderQuantity());
+    }
+
     displayChoices();
     getChoiceFromInput();
     goBack();
-  }
-
-  private void printInventoryPartList(List<edu.ncsu.csc.entity.Inventory> inventoryList) {
-    System.out.printf("Total part nums:%d\n", inventoryList.size());
-    PartRepository partRepository = new PartRepository();
-    for (int i = 0; i < inventoryList.size(); i++) {
-      Part part = partRepository.getPartByPartId(inventoryList.get(i).getPartId());
-      System.out.printf("Info for part #%d:\n", i);
-      System.out.println("Part ID:" + inventoryList.get(i).getPartId());
-      System.out.println("Part Name:" + part.getName());
-      System.out.println("Quantity:" + inventoryList.get(i).getAvailableQuantity());
-      System.out.println("Unit Price:" + part.getUnitPrice());
-      System.out.println("Minimum Quantity Threshold:" + inventoryList.get(i).getMinThreshold());
-      System.out.println("Minimum Order Threshold:" + inventoryList.get(i).getMinOrderQuantity());
-    }
-  }
-
-  private List<edu.ncsu.csc.entity.Inventory> getInventoryPartList() {
-    InventoryRepositoryImpl inventoryRepository = new InventoryRepositoryImpl();
-    EmploymentRepository employmentRepository = new EmploymentRepository();
-    return inventoryRepository.getInventory(
-        employmentRepository.getCenterIdByEmployeeId(manager.getId())
-    );
   }
 
   private void goBack() {

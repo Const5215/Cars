@@ -4,74 +4,71 @@ import java.util.Date;
 
 public class Payroll {
 
+  private Long employeeId;
+  private Date fromDate;
+  private Date toDate;
+  private Date paycheckDate;
+  private Float unit;
+  private Float earning;
 
-    private Long id;
-    private Date fromDate;
-    private Date toDate;
-    private Date paycheckDate;
-    private Integer unit;
-    private Float earning;
+  public Payroll() {
+  }
 
+  public Payroll(Long employeeId, Date fromDate, Date toDate, Date paycheckDate, Float unit,
+      Float earning) {
+    this.employeeId = employeeId;
+    this.fromDate = fromDate;
+    this.toDate = toDate;
+    this.paycheckDate = paycheckDate;
+    this.unit = unit;
+    this.earning = earning;
+  }
 
-    public Payroll() {
-    }
+  public Long getEmployeeId() {
+    return employeeId;
+  }
 
-    public Payroll(Date fromDate, Date toDate,
-                   Date paycheckDate, Integer unit,
-                   Float earning) {
-        this.fromDate = fromDate;
-        this.toDate = toDate;
-        this.paycheckDate = paycheckDate;
-        this.unit = unit;
-        this.earning = earning;
-    }
+  public void setEmployeeId(Long employeeId) {
+    this.employeeId = employeeId;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public Date getFromDate() {
+    return fromDate;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setFromDate(Date fromDate) {
+    this.fromDate = fromDate;
+  }
 
-    public Date getFromDate() {
-        return fromDate;
-    }
+  public Date getToDate() {
+    return toDate;
+  }
 
-    public void setFromDate(Date fromDate) {
-        this.fromDate = fromDate;
-    }
+  public void setToDate(Date toDate) {
+    this.toDate = toDate;
+  }
 
-    public Date getToDate() {
-        return toDate;
-    }
+  public Date getPaycheckDate() {
+    return paycheckDate;
+  }
 
-    public void setToDate(Date toDate) {
-        this.toDate = toDate;
-    }
+  public void setPaycheckDate(Date paycheckDate) {
+    this.paycheckDate = paycheckDate;
+  }
 
-    public Date getPaycheckDate() {
-        return paycheckDate;
-    }
+  public Float getUnit() {
+    return unit;
+  }
 
-    public void setPaycheckDate(Date paycheckDate) {
-        this.paycheckDate = paycheckDate;
-    }
+  public void setUnit(Float unit) {
+    this.unit = unit;
+  }
 
-    public Integer getUnit() {
-        return unit;
-    }
+  public Float getEarning() {
+    return earning;
+  }
 
-    public void setUnit(Integer unit) {
-        this.unit = unit;
-    }
-
-    public Float getEarning() {
-        return earning;
-    }
-
-    public void setEarning(Float earning) {
-        this.earning = earning;
-    }
-
+  public void setEarning(Float earning) {
+    this.earning = earning;
+  }
 }

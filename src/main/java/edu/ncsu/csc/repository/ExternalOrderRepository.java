@@ -3,7 +3,6 @@ package edu.ncsu.csc.repository;
 import edu.ncsu.csc.entity.ExternalOrder;
 import edu.ncsu.csc.entity.OrderStatus;
 import edu.ncsu.csc.pages.AbstractPage;
-import edu.ncsu.csc.util.ResultSetUtils;
 
 import java.sql.DriverManager;
 import java.util.ArrayList;

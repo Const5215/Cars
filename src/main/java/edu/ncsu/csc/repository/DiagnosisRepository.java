@@ -1,25 +1,25 @@
 package edu.ncsu.csc.repository;
 
-import edu.ncsu.csc.entity.Center;
+import edu.ncsu.csc.entity.Diagnosis;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class CenterRepository extends AbstractRepository {
+public class DiagnosisRepository extends AbstractRepository {
 
-  public Center getCenterById(Long id) {
-    Center center = null;
+  public Diagnosis getDiagnosisById(Long id) {
+    Diagnosis diagnosis = null;
 
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement("select * from CENTER where ID=?");
+      preparedStatement = connection.prepareStatement("select * from DIAGNOSIS where ID=?");
       preparedStatement.setLong(1, id);
       resultSet = preparedStatement.executeQuery();
       if (resultSet.next()) {
-        center = new Center(
+        diagnosis = new Diagnosis(
             resultSet.getLong("ID"),
-            resultSet.getString("NAME"),
-            resultSet.getString("TELEPHONE"),
-            resultSet.getString("ADDRESS")
+            resultSet.getString("PROBLEM"),
+            resultSet.getString("ISSUE"),
+            resultSet.getFloat("FEE")
         );
       }
     } catch (SQLException e) {
@@ -28,6 +28,6 @@ public class CenterRepository extends AbstractRepository {
       closeSqlConnection();
     }
 
-    return center;
+    return diagnosis;
   }
 }

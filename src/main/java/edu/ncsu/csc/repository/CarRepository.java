@@ -1,73 +1,79 @@
 package edu.ncsu.csc.repository;
 
 import edu.ncsu.csc.entity.Car;
-import edu.ncsu.csc.entity.CarModel;
-import edu.ncsu.csc.pages.AbstractPage;
-
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CarRepository extends AbstractPage {
-  private CarModelRepository carModelRepository;
+public class CarRepository extends AbstractRepository {
 
-  public CarRepository() {
-    this.carModelRepository = new CarModelRepository();
-  }
-
-  public long getCustomerIdByCarPlate(String carPlate) {
-    long customerId = -1;
+  public void add(Car car) {
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement("SELECT * FROM CAR WHERE PLATE=?");
-      preparedStatement.setString(1, carPlate);
+      preparedStatement = connection.prepareStatement("insert into CAR values (?, ?, ?, ?, ?)");
+      preparedStatement.setString(1, car.getPlate());
+      preparedStatement.setLong(2, car.getCustomerId());
+      preparedStatement.setLong(3, car.getCarModelId());
+      preparedStatement.setInt(4, car.getYear());
+      preparedStatement.setDate(5, new Date(car.getPurchaseDate().getTime()));
+      preparedStatement.executeUpdate();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
+  }
+
+  public Car getCarByPlate(String plate) {
+    Car car = null;
+
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      preparedStatement = connection.prepareStatement("select * from CAR where PLATE=?");
+      preparedStatement.setString(1, plate);
       resultSet = preparedStatement.executeQuery();
       if (resultSet.next()) {
-        customerId = resultSet.getLong("CUSTOMER_ID");
-      } else {
-        System.out.println("car plate not found.");
+        car = new Car(
+            resultSet.getString("PLATE"),
+            resultSet.getLong("CUSTOMER_ID"),
+            resultSet.getLong("CAR_MODEL_ID"),
+            resultSet.getInt("YEAR"),
+            resultSet.getDate("PURCHASE_DATE"));
       }
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
       closeSqlConnection();
     }
-    return customerId;
+
+    return car;
   }
 
-  public List<Car> getCarListByCustomerId(Long customerId) {
-    List<Car> carList = new ArrayList<>();
+  public List<Car> getAllCarsByCustomerId(Long customerId) {
+    List<Car> cars = new ArrayList<Car>();
+
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection.prepareStatement("SELECT * FROM CAR WHERE CUSTOMER_ID=?");
+      preparedStatement = connection.prepareStatement("select * from CAR where CUSTOMER_ID=?");
       preparedStatement.setLong(1, customerId);
       resultSet = preparedStatement.executeQuery();
       while (resultSet.next()) {
-        Car car = new Car();
-        car.setPlate(resultSet.getString("PLATE"));
-        car.setCustomerId(resultSet.getLong("CUSTOMER_ID"));
-        car.setCarModelId(resultSet.getLong("CAR_MODEL_ID"));
-        car.setYear(resultSet.getLong("YEAR"));
-        car.setPurchaseDate(resultSet.getDate("PURCHASE_DATE"));
-        carList.add(car);
+        cars.add(new Car(
+            resultSet.getString("PLATE"),
+            resultSet.getLong("CUSTOMER_ID"),
+            resultSet.getLong("CAR_MODEL_ID"),
+            resultSet.getInt("YEAR"),
+            resultSet.getDate("PURCHASE_DATE")
+        ));
       }
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
       closeSqlConnection();
     }
-    return carList;
-  }
 
-  public void printCarList(List<Car> carList) {
-    for (Car car : carList) {
-      System.out.println("Licence Plate: " + car.getPlate());
-      System.out.println("Purchase Date: " + car.getPurchaseDate());
-      CarModel carModel = carModelRepository.getCarModelByCarModelId(car.getCarModelId());
-      System.out.println("Make: " + carModel.getMake());
-      System.out.println("Model: " + carModel.getModel());
-      System.out.println("Year: " + car.getYear());
-    }
+    return cars;
   }
 }

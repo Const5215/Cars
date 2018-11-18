@@ -17,7 +17,7 @@ public class Service extends AbstractPage {
 
   @Override
   public void run() {
-    System.out.println("#customerService");
+    System.out.println("# Service");
 
     displayChoices();
     switch (getChoiceFromInput()) {

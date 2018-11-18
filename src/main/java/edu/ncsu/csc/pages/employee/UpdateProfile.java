@@ -1,109 +1,78 @@
 package edu.ncsu.csc.pages.employee;
 
-import edu.ncsu.csc.entity.MatchType;
 import edu.ncsu.csc.entity.User;
 import edu.ncsu.csc.pages.AbstractPage;
 import edu.ncsu.csc.pages.Page;
-import edu.ncsu.csc.repository.CustomerRepository;
-
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import edu.ncsu.csc.repository.EmployeeRepository;
 
 public class UpdateProfile extends AbstractPage {
 
-    private User user;
+  private EmployeeRepository employeeRepository;
+  private User employee;
 
-  UpdateProfile(User user) {
-    this.user = user;
-      choices.add("Name");
-      choices.add("Address");
-    choices.add("Email Address");
-      choices.add("Phone Number");
-      choices.add("Password");
+  UpdateProfile(User employee) {
+    employeeRepository = new EmployeeRepository();
+    this.employee = employee;
+    choices.add("Name");
+    choices.add("Address");
+    choices.add("Email address");
+    choices.add("Phone number");
+    choices.add("Password");
     choices.add("Go back");
-    }
+  }
 
-    @Override
-    public void run() {
-      int choice;
-      do {
-        System.out.println("#Update Profile");
-        displayChoices();
-        choice = getChoiceFromInput();
-        switch (choice) {
-          case 1:
-            updateName();
-            break;
-          case 2:
-            updateAddress();
-            break;
-          case 3:
-            updateEmailAddress();
-            break;
-          case 4:
-            updatePhone();
-            break;
-          case 5:
-            updatePassword();
-            break;
-          case 6:
-            Page profileSubmenu = new Profile(user);
-            profileSubmenu.run();
-        }
-      } while (choice != 6);
-    }
+  @Override
+  public void run() {
+    System.out.println("# Update Profile");
 
-  private void updateEmailAddress() {
-    String email;
-    CustomerRepository customerRepository = new CustomerRepository();
-    do {
-      email = getInfo("Enter new email address:", MatchType.Email);
-    } while (customerRepository.checkUsedEmail(email));
-    user.setEmail(email);
-    updateTable("EMAIL", user.getEmail());
-    System.out.println("Email updated.");
+    while (true) {
+      displayChoices();
+      switch (getChoiceFromInput()) {
+        case 1:
+          updateName();
+          break;
+        case 2:
+          updateAddress();
+          break;
+        case 3:
+          updateEmailAddress();
+          break;
+        case 4:
+          updatePhone();
+          break;
+        case 5:
+          updatePassword();
+          break;
+        case 6:
+          goBack();
+      }
+    }
+  }
+
+
+  private void updateName() {
+    employee.setName(getStringFromInput("Enter new name: "));
   }
 
   private void updateAddress() {
-    System.out.print("Enter new address: ");
-    user.setAddress(scanner.nextLine());
-    updateTable("ADDRESS", user.getAddress());
-    System.out.println("Address updated.");
+    employee.setAddress(getStringFromInput("Enter new address: "));
+  }
+
+  private void updateEmailAddress() {
+    employee.setEmail(getEmailFromInput("Enter new email address: "));
   }
 
   private void updatePhone() {
-    user.setPhone(getInfo("Enter new phone number (e.g. 123-456-7890): ", MatchType.Phone));
-    updateTable("PHONE", user.getPhone());
-    System.out.println("Phone updated.");
-  }
-
-  private void updateName() {
-    System.out.print("Enter new name: ");
-    user.setName(scanner.nextLine());
-    updateTable("NAME", user.getName());
-    System.out.println("Name updated.");
+    employee.setPhone(getPhoneFromInput("Enter new phone number (e.g. 123-456-7890): "));
   }
 
   private void updatePassword() {
-    System.out.print("Enter new password: ");
-    user.setPassword(scanner.nextLine());
-    updateTable("PASSWORD", user.getPassword());
-    System.out.println("Password updated.");
+    employee.setPassword(getStringFromInput("Enter new password: "));
   }
 
-  private void updateTable(String type, String val) {
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      String query = "UPDATE EMPLOYEE SET $type=? WHERE ID=?";
-      query = query.replace("$type", type);
-      preparedStatement = connection.prepareStatement(query);
-      preparedStatement.setString(1, val);
-      preparedStatement.setLong(2, user.getId());
-      preparedStatement.executeUpdate();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      closeSqlConnection();
-    }
+  private void goBack() {
+    Page profile = new Profile(employee);
+    employeeRepository.update(employee);
+    profile.run();
   }
 }

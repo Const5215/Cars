@@ -27,11 +27,6 @@ public class ScheduleMaintenancePage_1 extends AbstractPage {
     }
   }
 
-  private void goBack() {
-    Page scheduleService = new ScheduleService(customer);
-    scheduleService.run();
-  }
-
   private void findServiceDate() {
     if (serviceDateFound()) {
       Page scheduleMaintenancePage_2 = new ScheduleMaintenancePage_2(customer);
@@ -42,6 +37,13 @@ public class ScheduleMaintenancePage_1 extends AbstractPage {
       scheduleService.run();
     }
   }
+
+  private void goBack() {
+    Page scheduleService = new ScheduleService(customer);
+    scheduleService.run();
+  }
+
+
 
   private boolean serviceDateFound() {
     return true;

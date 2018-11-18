@@ -3,66 +3,70 @@ package edu.ncsu.csc.entity;
 import java.util.Date;
 
 public class ServiceHistory {
-  private long id;
-  private long customerId;
-  private long centerId;
-  private long mileage;
+
+  private Long id;
+  private Long customerId;
   private String carPlate;
+  private Long centerId;
   private ServiceType serviceType;
-  private long diagnosisId;
-  private Date startTime, endTime;
-  private long totalLaborHour;
+  private Integer mileage;
+  private Date startTime;
+  private Date endTime;
+  private Long mechanicId;
+  private Long diagnosisId;
   private ServiceStatus serviceStatus;
-  private long mechanicId;
 
   public ServiceHistory() {
   }
 
-  public ServiceHistory(long id, long customerId, long centerId, long mileage, String carPlate, ServiceType serviceType, long diagnosisId, Date startTime, Date endTime, long totalLaborHour, ServiceStatus serviceStatus, long mechanicId) {
+  public ServiceHistory(Long id, Long customerId, String carPlate, Long centerId,
+      ServiceType serviceType, Integer mileage, Date startTime, Date endTime,
+      Long mechanicId) {
     this.id = id;
     this.customerId = customerId;
-    this.centerId = centerId;
-    this.mileage = mileage;
     this.carPlate = carPlate;
+    this.centerId = centerId;
     this.serviceType = serviceType;
-    this.diagnosisId = diagnosisId;
+    this.mileage = mileage;
     this.startTime = startTime;
     this.endTime = endTime;
-    this.totalLaborHour = totalLaborHour;
-    this.serviceStatus = serviceStatus;
     this.mechanicId = mechanicId;
+    this.diagnosisId = null;
+    this.serviceStatus = endTime.before(new Date()) ? ServiceStatus.Complete
+        : (startTime.after(new Date()) ? ServiceStatus.Pending : ServiceStatus.Ongoing);
   }
 
-  public long getMileage() {
-    return mileage;
-  }
-
-  public void setMileage(long mileage) {
+  public ServiceHistory(Long id, Long customerId, String carPlate, Long centerId,
+      ServiceType serviceType, Integer mileage, Date startTime, Date endTime,
+      Long mechanicId, Long diagnosisId) {
+    this.id = id;
+    this.customerId = customerId;
+    this.carPlate = carPlate;
+    this.centerId = centerId;
+    this.serviceType = serviceType;
     this.mileage = mileage;
+    this.startTime = startTime;
+    this.endTime = endTime;
+    this.mechanicId = mechanicId;
+    this.diagnosisId = diagnosisId;
+    this.serviceStatus = endTime.before(new Date()) ? ServiceStatus.Complete
+        : (startTime.after(new Date()) ? ServiceStatus.Pending : ServiceStatus.Ongoing);
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(long id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
-  public long getCustomerId() {
+  public Long getCustomerId() {
     return customerId;
   }
 
-  public void setCustomerId(long customerId) {
+  public void setCustomerId(Long customerId) {
     this.customerId = customerId;
-  }
-
-  public long getCenterId() {
-    return centerId;
-  }
-
-  public void setCenterId(long centerId) {
-    this.centerId = centerId;
   }
 
   public String getCarPlate() {
@@ -73,6 +77,14 @@ public class ServiceHistory {
     this.carPlate = carPlate;
   }
 
+  public Long getCenterId() {
+    return centerId;
+  }
+
+  public void setCenterId(Long centerId) {
+    this.centerId = centerId;
+  }
+
   public ServiceType getServiceType() {
     return serviceType;
   }
@@ -81,12 +93,12 @@ public class ServiceHistory {
     this.serviceType = serviceType;
   }
 
-  public long getDiagnosisId() {
-    return diagnosisId;
+  public Integer getMileage() {
+    return mileage;
   }
 
-  public void setDiagnosisId(long diagnosisId) {
-    this.diagnosisId = diagnosisId;
+  public void setMileage(Integer mileage) {
+    this.mileage = mileage;
   }
 
   public Date getStartTime() {
@@ -105,12 +117,20 @@ public class ServiceHistory {
     this.endTime = endTime;
   }
 
-  public long getTotalLaborHour() {
-    return totalLaborHour;
+  public Long getMechanicId() {
+    return mechanicId;
   }
 
-  public void setTotalLaborHour(long totalLaborHour) {
-    this.totalLaborHour = totalLaborHour;
+  public void setMechanicId(Long mechanicId) {
+    this.mechanicId = mechanicId;
+  }
+
+  public Long getDiagnosisId() {
+    return diagnosisId;
+  }
+
+  public void setDiagnosisId(Long diagnosisId) {
+    this.diagnosisId = diagnosisId;
   }
 
   public ServiceStatus getServiceStatus() {
@@ -119,13 +139,5 @@ public class ServiceHistory {
 
   public void setServiceStatus(ServiceStatus serviceStatus) {
     this.serviceStatus = serviceStatus;
-  }
-
-  public long getMechanicId() {
-    return mechanicId;
-  }
-
-  public void setMechanicId(long mechanicId) {
-    this.mechanicId = mechanicId;
   }
 }

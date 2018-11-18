@@ -29,9 +29,8 @@ public class ManagerLanding extends AbstractPage {
 
   @Override
   public void run() {
-
-    int choice;
     System.out.println("# Manager");
+
     displayChoices();
     switch (getChoiceFromInput()) {
       case 1:
@@ -66,59 +65,15 @@ public class ManagerLanding extends AbstractPage {
         break;
       case 11:
         invoices();
+        break;
       case 12:
         logout();
     }
   }
 
-  private void logout() {
-    Page home = new Home();
-    home.run();
-  }
-
-  private void invoices() {
-    Page invoices = new Invoices(manager);
-    invoices.run();
-  }
-
-  private void serviceHistory() {
-    Page serviceHistory = new ServiceHistory(manager);
-    serviceHistory.run();
-  }
-
-  private void carServiceDetails() {
-    Page carServiceDetails = new CarServiceDetails(manager);
-    carServiceDetails.run();
-  }
-
-  private void newCarModel() {
-    Page newCarModel = new NewCarModel(manager);
-    newCarModel.run();
-  }
-
-  private void notifications() {
-    Page notifications = new Notifications(manager);
-    notifications.run();
-  }
-
-  private void orders() {
-    Page orders = new Orders(manager);
-    orders.run();
-  }
-
-  private void inventory() {
-    Page inventory = new Inventory(manager);
-    inventory.run();
-  }
-
-  private void payroll() {
-    Page payroll = new ViewPayroll(manager);
-    payroll.run();
-  }
-
-  private void addNewEmployees() {
-    Page addNewEmployees = new AddNewEmployees(manager);
-    addNewEmployees.run();
+  private void profile() {
+    Page profile = new Profile(manager);
+    profile.run();
   }
 
   private void viewCustomerProfile() {
@@ -126,8 +81,53 @@ public class ManagerLanding extends AbstractPage {
     viewCustomerProfile.run();
   }
 
-  private void profile() {
-    Page profile = new Profile(manager);
-    profile.run();
+  private void addNewEmployees() {
+    Page addNewEmployees = new AddNewEmployees(manager);
+    addNewEmployees.run();
+  }
+
+  private void payroll() {
+    Page payroll = new Payroll(manager);
+    payroll.run();
+  }
+
+  private void inventory() {
+    Page inventory = new Inventory(manager);
+    inventory.run();
+  }
+
+  private void orders() {
+    Page orders = new Orders(manager);
+    orders.run();
+  }
+
+  private void notifications() {
+    Page notifications = new Notifications(manager);
+    notifications.run();
+  }
+
+  private void newCarModel() {
+    Page newCarModel = new NewCarModel(manager);
+    newCarModel.run();
+  }
+
+  private void carServiceDetails() {
+    Page carServiceDetails = new CarServiceDetails(manager);
+    carServiceDetails.run();
+  }
+
+  private void serviceHistory() {
+    Page serviceHistory = new ServiceHistory(manager);
+    serviceHistory.run();
+  }
+
+  private void invoices() {
+    Page invoices = new Invoices(manager);
+    invoices.run();
+  }
+
+  private void logout() {
+    Page home = new Home();
+    home.run();
   }
 }
