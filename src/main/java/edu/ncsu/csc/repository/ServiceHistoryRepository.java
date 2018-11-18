@@ -5,9 +5,11 @@ import edu.ncsu.csc.entity.ServiceType;
 
 import java.sql.Date;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ServiceHistoryRepository extends AbstractRepository {
@@ -93,17 +95,14 @@ public class ServiceHistoryRepository extends AbstractRepository {
     return serviceHistory;
   }
 
-  public List<ServiceHistory> getServiceHistoriesByCenterId(Long centerId) {
-    List<ServiceHistory> serviceHistories = new ArrayList<ServiceHistory>();
+  private List<ServiceHistory> getAllMaintenanceHistoriesByPreparedStatement(
+      PreparedStatement preparedStatement) {
+    List<ServiceHistory> maintenanceHistories = new ArrayList<ServiceHistory>();
 
     try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection
-          .prepareStatement("select * from MAINTENANCE_HISTORY where CENTER_ID=?");
-      preparedStatement.setLong(1, centerId);
       resultSet = preparedStatement.executeQuery();
       while (resultSet.next()) {
-        serviceHistories.add(new ServiceHistory(
+        maintenanceHistories.add(new ServiceHistory(
             resultSet.getLong("ID"),
             resultSet.getLong("CUSTOMER_ID"),
             resultSet.getString("CAR_PLATE"),
@@ -116,18 +115,19 @@ public class ServiceHistoryRepository extends AbstractRepository {
       }
     } catch (SQLException e) {
       e.printStackTrace();
-    } finally {
-      closeSqlConnection();
     }
 
+    return maintenanceHistories;
+  }
+
+  private List<ServiceHistory> getAllRepairHistoriesByPreparedStatement(
+      PreparedStatement preparedStatement) {
+    List<ServiceHistory> repairHistories = new ArrayList<ServiceHistory>();
+
     try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection
-          .prepareStatement("select * from REPAIR_HISTORY where CENTER_ID=?");
-      preparedStatement.setLong(1, centerId);
       resultSet = preparedStatement.executeQuery();
       while (resultSet.next()) {
-        serviceHistories.add(new ServiceHistory(
+        repairHistories.add(new ServiceHistory(
             resultSet.getLong("ID"),
             resultSet.getLong("CUSTOMER_ID"),
             resultSet.getString("CAR_PLATE"),
@@ -139,6 +139,28 @@ public class ServiceHistoryRepository extends AbstractRepository {
             resultSet.getLong("MECHANIC_ID"),
             resultSet.getLong("DIAGNOSIS_ID")));
       }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return repairHistories;
+  }
+
+  public List<ServiceHistory> getAllServiceHistoriesByCenterId(Long centerId) {
+    List<ServiceHistory> serviceHistories = new ArrayList<ServiceHistory>();
+
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+
+      preparedStatement = connection
+          .prepareStatement("select * from MAINTENANCE_HISTORY where CENTER_ID=?");
+      preparedStatement.setLong(1, centerId);
+      serviceHistories.addAll(getAllMaintenanceHistoriesByPreparedStatement(preparedStatement));
+
+      preparedStatement = connection
+          .prepareStatement("select * from REPAIR_HISTORY where CENTER_ID=?");
+      preparedStatement.setLong(1, centerId);
+      serviceHistories.addAll(getAllRepairHistoriesByPreparedStatement(preparedStatement));
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
@@ -148,52 +170,21 @@ public class ServiceHistoryRepository extends AbstractRepository {
     return serviceHistories;
   }
 
-  public List<ServiceHistory> getServiceHistoriesByCustomerId(Long customerId) {
+  public List<ServiceHistory> getAllServiceHistoriesByCustomerId(Long customerId) {
     List<ServiceHistory> serviceHistories = new ArrayList<ServiceHistory>();
 
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+
       preparedStatement = connection
           .prepareStatement("select * from MAINTENANCE_HISTORY where CUSTOMER_ID=?");
       preparedStatement.setLong(1, customerId);
-      resultSet = preparedStatement.executeQuery();
-      while (resultSet.next()) {
-        serviceHistories.add(new ServiceHistory(
-            resultSet.getLong("ID"),
-            resultSet.getLong("CUSTOMER_ID"),
-            resultSet.getString("CAR_PLATE"),
-            resultSet.getLong("CENTER_ID"),
-            ServiceType.values()[resultSet.getInt("MAINTENANCE_TYPE")],
-            resultSet.getInt("MILEAGE"),
-            resultSet.getDate("START_TIME"),
-            resultSet.getDate("END_TIME"),
-            resultSet.getLong("MECHANIC_ID")));
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      closeSqlConnection();
-    }
+      serviceHistories.addAll(getAllMaintenanceHistoriesByPreparedStatement(preparedStatement));
 
-    try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
       preparedStatement = connection
           .prepareStatement("select * from REPAIR_HISTORY where CUSTOMER_ID=?");
       preparedStatement.setLong(1, customerId);
-      resultSet = preparedStatement.executeQuery();
-      while (resultSet.next()) {
-        serviceHistories.add(new ServiceHistory(
-            resultSet.getLong("ID"),
-            resultSet.getLong("CUSTOMER_ID"),
-            resultSet.getString("CAR_PLATE"),
-            resultSet.getLong("CENTER_ID"),
-            ServiceType.Repair,
-            resultSet.getInt("MILEAGE"),
-            resultSet.getDate("START_TIME"),
-            resultSet.getDate("END_TIME"),
-            resultSet.getLong("MECHANIC_ID"),
-            resultSet.getLong("DIAGNOSIS_ID")));
-      }
+      serviceHistories.addAll(getAllRepairHistoriesByPreparedStatement(preparedStatement));
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
@@ -234,53 +225,77 @@ public class ServiceHistoryRepository extends AbstractRepository {
     return serviceHistory;
   }
 
-  public List<ServiceHistory> getServiceHistoriesByCarPlate(String carPlate) {
+
+  public List<ServiceHistory> getAllServiceHistoriesByCarPlate(String carPlate) {
     List<ServiceHistory> serviceHistories = new ArrayList<ServiceHistory>();
 
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+
       preparedStatement = connection
-          .prepareStatement(
-              "select * from MAINTENANCE_HISTORY where CAR_PLATE=?");
+          .prepareStatement("select * from MAINTENANCE_HISTORY where CAR_PLATE=?");
       preparedStatement.setString(1, carPlate);
-      resultSet = preparedStatement.executeQuery();
-      while (resultSet.next()) {
-        serviceHistories.add(new ServiceHistory(
-            resultSet.getLong("ID"),
-            resultSet.getLong("CUSTOMER_ID"),
-            resultSet.getString("CAR_PLATE"),
-            resultSet.getLong("CENTER_ID"),
-            ServiceType.values()[resultSet.getInt("MAINTENANCE_TYPE")],
-            resultSet.getInt("MILEAGE"),
-            resultSet.getDate("START_TIME"),
-            resultSet.getDate("END_TIME"),
-            resultSet.getLong("MECHANIC_ID")));
-      }
+      serviceHistories.addAll(getAllMaintenanceHistoriesByPreparedStatement(preparedStatement));
+
+      preparedStatement = connection
+          .prepareStatement("select * from REPAIR_HISTORY where CAR_PLATE=?");
+      preparedStatement.setString(1, carPlate);
+      serviceHistories.addAll(getAllRepairHistoriesByPreparedStatement(preparedStatement));
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
       closeSqlConnection();
     }
 
+    return serviceHistories;
+  }
+
+  public List<ServiceHistory> getAllServiceHistoriesByCarPlateAndWarranty(String carPlate,
+      Integer warranty) {
+    List<ServiceHistory> serviceHistories = new ArrayList<ServiceHistory>();
+
     try {
       connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-      preparedStatement = connection
-          .prepareStatement("select * from REPAIR_HISTORY where CAR_PLATE=?");
+      preparedStatement = connection.prepareStatement(
+          "select * from MAINTENANCE_HISTORY where CAR_PLATE=? and END_TIME<sysdate and add_months(END_TIME, ?)>sysdate");
       preparedStatement.setString(1, carPlate);
-      resultSet = preparedStatement.executeQuery();
-      while (resultSet.next()) {
-        serviceHistories.add(new ServiceHistory(
-            resultSet.getLong("ID"),
-            resultSet.getLong("CUSTOMER_ID"),
-            resultSet.getString("CAR_PLATE"),
-            resultSet.getLong("CENTER_ID"),
-            ServiceType.Repair,
-            resultSet.getInt("MILEAGE"),
-            resultSet.getDate("START_TIME"),
-            resultSet.getDate("END_TIME"),
-            resultSet.getLong("MECHANIC_ID"),
-            resultSet.getLong("DIAGNOSIS_ID")));
-      }
+      preparedStatement.setInt(2, warranty);
+      serviceHistories.addAll(getAllMaintenanceHistoriesByPreparedStatement(preparedStatement));
+
+      preparedStatement = connection.prepareStatement(
+          "select * from REPAIR_HISTORY where CAR_PLATE=? and END_TIME<sysdate and add_months(END_TIME, ?)>sysdate");
+      preparedStatement.setString(1, carPlate);
+      preparedStatement.setInt(2, warranty);
+      serviceHistories.addAll(getAllRepairHistoriesByPreparedStatement(preparedStatement));
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
+
+    return serviceHistories;
+  }
+
+  public List<ServiceHistory> getAllServiceHistoriesByMechanicIdAndStartTimeAndEndTime(
+      Long mechanicId, Date startTime, Date endTime) {
+    List<ServiceHistory> serviceHistories = new ArrayList<ServiceHistory>();
+
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+
+      preparedStatement = connection.prepareStatement(
+          "select * from MAINTENANCE_HISTORY where MECHANIC_ID=? and START_TIME>? and END_TIME<?");
+      preparedStatement.setLong(1, mechanicId);
+      preparedStatement.setDate(2, new java.sql.Date(startTime.getTime()));
+      preparedStatement.setDate(3, new java.sql.Date(endTime.getTime()));
+      serviceHistories.addAll(getAllMaintenanceHistoriesByPreparedStatement(preparedStatement));
+
+      preparedStatement = connection.prepareStatement(
+          "select * from REPAIR_HISTORY where MECHANIC_ID=? and START_TIME>=? and END_TIME<?");
+      preparedStatement.setLong(1, mechanicId);
+      preparedStatement.setDate(2, new java.sql.Date(startTime.getTime()));
+      preparedStatement.setDate(3, new java.sql.Date(endTime.getTime()));
+      serviceHistories.addAll(getAllRepairHistoriesByPreparedStatement(preparedStatement));
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {

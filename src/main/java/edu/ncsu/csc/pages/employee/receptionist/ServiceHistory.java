@@ -28,7 +28,7 @@ public class ServiceHistory extends AbstractPage {
     String email = getEmailFromInput("Enter customer email address:");
     User customer = customerRepository.getCustomerByEmail(email);
     List<edu.ncsu.csc.entity.ServiceHistory> serviceHistoryList =
-        serviceHistoryRepository.getServiceHistoriesByCustomerId(customer.getId());
+        serviceHistoryRepository.getAllServiceHistoriesByCustomerId(customer.getId());
 
     printServiceHistory(serviceHistoryList);
     displayChoices();

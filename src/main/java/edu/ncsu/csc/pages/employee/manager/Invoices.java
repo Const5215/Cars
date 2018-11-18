@@ -66,7 +66,7 @@ class Invoices extends AbstractPage {
     List<edu.ncsu.csc.entity.ServiceHistory> serviceHistoryList;
 
     long centerId = employmentRepository.getCenterIdByEmployeeId(manager.getId());
-    serviceHistoryList = serviceHistoryRepository.getServiceHistoriesByCenterId(centerId);
+    serviceHistoryList = serviceHistoryRepository.getAllServiceHistoriesByCenterId(centerId);
     return serviceHistoryList;
   }
 

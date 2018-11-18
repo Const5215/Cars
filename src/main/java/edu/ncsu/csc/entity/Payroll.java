@@ -8,13 +8,13 @@ public class Payroll {
   private Date fromDate;
   private Date toDate;
   private Date paycheckDate;
-  private Integer unit;
+  private Float unit;
   private Float earning;
 
   public Payroll() {
   }
 
-  public Payroll(Long employeeId, Date fromDate, Date toDate, Date paycheckDate, Integer unit,
+  public Payroll(Long employeeId, Date fromDate, Date toDate, Date paycheckDate, Float unit,
       Float earning) {
     this.employeeId = employeeId;
     this.fromDate = fromDate;
@@ -56,11 +56,11 @@ public class Payroll {
     this.paycheckDate = paycheckDate;
   }
 
-  public Integer getUnit() {
+  public Float getUnit() {
     return unit;
   }
 
-  public void setUnit(Integer unit) {
+  public void setUnit(Float unit) {
     this.unit = unit;
   }
 

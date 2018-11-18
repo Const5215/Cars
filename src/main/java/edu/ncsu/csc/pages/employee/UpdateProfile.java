@@ -27,7 +27,6 @@ public class UpdateProfile extends AbstractPage {
 
     while (true) {
       displayChoices();
-      Integer choice = getChoiceFromInput();
       switch (getChoiceFromInput()) {
         case 1:
           updateName();
@@ -46,9 +45,7 @@ public class UpdateProfile extends AbstractPage {
           break;
         case 6:
           goBack();
-          break;
       }
-      if (choice == 5) break;
     }
   }
 
@@ -66,7 +63,7 @@ public class UpdateProfile extends AbstractPage {
   }
 
   private void updatePhone() {
-    employee.setPhone(getPhoneFromInput("Enter new phone: "));
+    employee.setPhone(getPhoneFromInput("Enter new phone number (e.g. 123-456-7890): "));
   }
 
   private void updatePassword() {
