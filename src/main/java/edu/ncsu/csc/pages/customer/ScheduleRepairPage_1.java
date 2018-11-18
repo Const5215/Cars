@@ -65,7 +65,7 @@ public class ScheduleRepairPage_1 extends AbstractPage {
   }
 
   private Date findRepairDate(ServiceHistory serviceHistory) {
-    Date repairDate = serviceController.getTomorrow();
+    Date repairDate = serviceController.getTomorrow(new java.util.Date());
     List<BasicServicePart> basicServicePartList = serviceController.getAllBasicServicePartsByServiceHistory(serviceHistory);
     for (BasicServicePart basicServicePart : basicServicePartList) {
       Date basicServiceDate = serviceController.getBasicServiceDate(serviceHistory, basicServicePart);
@@ -78,8 +78,8 @@ public class ScheduleRepairPage_1 extends AbstractPage {
   private void createDiagnosticReport(int choice) {
     ServiceHistory serviceHistory = createServiceHistory(choice);
     Date repairDate = findRepairDate(serviceHistory);
-    if (repairDate == serviceController.getTomorrow()) {
-      Page scheduleRepairPage_2 = new ScheduleRepairPage_2(customer);
+    if (repairDate == serviceController.getTomorrow(new java.util.Date())) {
+      Page scheduleRepairPage_2 = new ScheduleRepairPage_2(customer, car, currentMileage, preferredMechanic, serviceHistory);
       scheduleRepairPage_2.run();
     } else {
       displayErrorMessage(repairDate);

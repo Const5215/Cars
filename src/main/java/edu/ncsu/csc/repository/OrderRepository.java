@@ -6,12 +6,51 @@ import edu.ncsu.csc.entity.ServiceStatus;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 public class OrderRepository extends AbstractRepository {
+
+  public void add(Order order) {
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      if (order.getDeliveryOrder()){
+        preparedStatement = connection
+            .prepareStatement("insert into EXTERNAL_ORDER values (ORDER_ID_SEQ.nextval,?,?,?,?,?,?,?,?,?)");
+        preparedStatement.setLong(1, order.getPartId());
+        preparedStatement.setLong(2, order.getQuantity());
+        preparedStatement.setFloat(3, order.getTotal());
+        preparedStatement.setLong(4, order.getFromId());
+        preparedStatement.setLong(5, order.getToId());
+        preparedStatement.setDate(6, new java.sql.Date(order.getOrderDate().getTime()));
+        preparedStatement.setDate(7, new java.sql.Date(order.getExpectedDeliveryDate().getTime()));
+        preparedStatement.setNull(8, Types.DATE);
+        preparedStatement.setInt(9, order.getStatus().ordinal());
+        preparedStatement.executeUpdate();
+      }
+      else {
+        preparedStatement = connection
+          .prepareStatement("insert into INTERNAL_ORDER values (ORDER_ID_SEQ.nextval,?,?,?,?,?,?,?,?,?)");
+        preparedStatement.setLong(1, order.getPartId());
+        preparedStatement.setLong(2, order.getQuantity());
+        preparedStatement.setFloat(3, order.getTotal());
+        preparedStatement.setLong(4, order.getFromId());
+        preparedStatement.setLong(5, order.getToId());
+        preparedStatement.setDate(6, new java.sql.Date(order.getOrderDate().getTime()));
+        preparedStatement.setDate(7, new java.sql.Date(order.getExpectedDeliveryDate().getTime()));
+        preparedStatement.setNull(8, Types.DATE);
+        preparedStatement.setInt(9, order.getStatus().ordinal());
+        preparedStatement.executeUpdate();
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      closeSqlConnection();
+    }
+  }
 
   public List<Order> getOrdersByToIdAndPartIdAndStatus(Long centerId, Long partId, ServiceStatus serviceStatus) {
     List<Order> orderList = new ArrayList<Order>();
