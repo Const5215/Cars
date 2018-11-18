@@ -32,7 +32,7 @@ public class ServiceHistory extends AbstractPage {
 
     long centerId = employmentRepository.getCenterIdByEmployeeId(manager.getId());
     List<edu.ncsu.csc.entity.ServiceHistory> serviceHistoryList =
-        serviceHistoryRepository.getServiceHistoriesByCenterId(centerId);
+        serviceHistoryRepository.getAllServiceHistoriesByCenterId(centerId);
     printServiceHistory(serviceHistoryList);
     displayChoices();
     getChoiceFromInput();

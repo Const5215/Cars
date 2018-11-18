@@ -148,16 +148,16 @@ public class ServiceController extends AbstractPage {
     ServiceHistoryRepository serviceHistoryRepository = new ServiceHistoryRepository();
     Date lastServiceDate = null;
 
-    List<ServiceHistory> serviceHistoryList = serviceHistoryRepository.getServiceHistoriesByCustomerIdAndCarPlate(
-        targetServiceHistory.getCustomerId(), targetServiceHistory.getCarPlate()
-    );
-    for (ServiceHistory serviceHistory : serviceHistoryList) {
-      //skip later service and service without this part
-      if (!serviceHistory.getEndTime().before(targetServiceHistory.getEndTime()) ||
-          checkNotContainBasicService(serviceHistory, targetBasicServicePart) ) continue;
-      if (lastServiceDate == null || lastServiceDate.before(serviceHistory.getEndTime()))
-        lastServiceDate = serviceHistory.getEndTime();
-    }
+//    List<ServiceHistory> serviceHistoryList = serviceHistoryRepository.getServiceHistoriesByCustomerIdAndCarPlate(
+//        targetServiceHistory.getCustomerId(), targetServiceHistory.getCarPlate()
+//    );
+//    for (ServiceHistory serviceHistory : serviceHistoryList) {
+//      //skip later service and service without this part
+//      if (!serviceHistory.getEndTime().before(targetServiceHistory.getEndTime()) ||
+//          checkNotContainBasicService(serviceHistory, targetBasicServicePart) ) continue;
+//      if (lastServiceDate == null || lastServiceDate.before(serviceHistory.getEndTime()))
+//        lastServiceDate = serviceHistory.getEndTime();
+//    }
     return lastServiceDate;
   }
 

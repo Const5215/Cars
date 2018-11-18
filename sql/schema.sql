@@ -334,3 +334,33 @@ create sequence CAR_MODEL_ID_SEQ
   start with 7
   nocache
 /
+
+create sequence EXTERNAL_ORDER_ID_SEQ
+  nocache
+/
+
+create trigger EXTERNAL_ORDER_TRIGGER
+  before insert
+  on EXTERNAL_ORDER
+  for each row
+  when (NEW.ID is null)
+  begin
+    select EXTERNAL_ORDER_ID_SEQ.nextval into :new.id from dual;
+
+  end t_external_order_trigger;
+/
+
+create sequence INTERNAL_ORDER_ID_SEQ
+  nocache
+/
+
+create trigger INTERNAL_ORDER_TRIGGER
+  before insert
+  on INTERNAL_ORDER
+  for each row
+  when (NEW.ID is null)
+  begin
+  select INTERNAL_ORDER_ID_SEQ.nextval into :new.id from dual;
+
+end internal_order_trigger;
+/

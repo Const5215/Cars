@@ -7,6 +7,7 @@ import java.util.List;
 public class ScheduleController {
 
   public List<Date> getTwoAvailableTime(Long customerId, Car car) {
+    return null;
 
   }
 }

@@ -32,7 +32,7 @@ class Invoices extends AbstractPage {
     String email = getEmailFromInput("Enter customer email address: ");
     User customer = customerRepository.getCustomerByEmail(email);
     List<edu.ncsu.csc.entity.ServiceHistory> serviceHistoryList =
-        serviceHistoryRepository.getServiceHistoriesByCustomerId(customer.getId());
+        serviceHistoryRepository.getAllServiceHistoriesByCustomerId(customer.getId());
     //filter by status:complete
     for (ServiceHistory serviceHistory : serviceHistoryList) {
       if (serviceHistory.getServiceStatus() != ServiceStatus.Complete)

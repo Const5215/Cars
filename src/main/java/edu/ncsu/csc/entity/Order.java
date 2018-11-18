@@ -13,15 +13,17 @@ public class Order {
   private Date orderDate;
   private Date expectedDeliveryDate;
   private Date actualDeliveryDate;
-  private OrderStatus status;
+  private Integer status;
   private Boolean isDeliveryOrder;
+  private Long centerId;
+  private Long distributorId;
 
   public Order() {
   }
 
-  public Order(Long id, Long partId, Integer quantity, Float total, Long fromId, Long toId,
-      Date orderDate, Date expectedDeliveryDate, Date actualDeliveryDate,
-      OrderStatus status, Boolean isDeliveryOrder) {
+  public Order(Long id, Long partId, Integer quantity, Float total, Long fromId, Long toId, Date orderDate,
+               Date expectedDeliveryDate, Date actualDeliveryDate, Integer status, Boolean isDeliveryOrder,
+               Long centerId, Long distributorId) {
     this.id = id;
     this.partId = partId;
     this.quantity = quantity;
@@ -33,6 +35,8 @@ public class Order {
     this.actualDeliveryDate = actualDeliveryDate;
     this.status = status;
     this.isDeliveryOrder = isDeliveryOrder;
+    this.centerId = centerId;
+    this.distributorId = distributorId;
   }
 
   public Long getId() {
@@ -107,11 +111,11 @@ public class Order {
     this.actualDeliveryDate = actualDeliveryDate;
   }
 
-  public OrderStatus getStatus() {
+  public Integer getStatus() {
     return status;
   }
 
-  public void setStatus(OrderStatus status) {
+  public void setStatus(Integer status) {
     this.status = status;
   }
 
@@ -121,5 +125,21 @@ public class Order {
 
   public void setDeliveryOrder(Boolean deliveryOrder) {
     isDeliveryOrder = deliveryOrder;
+  }
+
+  public Long getCenterId() {
+    return centerId;
+  }
+
+  public void setCenterId(Long centerId) {
+    this.centerId = centerId;
+  }
+
+  public Long getDistributorId() {
+    return distributorId;
+  }
+
+  public void setDistributorId(Long distributorId) {
+    this.distributorId = distributorId;
   }
 }
